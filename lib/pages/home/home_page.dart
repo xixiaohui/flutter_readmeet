@@ -59,9 +59,9 @@ class _HomePageState extends State<HomePage> {
       _featuredBlogs = null;
     });
     try {
-      final result = await widget.apiService.getBlogs(page: 1, pageSize: 5);
+      final results = await widget.apiService.searchBlogs('最新', limit: 6, offset: 0);
       if (!mounted) return;
-      setState(() => _featuredBlogs = result.data);
+      setState(() => _featuredBlogs = results);
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e.toString());

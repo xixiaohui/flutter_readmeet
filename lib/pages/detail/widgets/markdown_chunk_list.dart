@@ -41,19 +41,21 @@ class MarkdownChunkList extends StatelessWidget {
 
   MarkdownStyleSheet _buildStyle(ReaderSettingsService s) {
     final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
+    final isDark = s.backgroundColor == 'dark';
+    final textColor = isDark ? AppColors.onDark : AppColors.ink;
 
     return MarkdownStyleSheet(
       p: TextStyle(
         fontSize: s.fontSize,
         fontWeight: FontWeight.w400,
-        color: AppColors.ink,
+        color: textColor,
         height: s.lineHeight,
         fontFamily: s.fontFamily,
       ),
       h1: TextStyle(
         fontSize: AppText.displayMdSize * scale,
         fontWeight: FontWeight.w600,
-        color: AppColors.ink,
+        color: textColor,
         letterSpacing: -0.3,
         height: 1.15,
         fontFamily: s.fontFamily,
@@ -61,23 +63,23 @@ class MarkdownChunkList extends StatelessWidget {
       h2: TextStyle(
         fontSize: AppText.taglineSize * scale,
         fontWeight: FontWeight.w600,
-        color: AppColors.ink,
+        color: textColor,
         height: 1.2,
         fontFamily: s.fontFamily,
       ),
       h3: TextStyle(
         fontSize: AppText.bodySize * scale,
         fontWeight: FontWeight.w600,
-        color: AppColors.ink,
+        color: textColor,
         height: 1.3,
         fontFamily: s.fontFamily,
       ),
-      strong: const TextStyle(fontWeight: FontWeight.w600),
+      strong: TextStyle(fontWeight: FontWeight.w600, color: textColor),
       blockquote: TextStyle(
         fontSize: s.fontSize,
         fontWeight: FontWeight.w300,
         fontStyle: FontStyle.italic,
-        color: AppColors.ink,
+        color: textColor,
         height: s.lineHeight,
         fontFamily: s.fontFamily,
       ),
@@ -90,6 +92,7 @@ class MarkdownChunkList extends StatelessWidget {
       code: TextStyle(
         fontSize: 15,
         backgroundColor: AppColors.canvasParchment,
+        color: textColor,
       ),
       codeblockDecoration: BoxDecoration(
         color: AppColors.canvasParchment,

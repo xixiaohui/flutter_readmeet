@@ -1,0 +1,217 @@
+import 'dart:async';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
+import '../../models/card_item.dart';
+import '../../models/reading_progress.dart';
+import '../../services/api_service.dart';
+import '../../services/reader_settings_service.dart';
+import '../../services/reading_progress_service.dart';
+import '../../theme/app_theme.dart';
+import '../../utils/markdown_chunker.dart';
+import '../../widgets/loading_indicator.dart';
+import 'widgets/hero_image.dart';
+import 'widgets/content_card.dart';
+import 'widgets/markdown_chunk_list.dart';
+
+class DetailPage extends StatefulWidget {
+  final ApiService apiService;
+  final String blogId;
+  final ReaderSettingsService settingsService;
+
+  const DetailPage({
+    super.key,
+    required this.apiService,
+    required this.blogId,
+    required this.settingsService,
+  });
+
+  @override
+  State<DetailPage> createState() => _DetailPageState();
+}
+
+class _DetailPageState extends State<DetailPage> {
+  final _scrollController = ScrollController();
+  final _progressService = ReadingProgressService();
+  Timer? _debounceTimer;
+
+  CardItem? _blog;
+  String? _error;
+  List<String>? _chunks;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDetail();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    _saveProgress(); // save immediately on exit
+    _scrollController.removeListener(_onScroll);
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadDetail() async {
+    setState(() {
+      _error = null;
+      _blog = null;
+      _chunks = null;
+    });
+    try {
+      final blog = await widget.apiService.getBlogDetail(widget.blogId);
+      if (!mounted) return;
+      setState(() {
+        _blog = blog;
+        _chunks = blog.content != null && blog.content!.isNotEmpty
+            ? MarkdownChunker.chunk(blog.content!)
+            : [];
+      });
+      _restoreProgress();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.toString());
+    }
+  }
+
+  Future<void> _restoreProgress() async {
+    final saved = await _progressService.get(widget.blogId);
+    if (!mounted || saved == null) return;
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(saved.scrollOffset);
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _scrollController.hasClients) {
+          _scrollController.jumpTo(saved.scrollOffset);
+        }
+      });
+    }
+  }
+
+  void _onScroll() {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 500), _saveProgress);
+  }
+
+  void _saveProgress() {
+    if (!mounted) return;
+    final blog = _blog;
+    if (blog == null) return;
+    if (!_scrollController.hasClients) return;
+
+    final offset = _scrollController.offset;
+    final maxExtent = _scrollController.position.maxScrollExtent;
+    final progress =
+        maxExtent > 0 ? (offset / maxExtent).clamp(0.0, 1.0) : 0.0;
+
+    _progressService.save(ReadingProgress(
+      blogId: widget.blogId,
+      scrollOffset: offset,
+      progress: progress,
+      blogTitle: blog.title,
+      coverImg: blog.img,
+      updatedAt: DateTime.now(),
+    ));
+  }
+
+  Color _bgColor() {
+    switch (widget.settingsService.backgroundColor) {
+      case 'white':
+        return AppColors.canvas;
+      case 'dark':
+        return AppColors.surfaceTile1;
+      case 'parchment':
+      default:
+        return AppColors.canvasParchment;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoPageScaffold(
+      backgroundColor: _bgColor(),
+      navigationBar: CupertinoNavigationBar(
+        backgroundColor: AppColors.canvas.withValues(alpha: 0.9),
+        border: null,
+        leading: GestureDetector(
+          onTap: () {
+            HapticFeedback.lightImpact();
+            Navigator.of(context).pop();
+          },
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                CupertinoIcons.back,
+                color: AppColors.primary,
+                size: 20,
+              ),
+              SizedBox(width: 4),
+              Text(
+                '返回',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: AppText.bodySize,
+                ),
+              ),
+            ],
+          ),
+        ),
+        trailing: GestureDetector(
+          onTap: () => HapticFeedback.lightImpact(),
+          child: const Icon(
+            CupertinoIcons.share,
+            color: AppColors.primary,
+            size: 20,
+          ),
+        ),
+      ),
+      child: _buildBody(),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_error != null) {
+      return ErrorView(message: _error!, onRetry: _loadDetail);
+    }
+
+    if (_blog == null) {
+      return const LoadingIndicator(message: '加载中...');
+    }
+
+    final blog = _blog!;
+    final hasCover = blog.img != null && blog.img!.isNotEmpty;
+    final chunks = _chunks ?? [];
+
+    return ListenableBuilder(
+      listenable: widget.settingsService,
+      builder: (context, _) {
+        return SafeArea(
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: [
+              SliverToBoxAdapter(
+                child: DetailHeroImage(imageUrl: blog.img),
+              ),
+              SliverToBoxAdapter(
+                child: ContentHeader(blog: blog, hasCover: hasCover),
+              ),
+              if (chunks.isNotEmpty)
+                MarkdownChunkList(
+                  chunks: chunks,
+                  settingsService: widget.settingsService,
+                )
+              else
+                const SliverToBoxAdapter(child: SizedBox.shrink()),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: AppSpacing.xxl),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}

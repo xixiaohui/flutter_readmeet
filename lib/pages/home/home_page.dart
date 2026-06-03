@@ -8,6 +8,7 @@ import '../../../widgets/loading_indicator.dart';
 import 'widgets/hero_tile.dart';
 import 'widgets/featured_card.dart';
 import '../list/list_page.dart';
+import '../hot/hot_page.dart';
 import '../detail/detail_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -26,12 +27,14 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<CardItem>? _featuredBlogs;
+  List<CardItem>? _hotBlogs;
   String? _error;
 
   @override
   void initState() {
     super.initState();
     _loadFeatured();
+    _loadHot();
   }
 
   Future<void> _loadFeatured() async {
@@ -46,6 +49,16 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e.toString());
+    }
+  }
+
+  Future<void> _loadHot() async {
+    try {
+      final results = await widget.apiService.searchBlogs('zh', limit: 6, offset: 0);
+      if (!mounted) return;
+      setState(() => _hotBlogs = results);
+    } catch (_) {
+      // Hot section is non-critical — silently ignore
     }
   }
 
@@ -66,6 +79,17 @@ class _HomePageState extends State<HomePage> {
     Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (_) => ListPage(
+          apiService: widget.apiService,
+          settingsService: widget.settingsService,
+        ),
+      ),
+    );
+  }
+
+  void _openHotList() {
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (_) => HotPage(
           apiService: widget.apiService,
           settingsService: widget.settingsService,
         ),
@@ -178,6 +202,54 @@ class _HomePageState extends State<HomePage> {
                       FeaturedCard(item: featured[i], onTap: () => _openDetail(featured[i])),
                 ),
               ),
+
+            // ── Hot / 精选 section ──
+            if (_hotBlogs != null && _hotBlogs!.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      '精选',
+                      style: TextStyle(
+                        fontSize: AppText.bodySize,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: _openHotList,
+                      child: const Text(
+                        '查看全部',
+                        style: TextStyle(
+                          fontSize: AppText.bodySize,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  itemCount: _hotBlogs!.length,
+                  itemBuilder: (_, i) =>
+                      FeaturedCard(item: _hotBlogs![i], onTap: () => _openDetail(_hotBlogs![i])),
+                ),
+              ),
+            ],
 
             const SizedBox(height: AppSpacing.xl),
           ],

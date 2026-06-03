@@ -108,6 +108,22 @@ class ApiService {
     }
   }
 
+  Future<CardItem> getHeroBlog(String blogIndex) async {
+    final uri = Uri.parse(ApiConfig.blogHero).replace(
+      queryParameters: {'blog_index': blogIndex},
+    );
+
+    final response = await _client.get(uri);
+
+    if (response.statusCode == 200) {
+      return CardItem.fromJson(
+        json.decode(response.body) as Map<String, dynamic>,
+      );
+    } else {
+      throw ApiException('请求失败', statusCode: response.statusCode);
+    }
+  }
+
   void dispose() {
     _client.close();
   }

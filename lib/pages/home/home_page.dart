@@ -25,6 +25,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  CardItem? _heroBlog;
   List<CardItem>? _featuredBlogs;
   List<CardItem>? _zhBlogs;
   List<CardItem>? _jaBlogs;
@@ -40,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    _loadHero();
     _loadFeatured();
     _loadZh();
     _loadJa();
@@ -50,6 +52,16 @@ class _HomePageState extends State<HomePage> {
     _loadLincoln();
     _loadSand();
     _loadBurnand();
+  }
+
+  Future<void> _loadHero() async {
+    try {
+      final blog = await widget.apiService.getHeroBlog('23876');
+      if (!mounted) return;
+      setState(() => _heroBlog = blog);
+    } catch (_) {
+      // Non-critical — silently ignore
+    }
   }
 
   Future<void> _loadFeatured() async {
@@ -230,16 +242,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBody() {
-    if (_error != null && _featuredBlogs == null) {
+    if (_error != null && _featuredBlogs == null && _heroBlog == null) {
       return ErrorView(message: _error!, onRetry: _loadFeatured);
     }
 
-    final hero = (_featuredBlogs != null && _featuredBlogs!.isNotEmpty)
-        ? _featuredBlogs!.first
-        : null;
-    final featured = (_featuredBlogs != null && _featuredBlogs!.length > 1)
-        ? _featuredBlogs!.sublist(1)
-        : <CardItem>[];
+    final featured = _featuredBlogs ?? [];
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -247,8 +254,8 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Hero tile — shows skeleton while loading
-            if (hero != null)
-              HeroTile(item: hero, onTap: () => _openDetail(hero))
+            if (_heroBlog != null)
+              HeroTile(item: _heroBlog!, onTap: () => _openDetail(_heroBlog!))
             else ...[
               const _HeroSkeleton(),
               const SizedBox(height: AppSpacing.xl),

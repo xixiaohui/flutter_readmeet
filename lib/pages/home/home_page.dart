@@ -230,20 +230,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBody() {
-    if (_error != null) {
+    if (_error != null && _featuredBlogs == null) {
       return ErrorView(message: _error!, onRetry: _loadFeatured);
     }
 
-    if (_featuredBlogs == null) {
-      return const LoadingIndicator(message: '加载中...');
-    }
-
-    if (_featuredBlogs!.isEmpty) {
-      return const EmptyView(message: '暂无文章');
-    }
-
-    final hero = _featuredBlogs!.first;
-    final featured = _featuredBlogs!.length > 1
+    final hero = (_featuredBlogs != null && _featuredBlogs!.isNotEmpty)
+        ? _featuredBlogs!.first
+        : null;
+    final featured = (_featuredBlogs != null && _featuredBlogs!.length > 1)
         ? _featuredBlogs!.sublist(1)
         : <CardItem>[];
 
@@ -252,8 +246,13 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Hero tile
-            HeroTile(item: hero, onTap: () => _openDetail(hero)),
+            // Hero tile — shows skeleton while loading
+            if (hero != null)
+              HeroTile(item: hero, onTap: () => _openDetail(hero))
+            else ...[
+              const _HeroSkeleton(),
+              const SizedBox(height: AppSpacing.xl),
+            ],
 
             // Featured cards section
             if (featured.isNotEmpty)
@@ -752,6 +751,25 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: AppSpacing.xl),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _HeroSkeleton extends StatelessWidget {
+  const _HeroSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 200,
+      margin: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: AppColors.canvasParchment,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+      ),
+      child: const Center(
+        child: CupertinoActivityIndicator(),
       ),
     );
   }

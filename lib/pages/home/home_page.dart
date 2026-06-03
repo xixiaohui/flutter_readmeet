@@ -31,6 +31,7 @@ class _HomePageState extends State<HomePage> {
   List<CardItem>? _jaBlogs;
   List<CardItem>? _shakespeareBlogs;
   List<CardItem>? _twainBlogs;
+  List<CardItem>? _byronBlogs;
   String? _error;
 
   @override
@@ -41,6 +42,7 @@ class _HomePageState extends State<HomePage> {
     _loadJa();
     _loadShakespeare();
     _loadTwain();
+    _loadByron();
   }
 
   Future<void> _loadFeatured() async {
@@ -93,6 +95,16 @@ class _HomePageState extends State<HomePage> {
       final results = await widget.apiService.searchAuthor('Twain, Mark', limit: 6, offset: 0);
       if (!mounted) return;
       setState(() => _twainBlogs = results);
+    } catch (_) {
+      // Non-critical — silently ignore
+    }
+  }
+
+  Future<void> _loadByron() async {
+    try {
+      final results = await widget.apiService.searchAuthor('Byron', limit: 6, offset: 0);
+      if (!mounted) return;
+      setState(() => _byronBlogs = results);
     } catch (_) {
       // Non-critical — silently ignore
     }
@@ -446,6 +458,56 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (_, i) => FeaturedCard(
                     item: _twainBlogs![i],
                     onTap: () => _openDetail(_twainBlogs![i]),
+                  ),
+                ),
+              ),
+            ],
+
+            // ── Byron section ──
+            if (_byronBlogs != null && _byronBlogs!.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Byron',
+                      style: TextStyle(
+                        fontSize: AppText.bodySize,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _openHotListAuthor('Byron', 'Byron'),
+                      child: const Text(
+                        '查看全部',
+                        style: TextStyle(
+                          fontSize: AppText.bodySize,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  itemCount: _byronBlogs!.length,
+                  itemBuilder: (_, i) => FeaturedCard(
+                    item: _byronBlogs![i],
+                    onTap: () => _openDetail(_byronBlogs![i]),
                   ),
                 ),
               ),

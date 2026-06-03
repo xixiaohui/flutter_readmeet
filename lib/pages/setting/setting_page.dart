@@ -14,6 +14,10 @@ class SettingPage extends StatefulWidget {
 class _SettingPageState extends State<SettingPage> {
   ReaderSettingsService get _s => widget.settingsService;
 
+  double? _dragFontSize;
+  double? _dragLineHeight;
+  double? _dragParagraphSpacing;
+
   @override
   void initState() {
     super.initState();
@@ -44,32 +48,41 @@ class _SettingPageState extends State<SettingPage> {
           children: [
             _SectionLabel('字体大小'),
             _SliderRow(
-              value: _s.fontSize,
+              value: _dragFontSize ?? _s.fontSize,
               min: 14.0,
               max: 24.0,
               formatLabel: (v) => '${v.round()}',
-              onChanged: (v) {},
-              onChangeEnd: _s.setFontSize,
+              onChanged: (v) => setState(() => _dragFontSize = v),
+              onChangeEnd: (v) {
+                _s.setFontSize(v);
+                setState(() => _dragFontSize = null);
+              },
             ),
 
             _SectionLabel('行间距'),
             _SliderRow(
-              value: _s.lineHeight,
+              value: _dragLineHeight ?? _s.lineHeight,
               min: 1.2,
               max: 2.4,
               formatLabel: (v) => v.toStringAsFixed(1),
-              onChanged: (v) {},
-              onChangeEnd: _s.setLineHeight,
+              onChanged: (v) => setState(() => _dragLineHeight = v),
+              onChangeEnd: (v) {
+                _s.setLineHeight(v);
+                setState(() => _dragLineHeight = null);
+              },
             ),
 
             _SectionLabel('段落间距'),
             _SliderRow(
-              value: _s.paragraphSpacing,
+              value: _dragParagraphSpacing ?? _s.paragraphSpacing,
               min: 8.0,
               max: 32.0,
               formatLabel: (v) => '${v.round()}',
-              onChanged: (v) {},
-              onChangeEnd: _s.setParagraphSpacing,
+              onChanged: (v) => setState(() => _dragParagraphSpacing = v),
+              onChangeEnd: (v) {
+                _s.setParagraphSpacing(v);
+                setState(() => _dragParagraphSpacing = null);
+              },
             ),
 
             _SectionLabel('字体样式'),

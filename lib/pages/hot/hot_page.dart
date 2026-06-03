@@ -18,6 +18,7 @@ class HotPage extends StatefulWidget {
   final String title;
   final String query;
   final bool useAuthorSearch;
+  final bool useGetBlogs;
 
   const HotPage({
     super.key,
@@ -26,6 +27,7 @@ class HotPage extends StatefulWidget {
     required this.title,
     required this.query,
     this.useAuthorSearch = false,
+    this.useGetBlogs = false,
   });
 
   @override
@@ -40,6 +42,7 @@ class _HotPageState extends State<HotPage> {
   bool _isLoadingMore = false;
   String? _error;
   int _offset = 0;
+  int _page = 1;
   bool _hasMore = true;
   static const int _pageSize = 20;
 
@@ -63,27 +66,31 @@ class _HotPageState extends State<HotPage> {
     }
   }
 
-  Future<List<CardItem>> _fetch(int limit, int offset) {
-    if (widget.useAuthorSearch) {
-      return widget.apiService.searchAuthor(widget.query, limit: limit, offset: offset);
-    }
-    return widget.apiService.searchBlogs(widget.query, limit: limit, offset: offset);
-  }
-
   Future<void> _load() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
     try {
-      final results = await _fetch(_pageSize, 0);
-      if (!mounted) return;
-      setState(() {
-        _blogs = results;
-        _offset = results.length;
-        _hasMore = results.length >= _pageSize;
-        _isLoading = false;
-      });
+      if (widget.useGetBlogs) {
+        final result = await widget.apiService.getBlogs(page: 1, pageSize: _pageSize);
+        if (!mounted) return;
+        setState(() {
+          _blogs = result.data;
+          _page = 1;
+          _hasMore = _blogs.length < result.total;
+          _isLoading = false;
+        });
+      } else {
+        final results = await _fetch(_pageSize, 0);
+        if (!mounted) return;
+        setState(() {
+          _blogs = results;
+          _offset = results.length;
+          _hasMore = results.length >= _pageSize;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -93,19 +100,37 @@ class _HotPageState extends State<HotPage> {
     }
   }
 
+  Future<List<CardItem>> _fetch(int limit, int offset) {
+    if (widget.useAuthorSearch) {
+      return widget.apiService.searchAuthor(widget.query, limit: limit, offset: offset);
+    }
+    return widget.apiService.searchBlogs(widget.query, limit: limit, offset: offset);
+  }
+
   Future<void> _loadMore() async {
     if (_isLoadingMore || !_hasMore) return;
 
     setState(() => _isLoadingMore = true);
     try {
-      final results = await _fetch(_pageSize, _offset);
-      if (!mounted) return;
-      setState(() {
-        _blogs.addAll(results);
-        _offset += results.length;
-        _hasMore = results.length >= _pageSize;
-        _isLoadingMore = false;
-      });
+      if (widget.useGetBlogs) {
+        final result = await widget.apiService.getBlogs(page: _page + 1, pageSize: _pageSize);
+        if (!mounted) return;
+        setState(() {
+          _blogs.addAll(result.data);
+          _page++;
+          _hasMore = _blogs.length < result.total;
+          _isLoadingMore = false;
+        });
+      } else {
+        final results = await _fetch(_pageSize, _offset);
+        if (!mounted) return;
+        setState(() {
+          _blogs.addAll(results);
+          _offset += results.length;
+          _hasMore = results.length >= _pageSize;
+          _isLoadingMore = false;
+        });
+      }
     } catch (_) {
       if (!mounted) return;
       setState(() => _isLoadingMore = false);

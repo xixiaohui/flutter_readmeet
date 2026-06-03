@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> {
   List<CardItem>? _jeffersonBlogs;
   List<CardItem>? _lincolnBlogs;
   List<CardItem>? _sandBlogs;
+  List<CardItem>? _burnandBlogs;
   String? _error;
 
   @override
@@ -49,6 +50,7 @@ class _HomePageState extends State<HomePage> {
     _loadJefferson();
     _loadLincoln();
     _loadSand();
+    _loadBurnand();
   }
 
   Future<void> _loadFeatured() async {
@@ -141,6 +143,16 @@ class _HomePageState extends State<HomePage> {
       final results = await widget.apiService.searchAuthor('Sand, George', limit: 6, offset: 0);
       if (!mounted) return;
       setState(() => _sandBlogs = results);
+    } catch (_) {
+      // Non-critical — silently ignore
+    }
+  }
+
+  Future<void> _loadBurnand() async {
+    try {
+      final results = await widget.apiService.searchAuthor('Burnand, F. C.', limit: 6, offset: 0);
+      if (!mounted) return;
+      setState(() => _burnandBlogs = results);
     } catch (_) {
       // Non-critical — silently ignore
     }
@@ -694,6 +706,56 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (_, i) => FeaturedCard(
                     item: _sandBlogs![i],
                     onTap: () => _openDetail(_sandBlogs![i]),
+                  ),
+                ),
+              ),
+            ],
+
+            // ── Burnand, F. C. section ──
+            if (_burnandBlogs != null && _burnandBlogs!.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Burnand, F. C.',
+                      style: TextStyle(
+                        fontSize: AppText.bodySize,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _openHotListAuthor('Burnand, F. C.', 'Burnand, F. C.'),
+                      child: const Text(
+                        '查看全部',
+                        style: TextStyle(
+                          fontSize: AppText.bodySize,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  itemCount: _burnandBlogs!.length,
+                  itemBuilder: (_, i) => FeaturedCard(
+                    item: _burnandBlogs![i],
+                    onTap: () => _openDetail(_burnandBlogs![i]),
                   ),
                 ),
               ),

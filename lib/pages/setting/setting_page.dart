@@ -36,8 +36,11 @@ class _SettingPageState extends State<SettingPage> {
         ),
       ),
       child: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+        child: ListenableBuilder(
+          listenable: _s,
+          builder: (context, _) {
+            return ListView(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
           children: [
             _SectionLabel('字体大小'),
             _SliderRow(
@@ -45,7 +48,8 @@ class _SettingPageState extends State<SettingPage> {
               min: 14.0,
               max: 24.0,
               formatLabel: (v) => '${v.round()}',
-              onChanged: _s.setFontSize,
+              onChanged: (v) {},
+              onChangeEnd: _s.setFontSize,
             ),
 
             _SectionLabel('行间距'),
@@ -54,7 +58,8 @@ class _SettingPageState extends State<SettingPage> {
               min: 1.2,
               max: 2.4,
               formatLabel: (v) => v.toStringAsFixed(1),
-              onChanged: _s.setLineHeight,
+              onChanged: (v) {},
+              onChangeEnd: _s.setLineHeight,
             ),
 
             _SectionLabel('段落间距'),
@@ -63,14 +68,15 @@ class _SettingPageState extends State<SettingPage> {
               min: 8.0,
               max: 32.0,
               formatLabel: (v) => '${v.round()}',
-              onChanged: _s.setParagraphSpacing,
+              onChanged: (v) {},
+              onChangeEnd: _s.setParagraphSpacing,
             ),
 
             _SectionLabel('字体样式'),
             _SegmentedRow<String>(
               value: _s.fontFamily ?? 'system',
               options: const ['system', 'serif', 'monospace'],
-              labels: const ['系统默认', '宋体', '等宽'],
+              labels: ReaderSettingsService.fontFamilyLabels.values.toList(),
               onChanged: (v) => _s.setFontFamily(v == 'system' ? null : v),
             ),
 
@@ -79,13 +85,15 @@ class _SettingPageState extends State<SettingPage> {
             _SectionLabel('阅读背景'),
             _SegmentedRow<String>(
               value: _s.backgroundColor,
-              options: const ['white', 'parchment', 'dark'],
-              labels: const ['白色', '米色', '深色'],
+              options: ReaderSettingsService.backgroundColorLabels.keys.toList(),
+              labels: ReaderSettingsService.backgroundColorLabels.values.toList(),
               onChanged: _s.setBackgroundColor,
             ),
 
             const SizedBox(height: AppSpacing.xxl),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );
@@ -126,6 +134,7 @@ class _SliderRow extends StatelessWidget {
   final double max;
   final String Function(double) formatLabel;
   final ValueChanged<double> onChanged;
+  final ValueChanged<double>? onChangeEnd;
 
   const _SliderRow({
     required this.value,
@@ -133,6 +142,7 @@ class _SliderRow extends StatelessWidget {
     required this.max,
     required this.formatLabel,
     required this.onChanged,
+    this.onChangeEnd,
   });
 
   @override
@@ -148,6 +158,7 @@ class _SliderRow extends StatelessWidget {
               max: max,
               activeColor: AppColors.primary,
               onChanged: onChanged,
+              onChangeEnd: onChangeEnd,
             ),
           ),
           SizedBox(

@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   List<CardItem>? _twainBlogs;
   List<CardItem>? _byronBlogs;
   List<CardItem>? _jeffersonBlogs;
+  List<CardItem>? _lincolnBlogs;
   String? _error;
 
   @override
@@ -45,6 +46,7 @@ class _HomePageState extends State<HomePage> {
     _loadTwain();
     _loadByron();
     _loadJefferson();
+    _loadLincoln();
   }
 
   Future<void> _loadFeatured() async {
@@ -122,6 +124,16 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _loadLincoln() async {
+    try {
+      final results = await widget.apiService.searchAuthor('Lincoln, Abraham', limit: 6, offset: 0);
+      if (!mounted) return;
+      setState(() => _lincolnBlogs = results);
+    } catch (_) {
+      // Non-critical — silently ignore
+    }
+  }
+
   void _openDetail(CardItem item) {
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
@@ -184,7 +196,7 @@ class _HomePageState extends State<HomePage> {
         leading: Padding(
           padding: EdgeInsets.only(left: 16),
           child: Text(
-            '情书',
+            'READMEET',
             style: TextStyle(
               fontSize: AppText.taglineSize,
               fontWeight: FontWeight.w600,
@@ -570,6 +582,56 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (_, i) => FeaturedCard(
                     item: _jeffersonBlogs![i],
                     onTap: () => _openDetail(_jeffersonBlogs![i]),
+                  ),
+                ),
+              ),
+            ],
+
+            // ── Lincoln, Abraham section ──
+            if (_lincolnBlogs != null && _lincolnBlogs!.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Lincoln, Abraham',
+                      style: TextStyle(
+                        fontSize: AppText.bodySize,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _openHotListAuthor('Lincoln, Abraham', 'Lincoln, Abraham'),
+                      child: const Text(
+                        '查看全部',
+                        style: TextStyle(
+                          fontSize: AppText.bodySize,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  itemCount: _lincolnBlogs!.length,
+                  itemBuilder: (_, i) => FeaturedCard(
+                    item: _lincolnBlogs![i],
+                    onTap: () => _openDetail(_lincolnBlogs![i]),
                   ),
                 ),
               ),

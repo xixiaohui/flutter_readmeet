@@ -7,7 +7,6 @@ import '../../../theme/app_theme.dart';
 import '../../../widgets/loading_indicator.dart';
 import 'widgets/hero_tile.dart';
 import 'widgets/featured_card.dart';
-import '../list/list_page.dart';
 import '../hot/hot_page.dart';
 import '../detail/detail_page.dart';
 
@@ -171,17 +170,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _openList() {
-    Navigator.of(context).push(
-      CupertinoPageRoute(
-        builder: (_) => ListPage(
-          apiService: widget.apiService,
-          settingsService: widget.settingsService,
-        ),
-      ),
-    );
-  }
-
   void _openHotList(String title, String query) {
     Navigator.of(context).push(
       CupertinoPageRoute(
@@ -288,7 +276,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: _openList,
+                      onTap: () => _openHotList('最新文章', '最新'),
                       child: const Text(
                         '查看全部',
                         style: TextStyle(

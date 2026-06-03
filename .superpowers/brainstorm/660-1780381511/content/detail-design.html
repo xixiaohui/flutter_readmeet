@@ -1,0 +1,91 @@
+<h2>详情页（Detail）设计 — 阅读体验</h2>
+<p class="subtitle">Markdown 正文渲染 · 最佳移动阅读体验</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">方案 A: 沉浸式 · 无干扰阅读</div>
+    <div class="mockup-body" style="background:#fff;padding:12px;max-width:320px;margin:0 auto;">
+      <!-- Nav translucent -->
+      <div style="background:rgba(245,245,247,0.9);backdrop-filter:blur(10px);padding:10px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #f0f0f0;">
+        <span style="font-size:14px;color:#0066cc;">← 返回</span>
+        <span style="font-size:12px;color:#7a7a7a;">阅读模式</span>
+        <span style="font-size:14px;">Aa</span>
+      </div>
+      <!-- Article content -->
+      <div style="padding:24px 20px;">
+        <span style="background:#f5f5f7;color:#7a7a7a;font-size:11px;padding:3px 10px;border-radius:999px;">精選</span>
+        <h1 style="font-size:28px;font-weight:600;color:#1d1d1f;line-height:1.15;letter-spacing:-0.3px;margin:12px 0 8px;">爱在深秋的季节里</h1>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;">
+          <div class="placeholder" style="width:24px;height:24px;border-radius:50%;">A</div>
+          <span style="font-size:14px;color:#7a7a7a;">作者名</span>
+          <span style="font-size:12px;color:#7a7a7a;">· 2025-11-12</span>
+        </div>
+        <!-- Content -->
+        <div style="font-size:17px;line-height:1.8;color:#1d1d1f;">
+          <p>秋天是一个充满诗意的季节。当落叶缓缓飘落，我总会想起那个温暖的午后...</p>
+          <p>阳光透过金黄的银杏叶洒在地上，形成斑驳的光影。你坐在长椅上，手里捧着一本书，偶尔抬头看看远处的风景。</p>
+          <div class="placeholder" style="height:180px;margin:16px 0;border-radius:8px;">文章配图</div>
+          <p>那一刻，时间仿佛静止了。我意识到，有些美好不需要言语，只需要用心去感受。</p>
+          <p>这大概就是爱的模样——简单、纯粹，却又深刻得让人无法忘怀。</p>
+        </div>
+        <!-- Highlight example -->
+        <div style="background:#fff3cd;padding:12px 16px;border-radius:8px;margin:16px 0;font-size:15px;line-height:1.6;color:#333;">高亮标记示例：用户长按选中文本后可高亮或下划线标记</div>
+      </div>
+      <!-- Bottom bar -->
+      <div style="background:rgba(245,245,247,0.9);backdrop-filter:blur(10px);padding:10px 16px;display:flex;justify-content:space-around;align-items:center;border-top:1px solid #f0f0f0;">
+        <span style="font-size:13px;color:#0066cc;">🖊 标记</span>
+        <span style="font-size:13px;color:#0066cc;">🔖 书签</span>
+        <span style="font-size:13px;color:#0066cc;">↗ 分享</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">方案 B: 图文叙事 · 杂志风格</div>
+    <div class="mockup-body" style="background:#f5f5f7;padding:12px;max-width:320px;margin:0 auto;">
+      <!-- Hero image -->
+      <div class="placeholder" style="height:200px;margin:0;">封面大图 (全宽)</div>
+      <!-- Article -->
+      <div style="background:#fff;padding:24px 20px;border-radius:18px 18px 0 0;margin-top:-12px;position:relative;">
+        <span style="background:#0066cc;color:#fff;font-size:11px;padding:3px 10px;border-radius:999px;">精選</span>
+        <h1 style="font-size:26px;font-weight:600;color:#1d1d1f;line-height:1.15;letter-spacing:-0.3px;margin:12px 0 8px;">爱在深秋的季节里</h1>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <div class="placeholder" style="width:24px;height:24px;border-radius:50%;">A</div>
+          <span style="font-size:14px;color:#7a7a7a;">作者名 · 2025-11-12</span>
+        </div>
+        <div style="font-size:17px;line-height:1.8;color:#1d1d1f;">
+          <p><strong style="font-weight:600;">秋天是一个充满诗意的季节。</strong>当落叶缓缓飘落，我总会想起那个温暖的午后...</p>
+          <p>阳光透过金黄的银杏叶洒在地上，形成斑驳的光影。你坐在长椅上，手里捧着一本书。</p>
+          <p>那一刻，时间仿佛静止了。</p>
+        </div>
+        <!-- Quote block -->
+        <div style="border-left:3px solid #0066cc;padding-left:16px;margin:16px 0;font-size:20px;font-weight:300;color:#1d1d1f;line-height:1.4;font-style:italic;">
+          "有些美好不需要言语，只需要用心去感受。"
+        </div>
+        <div style="font-size:17px;line-height:1.8;color:#1d1d1f;">
+          <p>这大概就是爱的模样——简单、纯粹，却又深刻得让人无法忘怀。</p>
+        </div>
+      </div>
+      <!-- Bottom -->
+      <div style="background:#fff;padding:10px 20px 20px;display:flex;gap:12px;">
+        <button style="background:#0066cc;color:#fff;border:none;border-radius:999px;padding:10px 20px;font-size:14px;flex:1;">🖊 标记</button>
+        <button style="background:#f5f5f7;color:#1d1d1f;border:1px solid #e0e0e0;border-radius:999px;padding:10px 20px;font-size:14px;">↗</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="cards" style="margin-top:24px;">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>推荐方案 A: 沉浸式阅读</h3>
+      <p>全白背景，大标题 + 17px 正文（Apple 式阅读节奏），毛玻璃导航栏，底部标记/书签工具栏。内容为王，UI 隐退</p>
+    </div>
+  </div>
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-body">
+      <h3>方案 B: 杂志叙事</h3>
+      <p>封面大图顶头 + 内容区圆角卡片叠加，引用块蓝色左边框，视觉层次丰富，更像杂志排版</p>
+    </div>
+  </div>
+</div>

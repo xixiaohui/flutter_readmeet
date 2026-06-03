@@ -91,11 +91,11 @@ class MarkdownChunkList extends StatelessWidget {
       blockquotePadding: const EdgeInsets.only(left: AppSpacing.md),
       code: TextStyle(
         fontSize: 15,
-        backgroundColor: AppColors.canvasParchment,
+        backgroundColor: isDark ? AppColors.inkMuted80 : AppColors.canvasParchment,
         color: textColor,
       ),
       codeblockDecoration: BoxDecoration(
-        color: AppColors.canvasParchment,
+        color: isDark ? AppColors.inkMuted80 : AppColors.canvasParchment,
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
     );

@@ -128,47 +128,61 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
+  Color _navBgColor() {
+    switch (widget.settingsService.backgroundColor) {
+      case 'dark':
+        return AppColors.surfaceTile1.withValues(alpha: 0.9);
+      default:
+        return AppColors.canvas.withValues(alpha: 0.9);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      backgroundColor: _bgColor(),
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: AppColors.canvas.withValues(alpha: 0.9),
-        border: null,
-        leading: GestureDetector(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            Navigator.of(context).pop();
-          },
-          child: const Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                CupertinoIcons.back,
+    return ListenableBuilder(
+      listenable: widget.settingsService,
+      builder: (context, _) {
+        return CupertinoPageScaffold(
+          backgroundColor: _bgColor(),
+          navigationBar: CupertinoNavigationBar(
+            backgroundColor: _navBgColor(),
+            border: null,
+            leading: GestureDetector(
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).pop();
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    CupertinoIcons.back,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    '返回',
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontSize: AppText.bodySize,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            trailing: GestureDetector(
+              onTap: () => HapticFeedback.lightImpact(),
+              child: const Icon(
+                CupertinoIcons.share,
                 color: AppColors.primary,
                 size: 20,
               ),
-              SizedBox(width: 4),
-              Text(
-                '返回',
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontSize: AppText.bodySize,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-        trailing: GestureDetector(
-          onTap: () => HapticFeedback.lightImpact(),
-          child: const Icon(
-            CupertinoIcons.share,
-            color: AppColors.primary,
-            size: 20,
-          ),
-        ),
-      ),
-      child: _buildBody(),
+          child: _buildBody(),
+        );
+      },
     );
   }
 
@@ -185,33 +199,28 @@ class _DetailPageState extends State<DetailPage> {
     final hasCover = blog.img != null && blog.img!.isNotEmpty;
     final chunks = _chunks ?? [];
 
-    return ListenableBuilder(
-      listenable: widget.settingsService,
-      builder: (context, _) {
-        return SafeArea(
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              SliverToBoxAdapter(
-                child: DetailHeroImage(imageUrl: blog.img),
-              ),
-              SliverToBoxAdapter(
-                child: ContentHeader(blog: blog, hasCover: hasCover),
-              ),
-              if (chunks.isNotEmpty)
-                MarkdownChunkList(
-                  chunks: chunks,
-                  settingsService: widget.settingsService,
-                )
-              else
-                const SliverToBoxAdapter(child: SizedBox.shrink()),
-              const SliverToBoxAdapter(
-                child: SizedBox(height: AppSpacing.xxl),
-              ),
-            ],
+    return SafeArea(
+      child: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          SliverToBoxAdapter(
+            child: DetailHeroImage(imageUrl: blog.img),
           ),
-        );
-      },
+          SliverToBoxAdapter(
+            child: ContentHeader(blog: blog, hasCover: hasCover),
+          ),
+          if (chunks.isNotEmpty)
+            MarkdownChunkList(
+              chunks: chunks,
+              settingsService: widget.settingsService,
+            )
+          else
+            const SliverToBoxAdapter(child: SizedBox.shrink()),
+          const SliverToBoxAdapter(
+            child: SizedBox(height: AppSpacing.xxl),
+          ),
+        ],
+      ),
     );
   }
 }

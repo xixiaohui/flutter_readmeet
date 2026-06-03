@@ -1,0 +1,650 @@
+{
+  "4": {
+    "title": "Lincoln's Gettysburg Address\nGiven November 19, 1863 on the battlefield near Gettysburg, Pennsylvania, USA",
+    "author": "Lincoln, Abraham, 1809-1865",
+    "subjects": "Consecration of cemeteries -- Pennsylvania -- Gettysburg; Soldiers' National Cemetery (Gettysburg, Pa.); Lincoln, Abraham, 1809-1865. Gettysburg address",
+    "language": "en"
+  },
+  "8": {
+    "title": "Abraham Lincoln's Second Inaugural Address",
+    "author": "Lincoln, Abraham, 1809-1865",
+    "subjects": "United States -- Politics and government -- 1861-1865; Presidents -- United States -- Inaugural addresses",
+    "language": "en"
+  },
+  "9": {
+    "title": "Abraham Lincoln's First Inaugural Address",
+    "author": "Lincoln, Abraham, 1809-1865",
+    "subjects": "United States -- Politics and government -- 1861-1865; Presidents -- United States -- Inaugural addresses",
+    "language": "en"
+  },
+  "1747": {
+    "title": "The Red Seal",
+    "author": "Lincoln, Natalie Sumner, 1881-1935",
+    "subjects": "Fiction",
+    "language": "en"
+  },
+  "2068": {
+    "title": "Keziah Coffin",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Historical fiction; New England -- Fiction",
+    "language": "en"
+  },
+  "2307": {
+    "title": "The Depot Master",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Man-woman relationships -- Fiction; Railroad stories; Cape Cod (Mass.) -- Fiction; Railroad stations -- Fiction",
+    "language": "en"
+  },
+  "2372": {
+    "title": "The Woman-Haters",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Humorous stories; Massachusetts -- Fiction; Lighthouse keepers -- Fiction; Cape Cod (Mass.) -- Fiction",
+    "language": "en"
+  },
+  "2452": {
+    "title": "Shavings: A Novel",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Man-woman relationships -- Fiction; Massachusetts -- Fiction; Toymakers -- Fiction; Thieves -- Fiction; Cape Cod (Mass.) -- Fiction",
+    "language": "en"
+  },
+  "2473": {
+    "title": "Mary-'Gusta",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Orphans -- Fiction; Guardian and ward -- Fiction; Massachusetts -- Fiction; Cape Cod (Mass.) -- Fiction",
+    "language": "en"
+  },
+  "2552": {
+    "title": "Thankful's Inheritance",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Inheritance and succession -- Fiction; Widows -- Fiction; Massachusetts -- Fiction; Boardinghouses -- Fiction; Cape Cod (Mass.) -- Fiction",
+    "language": "en"
+  },
+  "2653": {
+    "title": "The Papers and Writings of Abraham Lincoln — Volume 1: 1832-1843",
+    "author": "Lincoln, Abraham, 1809-1865; Choate, Joseph Hodges, 1832-1917 [Contributor]; Roosevelt, Theodore, 1858-1919 [Contributor]; Schurz, Carl, 1829-1906 [Contributor]; Lapsley, Arthur Brooks [Editor]",
+    "subjects": "Lincoln, Abraham, 1809-1865; United States -- Politics and government -- 1837-1841; Lincoln, Abraham, 1809-1865 -- Correspondence; United States -- Politics and government -- 1829-1837; United States -- Politics and government -- 1841-1845",
+    "language": "en"
+  },
+  "2654": {
+    "title": "The Papers and Writings of Abraham Lincoln — Volume 2: 1843-1858",
+    "author": "Lincoln, Abraham, 1809-1865; Lapsley, Arthur Brooks [Editor]",
+    "subjects": "Lincoln, Abraham, 1809-1865 -- Correspondence; United States -- Politics and government -- 1841-1845; United States -- Politics and government -- 1845-1861",
+    "language": "en"
+  },
+  "2655": {
+    "title": "The Papers and Writings of Abraham Lincoln — Volume 3: The Lincoln-Douglas Debates",
+    "author": "Lincoln, Abraham, 1809-1865; Lapsley, Arthur Brooks [Editor]",
+    "subjects": "Lincoln-Douglas Debates, Ill., 1858",
+    "language": "en"
+  },
+  "2656": {
+    "title": "The Papers and Writings of Abraham Lincoln — Volume 4: The Lincoln-Douglas Debates",
+    "author": "Lincoln, Abraham, 1809-1865; Lapsley, Arthur Brooks [Editor]",
+    "subjects": "Lincoln-Douglas Debates, Ill., 1858",
+    "language": "en"
+  },
+  "2657": {
+    "title": "The Papers and Writings of Abraham Lincoln — Volume 5: 1858-1862",
+    "author": "Lincoln, Abraham, 1809-1865; Lapsley, Arthur Brooks [Editor]",
+    "subjects": "United States -- History -- Civil War, 1861-1865; United States -- Politics and government -- 1861-1865; United States -- Politics and government -- 1857-1861; Lincoln, Abraham, 1809-1865 -- Correspondence",
+    "language": "en"
+  },
+  "2658": {
+    "title": "The Papers and Writings of Abraham Lincoln — Volume 6: 1862-1863",
+    "author": "Lincoln, Abraham, 1809-1865; Lapsley, Arthur Brooks [Editor]",
+    "subjects": "United States -- History -- Civil War, 1861-1865; United States -- Politics and government -- 1861-1865; Lincoln, Abraham, 1809-1865 -- Correspondence",
+    "language": "en"
+  },
+  "2659": {
+    "title": "The Papers and Writings of Abraham Lincoln — Volume 7: 1863-1865",
+    "author": "Lincoln, Abraham, 1809-1865; Lapsley, Arthur Brooks [Editor]",
+    "subjects": "United States -- History -- Civil War, 1861-1865; United States -- Politics and government -- 1861-1865; Lincoln, Abraham, 1809-1865 -- Correspondence",
+    "language": "en"
+  },
+  "3137": {
+    "title": "The Rise of Roscoe Paine",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Massachusetts -- Fiction; Cape Cod (Mass.) -- Fiction",
+    "language": "en"
+  },
+  "3240": {
+    "title": "Cap'n Eri",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Ship captains -- Fiction; Massachusetts -- Fiction; Cape Cod (Mass.) -- Fiction; Housekeepers -- Fiction; Wives -- Fiction",
+    "language": "en"
+  },
+  "3253": {
+    "title": "The Papers and Writings of Abraham Lincoln, Complete",
+    "author": "Lincoln, Abraham, 1809-1865; Choate, Joseph Hodges, 1832-1917 [Contributor]; Roosevelt, Theodore, 1858-1919 [Contributor]; Schurz, Carl, 1829-1906 [Contributor]; Lapsley, Arthur Brooks [Editor]",
+    "subjects": "Lincoln, Abraham, 1809-1865; United States -- History -- Civil War, 1861-1865; Illinois -- Politics and government -- To 1865; United States -- Politics and government -- 1861-1865; United States -- Politics and government -- 1837-1841; Lincoln-Douglas Debates, Ill., 1858; Lincoln, Abraham, 1809-1865 -- Correspondence; United States -- Politics and government -- 1829-1837; United States -- Politics and government -- 1841-1845; United States -- Politics and government -- 1845-1861",
+    "language": "en"
+  },
+  "3263": {
+    "title": "The Portygee",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Grandparent and child -- Fiction; Spanish Americans -- Fiction",
+    "language": "en"
+  },
+  "3280": {
+    "title": "Cap'n Warren's Wards",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "New York (N.Y.) -- Fiction; Guardian and ward -- Fiction; Massachusetts -- Fiction; Wealth -- Fiction; Child rearing -- Fiction; Responsibility -- Fiction",
+    "language": "en"
+  },
+  "3281": {
+    "title": "Cy Whittaker's Place",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Man-woman relationships -- Fiction; Massachusetts -- Fiction; Cape Cod (Mass.) -- Fiction; Adoption -- Fiction",
+    "language": "en"
+  },
+  "3626": {
+    "title": "Widger's Quotations from the Project Gutenberg Editions of the Works of Abraham Lincoln",
+    "author": "Lincoln, Abraham, 1809-1865; Widger, David, 1932-2021? [Editor]",
+    "subjects": "Quotations",
+    "language": "en"
+  },
+  "4905": {
+    "title": "Galusha the Magnificent",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Humorous stories; Archaeologists -- Fiction; Cape Cod (Mass.) -- Fiction",
+    "language": "en"
+  },
+  "5024": {
+    "title": "State of the Union Addresses",
+    "author": "Lincoln, Abraham, 1809-1865",
+    "subjects": "Presidents -- United States -- Messages; United States -- Politics and government -- Sources",
+    "language": "en"
+  },
+  "5195": {
+    "title": "Cape Cod Stories",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Short stories, American; Cape Cod (Mass.) -- Fiction",
+    "language": "en"
+  },
+  "5980": {
+    "title": "Kent Knowles: Quahaug",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Americans -- Europe -- Fiction; Cape Cod (Mass.) -- Fiction",
+    "language": "en"
+  },
+  "6718": {
+    "title": "Cap'n Dan's Daughter",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Inheritance and succession -- Fiction; Young women -- Fiction; Ship captains -- Fiction; Married people -- Fiction; Social classes -- Fiction; Massachusetts -- Fiction",
+    "language": "en"
+  },
+  "6908": {
+    "title": "The Air Ship Boys : Or, the Quest of the Aztec Treasure",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913",
+    "subjects": "Airships -- Juvenile fiction; Aeronautics -- Juvenile fiction",
+    "language": "en"
+  },
+  "7547": {
+    "title": "Quotes and Images from the Writings of Abraham Lincoln",
+    "author": "Lincoln, Abraham, 1809-1865; Widger, David, 1932-2021? [Editor]",
+    "subjects": "Lincoln, Abraham, 1809-1865 -- Portraits",
+    "language": "en"
+  },
+  "8110": {
+    "title": "Lincoln Letters",
+    "author": "Lincoln, Abraham, 1809-1865",
+    "subjects": "Lincoln, Abraham, 1809-1865 -- Correspondence",
+    "language": "en"
+  },
+  "8554": {
+    "title": "Why Worry?",
+    "author": "Walton, George Lincoln, 1854-1941",
+    "subjects": "Worry",
+    "language": "en"
+  },
+  "9812": {
+    "title": "I Spy",
+    "author": "Lincoln, Natalie Sumner, 1881-1935",
+    "subjects": "World War, 1914-1918 -- Fiction; Washington (D.C.) -- Fiction; Spy stories",
+    "language": "en"
+  },
+  "10176": {
+    "title": "The Debutante: Caprice Brillante",
+    "author": "White, Edna, 1892-1992 [Performer]; Clarke, Herbert L. (Herbert Lincoln), 1867-1945 [Composer]",
+    "subjects": "Trumpet with orchestra",
+    "language": "en"
+  },
+  "10958": {
+    "title": "An Unwilling Maid\nBeing the History of Certain Episodes during the American Revolution in the Early Life of Mistress Betty Yorke, born Wolcott",
+    "author": "Lincoln, Jeanie Gould, 1846-1921",
+    "subjects": "United States -- History -- Revolution, 1775-1783 -- Fiction",
+    "language": "en"
+  },
+  "11351": {
+    "title": "Cape Cod Ballads, and Other Verse",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Poetry",
+    "language": "en"
+  },
+  "11728": {
+    "title": "Abraham Lincoln: The People's Leader in the Struggle for National Existence",
+    "author": "Putnam, George Haven, 1844-1930; Brainerd, Cephas, 1831-1910 [Annotator]; Nott, Charles C., 1827-1916 [Annotator]; Lincoln, Abraham, 1809-1865 [Contributor]",
+    "subjects": "Lincoln, Abraham, 1809-1865; United States -- History -- Civil War, 1861-1865",
+    "language": "en"
+  },
+  "14127": {
+    "title": "A Kindergarten Story Book",
+    "author": "Hoxie, Jane L. (Jane Lincoln), 1863-1930",
+    "subjects": "Children's stories",
+    "language": "en"
+  },
+  "14274": {
+    "title": "Lincoln's Inaugurals, Addresses and Letters (Selections)",
+    "author": "Lincoln, Abraham, 1809-1865; Dodge, Daniel Kilham, 1863-1933 [Editor]",
+    "subjects": "Lincoln, Abraham, 1809-1865; Presidents -- United States -- Inaugural addresses; Lincoln, Abraham, 1809-1865 -- Oratory; Lincoln, Abraham, 1809-1865 -- Correspondence",
+    "language": "en"
+  },
+  "14721": {
+    "title": "Speeches & Letters of Abraham Lincoln, 1832-1865",
+    "author": "Lincoln, Abraham, 1809-1865; Roe, Merwin [Editor]",
+    "subjects": "Speeches, addresses, etc., American; Lincoln, Abraham, 1809-1865 -- Oratory; Lincoln, Abraham, 1809-1865 -- Correspondence",
+    "language": "en"
+  },
+  "15363": {
+    "title": "Carving and Serving",
+    "author": "Lincoln, Mary J. (Mary Johnson), 1844-1921",
+    "subjects": "Cooking; Carving (Meat, etc.)",
+    "language": "en"
+  },
+  "17301": {
+    "title": "On With Torchy",
+    "author": "Ford, Sewell, 1868-1946; Lincoln, F. Foster (Frederic Foster) [Illustrator]",
+    "subjects": "New York (N.Y.) -- Fiction; Humorous stories; Love stories",
+    "language": "en"
+  },
+  "18709": {
+    "title": "The best short stories of 1921, and the yearbook of the American short story",
+    "author": "O'Brien, Edward J. (Edward Joseph), 1890-1941 [Editor]; Anderson, Sherwood, 1876-1941 [Contributor]; Bercovici, Konrad, 1882-1961 [Contributor]; Burt, Maxwell Struthers, 1882-1954 [Contributor]; Cobb, Irvin S. (Irvin Shrewsbury), 1876-1944 [Contributor]; Colcord, Lincoln, 1883-1947 [Contributor]; Finger, Charles Joseph, 1869-1941 [Contributor]; Frank, Waldo David, 1889-1967 [Contributor]; Gerould, Katharine Fullerton, 1879-1944 [Contributor]; Glasgow, Ellen Anderson Gholson, 1873-1945 [Contributor]; Glaspell, Susan, 1882?-1948 [Contributor]; Hallet, Richard Matthews, 1887-1967 [Contributor]; Hart, Frances Noyes, 1890-1943 [Contributor]; Hurst, Fannie, 1889-1968 [Contributor]; Komroff, Manuel, 1890-1974 [Contributor]; Mott, Frank Luther, 1886-1964 [Contributor]; O'Sullivan, Vincent, 1868-1940 [Contributor]; Steele, Wilbur Daniel, 1886-1970 [Contributor]; Thayer, Harriet Maxon, 1889- [Contributor]; Towne, Charles Hanson, 1877-1949 [Contributor]; Vorse, Mary Heaton, 1874-1966 [Contributor]",
+    "subjects": "Short stories, American; American fiction -- 20th century; Short stories -- 20th century -- Bibliography; Short stories -- 20th century -- Indexes",
+    "language": "en"
+  },
+  "20627": {
+    "title": "Torchy, Private Sec.",
+    "author": "Ford, Sewell, 1868-1946; Lincoln, F. Foster (Frederic Foster) [Illustrator]",
+    "subjects": "New York (N.Y.) -- Fiction; Humorous stories; Private secretaries -- Fiction",
+    "language": "en"
+  },
+  "20772": {
+    "title": "Agriculture for Beginners\nRevised Edition",
+    "author": "Burkett, Charles William, 1873-1962; Hill, Daniel Harvey, 1859-1924; Stevens, Frank Lincoln, 1871-1934",
+    "subjects": "Agriculture",
+    "language": "en"
+  },
+  "21900": {
+    "title": "The Principles of Breeding\nor, Glimpses at the Physiological Laws involved in the Reproduction and Improvement of Domestic Animals",
+    "author": "Goodale, S. L. (Stephen Lincoln), 1815-1897",
+    "subjects": "Livestock; Breeding",
+    "language": "en"
+  },
+  "22082": {
+    "title": "The Emancipation Proclamation",
+    "author": "Lincoln, Abraham, 1809-1865",
+    "subjects": "United States. President (1861-1865 : Lincoln). Emancipation Proclamation",
+    "language": "en"
+  },
+  "22681": {
+    "title": "The Life and Public Service of General Zachary Taylor: An Address",
+    "author": "Lincoln, Abraham, 1809-1865; Barton, William E. (William Eleazar), 1861-1930 [Editor]",
+    "subjects": "Generals -- United States -- Biography; Presidents -- United States -- Biography; Taylor, Zachary, 1784-1850",
+    "language": "en"
+  },
+  "22745": {
+    "title": "Fair Harbor",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "Ship captains -- Fiction; Cape Cod (Mass.) -- Fiction",
+    "language": "en"
+  },
+  "24204": {
+    "title": "The Lost Despatch",
+    "author": "Lincoln, Natalie Sumner, 1881-1935",
+    "subjects": "United States -- History -- Civil War, 1861-1865 -- Fiction; Spy stories",
+    "language": "en"
+  },
+  "25787": {
+    "title": "On the Edge of the Arctic; Or, An Aeroplane in Snowland",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913; Hall, N. P. [Illustrator]",
+    "subjects": "Detective and mystery stories; Canada -- Juvenile fiction; Air pilots -- Juvenile fiction; Airplanes -- Piloting -- Juvenile fiction; Aeronautics -- Juvenile fiction",
+    "language": "en"
+  },
+  "26200": {
+    "title": "The Gettysburg Address",
+    "author": "Lincoln, Abraham, 1809-1865",
+    "subjects": "Consecration of cemeteries -- Pennsylvania -- Gettysburg; Soldiers' National Cemetery (Gettysburg, Pa.)",
+    "language": "en"
+  },
+  "26250": {
+    "title": "Lincoln at Cooper Union",
+    "author": "Lincoln, Abraham, 1809-1865",
+    "subjects": "United States -- Politics and government -- 1857-1861; Lincoln, Abraham, 1809-1865. Cooper Institute speech; Lincoln, Abraham, 1809-1865 -- Oratory; Lincoln, Abraham, 1809-1865 -- Views on slavery; Lincoln, Abraham, 1809-1865 -- Political career before 1861; Speeches, addresses, etc., American -- New York (State) -- New York",
+    "language": "en"
+  },
+  "27288": {
+    "title": "The Life of Trust: Being a Narrative of the Lord's Dealings With George Müller",
+    "author": "Müller, George, 1805-1898; Wayland, H. L. (Heman Lincoln), 1830-1898 [Editor]",
+    "subjects": "Prayer; Orphanages -- Great Britain",
+    "language": "en"
+  },
+  "29467": {
+    "title": "The Project Gutenberg Works of Joseph Lincoln: An Index",
+    "author": "Lincoln, Joseph Crosby, 1870-1944; Widger, David, 1932-2021? [Editor]",
+    "subjects": "Indexes",
+    "language": "en"
+  },
+  "30601": {
+    "title": "How to analyze people on sight through the science of human analysis",
+    "author": "Benedict, Elsie Lincoln, 1885-1970; Benedict, Ralph Paine, 1874-1941; Lufkin, Raymond, 1897-1978 [Illustrator]",
+    "subjects": "Characters and characteristics",
+    "language": "en"
+  },
+  "33424": {
+    "title": "Instruction book on ring spinning",
+    "author": "Lincoln, Francis L.",
+    "subjects": "Spinning",
+    "language": "en"
+  },
+  "36446": {
+    "title": "Photogravure",
+    "author": "Blaney, Henry R., 1855-1913; Adams, W. I. Lincoln (Washington Irving Lincoln), 1865-1946 [Editor]",
+    "subjects": "Photogravure",
+    "language": "en"
+  },
+  "37482": {
+    "title": "The Postmaster",
+    "author": "Lincoln, Joseph Crosby, 1870-1944; Heath, Howard, 1879- [Illustrator]",
+    "subjects": "Love stories; New England -- Social life and customs -- Fiction; Middle-aged men -- Fiction; Cape Cod (Mass.) -- Fiction; Business -- Fiction",
+    "language": "en"
+  },
+  "39204": {
+    "title": "The Lincoln Year Book: Axioms and Aphorisms from the Great Emancipator",
+    "author": "Lincoln, Abraham, 1809-1865; Rice, Wallace, 1859-1939 [Compiler]",
+    "subjects": "Lincoln, Abraham, 1809-1865 -- Quotations",
+    "language": "en"
+  },
+  "39750": {
+    "title": "To Your Dog and to My Dog",
+    "author": "Kinnicutt, Lincoln Newton, 1849-1921 [Compiler]",
+    "subjects": "Dogs -- Poetry",
+    "language": "en"
+  },
+  "41535": {
+    "title": "Pistol and Revolver Shooting",
+    "author": "Himmelwright, A. L. A. (Abraham Lincoln Artman), 1865-",
+    "subjects": "Revolvers; Pistols",
+    "language": "en"
+  },
+  "44744": {
+    "title": "Superstition in Medicine",
+    "author": "Magnus, Hugo, 1842-1907; Salinger, Julius L. (Julius Lincoln) [Translator]",
+    "subjects": "Medicine -- History; Astrology; Medical misconceptions",
+    "language": "en"
+  },
+  "45942": {
+    "title": "Manpower",
+    "author": "Andrews, Lincoln C. (Lincoln Clarke), 1867-1950",
+    "subjects": "Leadership",
+    "language": "en"
+  },
+  "46015": {
+    "title": "The Gypsy's Parson: his experiences and adventures",
+    "author": "Hall, George, rector of Ruckland, Lincolnshire, 1863-1918",
+    "subjects": "Romanies -- England",
+    "language": "en"
+  },
+  "46144": {
+    "title": "Six Cups of Coffee\nPrepared for the Public Palate by the Best Authorities on Coffee Making",
+    "author": "Parloa, Maria, 1843-1909; Campbell, Helen, 1839-1918; Corson, Juliet, 1842-1897; Harland, Marion, 1830-1922; Lincoln, Mary J. (Mary Johnson), 1844-1921; Owen, Catherine, -1889; Poole, Hester M. (Hester Martha), 1833-1932",
+    "subjects": "Coffee",
+    "language": "en"
+  },
+  "46150": {
+    "title": "Famous Days in the Century of Invention",
+    "author": "Stone, Gertrude L. (Gertrude Lincoln); Fickett, M. Grace (Mary Grace)",
+    "subjects": "Inventions",
+    "language": "en"
+  },
+  "46694": {
+    "title": "Under Sail",
+    "author": "Colcord, Lincoln, 1883-1947",
+    "subjects": "Short stories, American; Seafaring life -- Fiction; Sea stories, American",
+    "language": "en"
+  },
+  "47782": {
+    "title": "The Friar's Daughter: A Story of the American Occupation of the Philippines",
+    "author": "Phifer, Charles Lincoln, 1860-1931",
+    "subjects": "Philippines -- History -- 1898-1946 -- Fiction; Philippines -- Politics and government -- 1898-1935 -- Fiction",
+    "language": "en"
+  },
+  "48364": {
+    "title": "Noted Speeches of Abraham Lincoln, Including the Lincoln-Douglas Debate",
+    "author": "Lincoln, Abraham, 1809-1865; Briggs, Lilian Marie [Editor]",
+    "subjects": "Lincoln, Abraham, 1809-1865 -- Oratory",
+    "language": "en"
+  },
+  "49416": {
+    "title": "The Airship Boys' Ocean Flyer; Or, New York to London in Twelve Hours",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913; Riesenberg, Sidney H., 1885-1971 [Illustrator]",
+    "subjects": "Mystery and detective stories; Airships -- Juvenile fiction; Aeronautics -- Juvenile fiction",
+    "language": "en"
+  },
+  "52007": {
+    "title": "Discoveries and Inventions: A lecture by Abraham Lincoln delivered in 1860",
+    "author": "Lincoln, Abraham, 1809-1865; Coyle, Ray Frederick, 1885-1924 [Illustrator]",
+    "subjects": "Inventions",
+    "language": "en"
+  },
+  "52161": {
+    "title": "Bangerter's Inventions; His Marvelous Time Clock",
+    "author": "King, Everett Lincoln, 1863- [Editor]",
+    "subjects": "Clocks and watches; Perpetual motion; Bangerter, Friedrich, 1868-",
+    "language": "en"
+  },
+  "52848": {
+    "title": "Space Nomads: Meteorites in Sky, Field, and Laboratory",
+    "author": "LaPaz, Lincoln, 1897-1985; LaPaz, Jean",
+    "subjects": "Meteorites",
+    "language": "en"
+  },
+  "54056": {
+    "title": "In the Clouds for Uncle Sam; or, Morey Marshall of the Signal Corps",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913; Riesenberg, Sidney H., 1885-1971 [Illustrator]",
+    "subjects": "Aeronautics -- Juvenile fiction",
+    "language": "en"
+  },
+  "54579": {
+    "title": "The Stolen Aeroplane; or, How Bud Wilson Made Good",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913; Gunn, M. G. [Illustrator]",
+    "subjects": "Aeronautics -- Juvenile fiction",
+    "language": "en"
+  },
+  "54710": {
+    "title": "The Shame of the Cities",
+    "author": "Steffens, Lincoln, 1866-1936",
+    "subjects": "Political corruption -- United States; Municipal government -- United States",
+    "language": "en"
+  },
+  "55461": {
+    "title": "The Book of the V.C.\nA record of the deeds of heroism for which the Victoria Cross has been bestowed, from its institution in 1857 to the present time",
+    "author": "Haydon, A. L. (Arthur Lincoln), 1872-1964",
+    "subjects": "Great Britain -- History, Military; Victoria Cross",
+    "language": "en"
+  },
+  "55534": {
+    "title": "The Aeroplane Express; or, The Boy Aeronaut's Grit",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913; Riesenberg, Sidney H., 1885-1971 [Illustrator]",
+    "subjects": "Aeronautics -- Juvenile fiction",
+    "language": "en"
+  },
+  "57000": {
+    "title": "The Boy Aeronauts' Club; or, Flying for Fun",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913; Riesenberg, Sidney H., 1885-1971 [Illustrator]",
+    "subjects": "Aeronautics -- Juvenile fiction",
+    "language": "en"
+  },
+  "57882": {
+    "title": "A Cruise in the Sky; or, The Legend of the Great Pink Pearl",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913; Riesenberg, Sidney H., 1885-1971 [Illustrator]",
+    "subjects": "Aeronautics -- Juvenile fiction; Florida -- Description and travel -- Juvenile fiction",
+    "language": "en"
+  },
+  "58381": {
+    "title": "Battling the Bighorn; or, The Aeroplane in the Rockies",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913; Nuyttens, Josef Pierre, 1885-1960 [Illustrator]",
+    "subjects": "Aeronautics -- Juvenile fiction; Canadian Rockies (B.C. and Alta.) -- Juvenile fiction; Hunting -- Juvenile fiction",
+    "language": "en"
+  },
+  "58597": {
+    "title": "The Meredith Mystery",
+    "author": "Lincoln, Natalie Sumner, 1881-1935",
+    "subjects": "Detective and mystery stories; Inheritance and succession -- Fiction; Murder -- Investigation -- Fiction; Blind -- Fiction",
+    "language": "en"
+  },
+  "58709": {
+    "title": "When Scout Meets Scout; or, The Aeroplane Spy",
+    "author": "Sayler, H. L. (Harry Lincoln), 1863-1913; Riesenberg, Sidney H., 1885-1971 [Illustrator]",
+    "subjects": "Boy Scouts -- Juvenile fiction; Aeronautics -- Juvenile fiction",
+    "language": "en"
+  },
+  "58850": {
+    "title": "A Legacy of Fun",
+    "author": "Lincoln, Abraham, 1809-1865",
+    "subjects": "Lincoln, Abraham, 1809-1865; Lincoln, Abraham, 1809-1865 -- Humor",
+    "language": "en"
+  },
+  "58881": {
+    "title": "A Philosophical Essay on Probabilities",
+    "author": "Laplace, Pierre Simon, marquis de, 1749-1827; Emory, Frederick Lincoln, 1867- [Translator]; Truscott, Frederick Wilson, 1870- [Translator]",
+    "subjects": "Probabilities",
+    "language": "en"
+  },
+  "61966": {
+    "title": "Abraham Lincoln's Lost Speech, May 29, 1856\nA Souvenir of the Eleventh Annual Lincoln Dinner of the Republican Club of the City of New York, at the Waldorf, February 12, 1897",
+    "author": "Lincoln, Abraham, 1809-1865; Whitney, Henry Clay, 1831-1905 [Transcriber]",
+    "subjects": "Slavery -- Kansas",
+    "language": "en"
+  },
+  "63223": {
+    "title": "The Man Inside",
+    "author": "Lincoln, Natalie Sumner, 1881-1935",
+    "subjects": "Detective and mystery stories; Murder -- Investigation -- Fiction; Washington (D.C.) -- Fiction",
+    "language": "en"
+  },
+  "65173": {
+    "title": "Migration of Birds (1950)",
+    "author": "Lincoln, Frederick Charles, 1892-1960; Hines, Bob, 1912-1994 [Illustrator]",
+    "subjects": "Birds; Birds -- Migration",
+    "language": "en"
+  },
+  "65222": {
+    "title": "Migration of Birds (1979)",
+    "author": "Lincoln, Frederick Charles, 1892-1960; Peterson, Steven R.; Anastasi, Peter A. [Editor]; Hines, Bob, 1912-1994 [Illustrator]",
+    "subjects": "Birds; Birds -- Migration",
+    "language": "en"
+  },
+  "65265": {
+    "title": "The Migration of North American Birds (1935)",
+    "author": "Lincoln, Frederick Charles, 1892-1960",
+    "subjects": "Birds -- Migration",
+    "language": "en"
+  },
+  "66627": {
+    "title": "The Cat's Paw",
+    "author": "Lincoln, Natalie Sumner, 1881-1935; Fisher, William, 1890-1985 [Illustrator]",
+    "subjects": "Detective and mystery stories; Family secrets -- Fiction; Murder -- Investigation -- Fiction; Washington (D.C.) -- Fiction",
+    "language": "en"
+  },
+  "67890": {
+    "title": "The Thirteenth Letter",
+    "author": "Lincoln, Natalie Sumner, 1881-1935",
+    "subjects": "Detective and mystery stories; Murder -- Investigation -- Fiction; Nurses -- Fiction; Washington (D.C.) Region -- Fiction",
+    "language": "en"
+  },
+  "68048": {
+    "title": "The Big Mogul",
+    "author": "Lincoln, Joseph Crosby, 1870-1944",
+    "subjects": "American fiction -- 20th century",
+    "language": "en"
+  },
+  "68679": {
+    "title": "The unseen ear",
+    "author": "Lincoln, Natalie Sumner, 1881-1935",
+    "subjects": "Detective and mystery stories; Murder -- Investigation -- Fiction; Washington (D.C.) -- Fiction; Husband and wife -- Fiction; Families -- Fiction; Deaf -- Fiction",
+    "language": "en"
+  },
+  "68810": {
+    "title": "The nameless man",
+    "author": "Lincoln, Natalie Sumner, 1881-1935; Ballinger, Harry Russell, 1892-1993 [Illustrator]",
+    "subjects": "Detective and mystery stories; Murder -- Investigation -- Fiction; Interpersonal relations -- Fiction; Railroad travel -- Fiction; Washington (D.C.) -- Social life and customs -- Fiction",
+    "language": "en"
+  },
+  "69004": {
+    "title": "The Trevor case",
+    "author": "Lincoln, Natalie Sumner, 1881-1935; Frederick, Edmund, 1870-1949 [Illustrator]",
+    "subjects": "Detective and mystery stories; Murder -- Investigation -- Fiction; Washington (D.C.) -- Fiction",
+    "language": "en"
+  },
+  "69388": {
+    "title": "The official chaperon",
+    "author": "Lincoln, Natalie Sumner, 1881-1935; Frederick, Edmund, 1870-1949 [Illustrator]; McMein, Neysa, 1889-1949 [Illustrator]",
+    "subjects": "Young women -- Fiction; Theft -- Fiction; Mystery fiction; Washington (D.C.) -- Social life and customs -- Fiction",
+    "language": "en"
+  },
+  "69958": {
+    "title": "The factory",
+    "author": "Lincoln, Jonathan Thayer, 1869-1942",
+    "subjects": "Factory system",
+    "language": "en"
+  },
+  "70061": {
+    "title": "En avion vers le p?le nord",
+    "author": "Amundsen, Roald, 1872-1928; Bjerknes, J. (Jacob Aall Bonnevie), 1897-1975 [Contributor]; Dietrichson, Leif, 1890-1928 [Contributor]; Larsen, Hjalmar Riiser-, 1890-1965 [Contributor]; Ramm, Fredrik, 1892-1943 [Contributor]; Ellsworth, Lincoln, 1880-1951 [Other]; Rabot, Charles, 1856-1944 [Translator]",
+    "subjects": "North Pole; Arctic regions -- Aerial exploration; Aeronautics -- Arctic regions -- Flights",
+    "language": "fr"
+  },
+  "71497": {
+    "title": "Our polar flight",
+    "author": "Amundsen, Roald, 1872-1928; Ellsworth, Lincoln, 1880-1951",
+    "subjects": "Arctic regions; Aeronautics -- Flights; North Pole",
+    "language": "en"
+  },
+  "73597": {
+    "title": "The three strings",
+    "author": "Lincoln, Natalie Sumner, 1881-1935; Wrenn, Charles L. (Charles Lewis), 1880-1952 [Illustrator]",
+    "subjects": "Detective and mystery stories; Murder -- Investigation -- Fiction; Washington (D.C.) -- Fiction; Chess -- Fiction",
+    "language": "en"
+  },
+  "73605": {
+    "title": "A century of science in America",
+    "author": "Dana, Edward Salisbury, 1849-1935 [Contributor]; Barrell, Joseph, 1869-1919 [Contributor]; Coe, Wesley R. (Wesley Roswell), 1869-1960 [Contributor]; Foote, H. W. (Harry Ward), 1875-1942 [Contributor]; Ford, William E. (William Ebenezer), 1878-1939 [Contributor]; Goodale, George L. (George Lincoln), 1839-1923 [Contributor]; Gregory, Herbert E. (Herbert Ernest), 1869-1952 [Contributor]; Lull, Richard Swann, 1867-1957 [Contributor]; Page, Leigh, 1884-1952 [Contributor]; Pirsson, Louis V. (Louis Valentine), 1860-1919 [Contributor]; Schuchert, Charles, 1858-1942 [Contributor]; Smith, George Otis, 1871-1944 [Contributor]; Sosman, Robert B. (Robert Browning), 1881-1967 [Contributor]; Wells, Horace L. (Horace Lemuel), 1855-1924 [Contributor]",
+    "subjects": "American journal of science; Science -- United States -- History",
+    "language": "en"
+  },
+  "74210": {
+    "title": "The moving finger",
+    "author": "Lincoln, Natalie Sumner, 1881-1935; Wrenn, Charles L. (Charles Lewis), 1880-1952 [Illustrator]",
+    "subjects": "Detective and mystery stories; Murder -- Investigation -- Fiction; Nurses -- Fiction; Washington (D.C.) Region -- Fiction",
+    "language": "en"
+  },
+  "74509": {
+    "title": "D'Europe en Amérique par le p?le nord",
+    "author": "Amundsen, Roald, 1872-1928; Ellsworth, Lincoln, 1880-1951; Rabot, Charles, 1856-1944 [Translator]",
+    "subjects": "Arctic regions -- Aerial exploration",
+    "language": "fr"
+  },
+  "75491": {
+    "title": "Giants in the earth",
+    "author": "R?lvaag, O. E. (Ole Edvart), 1876-1931; Colcord, Lincoln, 1883-1947 [Translator]",
+    "subjects": "Norwegian Americans -- Fiction; Norwegian fiction -- Translations into English; South Dakota -- Fiction",
+    "language": "en"
+  },
+  "77223": {
+    "title": "The literature of witchcraft",
+    "author": "Burr, George Lincoln, 1857-1938",
+    "subjects": "Witchcraft -- Bibliography",
+    "language": "en"
+  }
+}

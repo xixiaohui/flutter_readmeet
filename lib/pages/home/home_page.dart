@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
   List<CardItem>? _shakespeareBlogs;
   List<CardItem>? _twainBlogs;
   List<CardItem>? _byronBlogs;
+  List<CardItem>? _jeffersonBlogs;
   String? _error;
 
   @override
@@ -43,6 +44,7 @@ class _HomePageState extends State<HomePage> {
     _loadShakespeare();
     _loadTwain();
     _loadByron();
+    _loadJefferson();
   }
 
   Future<void> _loadFeatured() async {
@@ -105,6 +107,16 @@ class _HomePageState extends State<HomePage> {
       final results = await widget.apiService.searchAuthor('Byron', limit: 6, offset: 0);
       if (!mounted) return;
       setState(() => _byronBlogs = results);
+    } catch (_) {
+      // Non-critical — silently ignore
+    }
+  }
+
+  Future<void> _loadJefferson() async {
+    try {
+      final results = await widget.apiService.searchAuthor('Jefferson, Thomas', limit: 6, offset: 0);
+      if (!mounted) return;
+      setState(() => _jeffersonBlogs = results);
     } catch (_) {
       // Non-critical — silently ignore
     }
@@ -508,6 +520,56 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (_, i) => FeaturedCard(
                     item: _byronBlogs![i],
                     onTap: () => _openDetail(_byronBlogs![i]),
+                  ),
+                ),
+              ),
+            ],
+
+            // ── Jefferson, Thomas section ──
+            if (_jeffersonBlogs != null && _jeffersonBlogs!.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Jefferson, Thomas',
+                      style: TextStyle(
+                        fontSize: AppText.bodySize,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _openHotListAuthor('Jefferson, Thomas', 'Jefferson, Thomas'),
+                      child: const Text(
+                        '查看全部',
+                        style: TextStyle(
+                          fontSize: AppText.bodySize,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  itemCount: _jeffersonBlogs!.length,
+                  itemBuilder: (_, i) => FeaturedCard(
+                    item: _jeffersonBlogs![i],
+                    onTap: () => _openDetail(_jeffersonBlogs![i]),
                   ),
                 ),
               ),

@@ -30,6 +30,7 @@ class _HomePageState extends State<HomePage> {
   List<CardItem>? _zhBlogs;
   List<CardItem>? _jaBlogs;
   List<CardItem>? _shakespeareBlogs;
+  List<CardItem>? _twainBlogs;
   String? _error;
 
   @override
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
     _loadZh();
     _loadJa();
     _loadShakespeare();
+    _loadTwain();
   }
 
   Future<void> _loadFeatured() async {
@@ -81,6 +83,16 @@ class _HomePageState extends State<HomePage> {
       final results = await widget.apiService.searchAuthor('Shakespeare', limit: 6, offset: 0);
       if (!mounted) return;
       setState(() => _shakespeareBlogs = results);
+    } catch (_) {
+      // Non-critical — silently ignore
+    }
+  }
+
+  Future<void> _loadTwain() async {
+    try {
+      final results = await widget.apiService.searchAuthor('Twain, Mark', limit: 6, offset: 0);
+      if (!mounted) return;
+      setState(() => _twainBlogs = results);
     } catch (_) {
       // Non-critical — silently ignore
     }
@@ -384,6 +396,56 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (_, i) => FeaturedCard(
                     item: _shakespeareBlogs![i],
                     onTap: () => _openDetail(_shakespeareBlogs![i]),
+                  ),
+                ),
+              ),
+            ],
+
+            // ── Twain, Mark section ──
+            if (_twainBlogs != null && _twainBlogs!.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Twain, Mark',
+                      style: TextStyle(
+                        fontSize: AppText.bodySize,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _openHotListAuthor('Twain, Mark', 'Twain, Mark'),
+                      child: const Text(
+                        '查看全部',
+                        style: TextStyle(
+                          fontSize: AppText.bodySize,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  itemCount: _twainBlogs!.length,
+                  itemBuilder: (_, i) => FeaturedCard(
+                    item: _twainBlogs![i],
+                    onTap: () => _openDetail(_twainBlogs![i]),
                   ),
                 ),
               ),

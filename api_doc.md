@@ -272,7 +272,176 @@ GET /api/blogs/searchall?q=爱情&limit=20&offset=20
 
 ---
 
-### 5. 创建阅读标记
+### 5. 按作者搜索博客
+
+按作者名称搜索博客，大小写不敏感模糊匹配。
+
+```
+GET /api/blogs/searchauthor
+```
+
+**请求参数（Query）**
+
+| 参数 | 类型 | 必填 | 默认值 | 说明 |
+|------|------|------|--------|------|
+| `q` | string | 是 | - | 作者搜索关键字 |
+| `limit` | number | 否 | 50 | 返回条数上限（最大 200） |
+| `offset` | number | 否 | 0 | 偏移量（分页） |
+
+**响应示例**
+
+```json
+[
+  {
+    "id": "a68ebdf4-8413-4b6a-8c7c-66232e74bb0c",
+    "img": null,
+    "tag": "en; zh",
+    "title": "The Chinese Classics: with a translation...",
+    "description": "China -- History; Chinese literature...",
+    "authors": "Legge, James, 1815-1897",
+    "slug": null,
+    "blog_index": 3100,
+    "created_at": "2026-01-19T03:04:34.102Z"
+  }
+]
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `id` | string | 博客 UUID |
+| `img` | string \| null | 封面图 URL |
+| `tag` | string | 标签/分类 |
+| `title` | string | 标题 |
+| `description` | string | 摘要描述 |
+| `authors` | string | 作者名称（原始字符串） |
+| `slug` | string \| null | URL 友好标识 |
+| `blog_index` | number | 博客序号 |
+| `created_at` | string | 创建时间 (ISO 8601) |
+
+> **注意**：此接口返回的 `authors` 为数据库原始字符串，可能包含生卒年份等信息（如 `"Legge, James, 1815-1897"`）。搜索结果按创建时间倒序排列。
+
+**分页示例**
+
+```typescript
+// 搜索包含 "Legge" 的作者
+GET /api/blogs/searchauthor?q=Legge
+
+// 分页：第二页
+GET /api/blogs/searchauthor?q=James&limit=20&offset=20
+```
+
+**移动端使用示例**
+
+```dart
+// Flutter
+final response = await http.get(
+  Uri.parse('$baseURL/api/blogs/searchauthor?q=${Uri.encodeComponent(authorName)}'),
+);
+```
+
+```swift
+// Swift
+let url = URL(string: "\(baseURL)/api/blogs/searchauthor?q=\(authorName)")!
+```
+
+**错误响应**
+
+| HTTP Status | 说明 |
+|-------------|------|
+| `400` | 缺少 `q` 参数，返回 `{ "message": "Missing required parameter: q (author search keyword)" }` |
+| `500` | 服务器内部错误，返回 `{ "message": "Internal Server Error" }` |
+
+---
+
+### 6. 获取 Hero 博客
+
+根据 `blog_index` 查询单篇博客，用于首页 Hero 区域展示。返回完整博客内容（包含正文）。
+
+```
+GET /api/blogs/hero
+```
+
+**请求参数（Query）**
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `blog_index` | number | 是 | 博客序号 |
+
+**响应示例（成功）**
+
+```json
+{
+  "id": "a68ebdf4-8413-4b6a-8c7c-66232e74bb0c",
+  "img": null,
+  "tag": "en; zh",
+  "title": "The Chinese Classics: with a translation...",
+  "description": "China -- History; Chinese literature...",
+  "authors": "Legge, James, 1815-1897",
+  "content": "# 正文内容\n\nMarkdown 格式的完整文章...",
+  "slug": null,
+  "blog_index": 3100,
+  "created_at": "2026-01-19T03:04:34.102Z"
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `id` | string | 博客 UUID |
+| `img` | string \| null | 封面图 URL |
+| `tag` | string | 标签/分类 |
+| `title` | string | 标题 |
+| `description` | string | 摘要描述 |
+| `authors` | string | 作者名称 |
+| `content` | string | Markdown 正文 |
+| `slug` | string \| null | URL 友好标识 |
+| `blog_index` | number | 博客序号 |
+| `created_at` | string | 创建时间 (ISO 8601) |
+
+> **注意**：此接口返回的 `content` 为 Markdown 格式。与 `GET /api/blogs/:identifier` 不同，此接口通过 `blog_index` 而非 UUID 查询。
+
+**响应示例（未找到）**
+
+```json
+{
+  "message": "Blog not found"
+}
+```
+> HTTP Status: `404`
+
+**响应示例（参数错误）**
+
+```json
+{
+  "message": "Invalid parameter: blog_index must be a number"
+}
+```
+> HTTP Status: `400`
+
+**移动端使用示例**
+
+```dart
+// Flutter
+final response = await http.get(
+  Uri.parse('$baseURL/api/blogs/hero?blog_index=3100'),
+);
+```
+
+```swift
+// Swift
+let url = URL(string: "\(baseURL)/api/blogs/hero?blog_index=3100")!
+```
+
+**错误响应**
+
+| HTTP Status | 说明 |
+|-------------|------|
+| `400` | 缺少 `blog_index` 参数或格式错误 |
+| `404` | 未找到对应博客 |
+| `500` | 服务器内部错误 |
+
+---
+
+### 7. 创建阅读标记
 
 保存用户对博客文本的高亮或下划线标记。
 
@@ -327,8 +496,45 @@ POST /api/blogMark
 
 ---
 
+### 8. 翻译文本
 
-### 6. 获取文件列表
+将文本翻译为中文。
+
+```
+POST /api/translate
+```
+
+**请求体（JSON）**
+
+```json
+{
+  "text": "Hello, world!"
+}
+```
+
+| 字段 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `text` | string | 是 | 待翻译的文本 |
+
+**响应示例**
+
+```json
+{
+  "message": "翻译成功",
+  "result": "Hello, world! (翻译后)"
+}
+```
+
+| 字段 | 类型 | 说明 |
+|------|------|------|
+| `message` | string | 状态消息 |
+| `result` | string | 翻译后的文本 |
+
+> **注意**：当前为模拟实现，后续会接入真实翻译服务。
+
+---
+
+### 9. 获取文件列表
 
 从文件服务器获取文件列表。
 
@@ -383,8 +589,11 @@ GET /api/files
 | 2 | `GET` | `/api/blogs/:identifier` | 博客详情（含正文） | - |
 | 3 | `GET` | `/api/blogs/search` | 简单搜索 | 固定 50 条 |
 | 4 | `GET` | `/api/blogs/searchall` | 全字段搜索 | ✅ limit/offset |
-| 5 | `POST` | `/api/blogMark` | 创建阅读标记 | - |
-| 6 | `GET` | `/api/files` | 文件列表 | - |
+| 5 | `GET` | `/api/blogs/searchauthor` | 按作者搜索 | ✅ limit/offset |
+| 6 | `GET` | `/api/blogs/hero` | Hero 博客（按 blog_index） | - |
+| 7 | `POST` | `/api/blogMark` | 创建阅读标记 | - |
+| 8 | `POST` | `/api/translate` | 翻译文本 | - |
+| 9 | `GET` | `/api/files` | 文件列表 | - |
 
 ---
 

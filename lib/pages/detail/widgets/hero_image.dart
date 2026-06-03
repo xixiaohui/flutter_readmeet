@@ -15,12 +15,12 @@ class DetailHeroImage extends StatelessWidget {
     return CachedNetworkImage(
       imageUrl: imageUrl!,
       width: double.infinity,
-      height: 200,
+      height: 240,
       fit: BoxFit.cover,
       placeholder: (_, _) =>
-          Container(height: 200, color: AppColors.canvasParchment),
+          Container(height: 240, color: AppColors.canvasParchment),
       errorWidget: (_, _, _) =>
-          Container(height: 200, color: AppColors.canvasParchment),
+          Container(height: 240, color: AppColors.canvasParchment),
     );
   }
 }

@@ -27,10 +27,13 @@ class MarkdownChunkList extends StatelessWidget {
         return SliverList.separated(
           itemCount: chunks.length,
           itemBuilder: (context, index) {
-            return MarkdownBody(
-              data: chunks[index],
-              selectable: true,
-              styleSheet: style,
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              child: MarkdownBody(
+                data: chunks[index],
+                selectable: true,
+                styleSheet: style,
+              ),
             );
           },
           separatorBuilder: (_, _) => SizedBox(height: s.paragraphSpacing),
@@ -52,6 +55,7 @@ class MarkdownChunkList extends StatelessWidget {
         height: s.lineHeight,
         fontFamily: s.fontFamily,
       ),
+      pPadding: EdgeInsets.zero,
       h1: TextStyle(
         fontSize: AppText.displayMdSize * scale,
         fontWeight: FontWeight.w600,
@@ -60,6 +64,7 @@ class MarkdownChunkList extends StatelessWidget {
         height: 1.15,
         fontFamily: s.fontFamily,
       ),
+      h1Padding: const EdgeInsets.only(top: AppSpacing.xl, bottom: AppSpacing.sm),
       h2: TextStyle(
         fontSize: AppText.taglineSize * scale,
         fontWeight: FontWeight.w600,
@@ -67,6 +72,7 @@ class MarkdownChunkList extends StatelessWidget {
         height: 1.2,
         fontFamily: s.fontFamily,
       ),
+      h2Padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.xs),
       h3: TextStyle(
         fontSize: AppText.bodySize * scale,
         fontWeight: FontWeight.w600,
@@ -74,6 +80,7 @@ class MarkdownChunkList extends StatelessWidget {
         height: 1.3,
         fontFamily: s.fontFamily,
       ),
+      h3Padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.xxs),
       strong: TextStyle(fontWeight: FontWeight.w600, color: textColor),
       blockquote: TextStyle(
         fontSize: s.fontSize,

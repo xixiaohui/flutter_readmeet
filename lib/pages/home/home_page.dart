@@ -58,9 +58,9 @@ class _HomePageState extends State<HomePage> {
       _featuredBlogs = null;
     });
     try {
-      final result = await widget.apiService.getBlogs(page: 1, pageSize: 5);
+      final results = await widget.apiService.searchBlogs('最新', limit: 6, offset: 0);
       if (!mounted) return;
-      setState(() => _featuredBlogs = result.data);
+      setState(() => _featuredBlogs = results);
     } catch (e) {
       if (!mounted) return;
       setState(() => _error = e.toString());
@@ -183,20 +183,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _openHotListBlogs(String title) {
-    Navigator.of(context).push(
-      CupertinoPageRoute(
-        builder: (_) => HotPage(
-          apiService: widget.apiService,
-          settingsService: widget.settingsService,
-          title: title,
-          query: '',
-          useGetBlogs: true,
-        ),
-      ),
-    );
-  }
-
   void _openHotListAuthor(String title, String query) {
     Navigator.of(context).push(
       CupertinoPageRoute(
@@ -289,7 +275,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => _openHotListBlogs('最新文章'),
+                      onTap: () => _openHotList('最新文章', '最新'),
                       child: const Text(
                         '查看全部',
                         style: TextStyle(

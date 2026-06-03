@@ -34,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   List<CardItem>? _byronBlogs;
   List<CardItem>? _jeffersonBlogs;
   List<CardItem>? _lincolnBlogs;
+  List<CardItem>? _sandBlogs;
   String? _error;
 
   @override
@@ -47,6 +48,7 @@ class _HomePageState extends State<HomePage> {
     _loadByron();
     _loadJefferson();
     _loadLincoln();
+    _loadSand();
   }
 
   Future<void> _loadFeatured() async {
@@ -129,6 +131,16 @@ class _HomePageState extends State<HomePage> {
       final results = await widget.apiService.searchAuthor('Lincoln, Abraham', limit: 6, offset: 0);
       if (!mounted) return;
       setState(() => _lincolnBlogs = results);
+    } catch (_) {
+      // Non-critical — silently ignore
+    }
+  }
+
+  Future<void> _loadSand() async {
+    try {
+      final results = await widget.apiService.searchAuthor('Sand, George', limit: 6, offset: 0);
+      if (!mounted) return;
+      setState(() => _sandBlogs = results);
     } catch (_) {
       // Non-critical — silently ignore
     }
@@ -632,6 +644,56 @@ class _HomePageState extends State<HomePage> {
                   itemBuilder: (_, i) => FeaturedCard(
                     item: _lincolnBlogs![i],
                     onTap: () => _openDetail(_lincolnBlogs![i]),
+                  ),
+                ),
+              ),
+            ],
+
+            // ── Sand, George section ──
+            if (_sandBlogs != null && _sandBlogs!.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Sand, George',
+                      style: TextStyle(
+                        fontSize: AppText.bodySize,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _openHotListAuthor('Sand, George', 'Sand, George'),
+                      child: const Text(
+                        '查看全部',
+                        style: TextStyle(
+                          fontSize: AppText.bodySize,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  itemCount: _sandBlogs!.length,
+                  itemBuilder: (_, i) => FeaturedCard(
+                    item: _sandBlogs![i],
+                    onTap: () => _openDetail(_sandBlogs![i]),
                   ),
                 ),
               ),

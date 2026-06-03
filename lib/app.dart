@@ -1,13 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'services/api_service.dart';
+import 'services/reader_settings_service.dart';
 import 'pages/home/home_page.dart';
 import 'pages/list/list_page.dart';
+import 'pages/setting/setting_page.dart';
 
 class App extends StatelessWidget {
   final ApiService apiService;
+  final ReaderSettingsService settingsService;
 
-  const App({super.key, required this.apiService});
+  const App({
+    super.key,
+    required this.apiService,
+    required this.settingsService,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -45,21 +52,39 @@ class App extends StatelessWidget {
               activeIcon: Icon(CupertinoIcons.square_list_fill),
               label: '全部文章',
             ),
+            BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.settings),
+              activeIcon: Icon(CupertinoIcons.settings_solid),
+              label: '设置',
+            ),
           ],
         ),
         tabBuilder: (context, index) {
           switch (index) {
             case 0:
               return CupertinoTabView(
-                builder: (_) => HomePage(apiService: apiService),
+                builder: (_) => HomePage(
+                  apiService: apiService,
+                  settingsService: settingsService,
+                ),
               );
             case 1:
               return CupertinoTabView(
-                builder: (_) => ListPage(apiService: apiService),
+                builder: (_) => ListPage(
+                  apiService: apiService,
+                  settingsService: settingsService,
+                ),
+              );
+            case 2:
+              return CupertinoTabView(
+                builder: (_) => SettingPage(settingsService: settingsService),
               );
             default:
               return CupertinoTabView(
-                builder: (_) => HomePage(apiService: apiService),
+                builder: (_) => HomePage(
+                  apiService: apiService,
+                  settingsService: settingsService,
+                ),
               );
           }
         },

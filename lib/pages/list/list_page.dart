@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../models/card_item.dart';
 import '../../services/api_service.dart';
+import '../../services/reader_settings_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/loading_indicator.dart';
 import '../detail/detail_page.dart';
@@ -10,8 +11,13 @@ import 'widgets/blog_row.dart';
 
 class ListPage extends StatefulWidget {
   final ApiService apiService;
+  final ReaderSettingsService settingsService;
 
-  const ListPage({super.key, required this.apiService});
+  const ListPage({
+    super.key,
+    required this.apiService,
+    required this.settingsService,
+  });
 
   @override
   State<ListPage> createState() => _ListPageState();
@@ -173,8 +179,11 @@ class _ListPageState extends State<ListPage> {
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
       CupertinoPageRoute(
-        builder: (_) =>
-            DetailPage(apiService: widget.apiService, blogId: item.id),
+        builder: (_) => DetailPage(
+          apiService: widget.apiService,
+          blogId: item.id,
+          settingsService: widget.settingsService,
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../../models/card_item.dart';
 import '../../../services/api_service.dart';
+import '../../../services/reader_settings_service.dart';
 import '../../../theme/app_theme.dart';
 import '../../../widgets/loading_indicator.dart';
 import 'widgets/hero_tile.dart';
@@ -11,8 +12,13 @@ import '../detail/detail_page.dart';
 
 class HomePage extends StatefulWidget {
   final ApiService apiService;
+  final ReaderSettingsService settingsService;
 
-  const HomePage({super.key, required this.apiService});
+  const HomePage({
+    super.key,
+    required this.apiService,
+    required this.settingsService,
+  });
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -47,8 +53,11 @@ class _HomePageState extends State<HomePage> {
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
       CupertinoPageRoute(
-        builder: (_) =>
-            DetailPage(apiService: widget.apiService, blogId: item.id),
+        builder: (_) => DetailPage(
+          apiService: widget.apiService,
+          blogId: item.id,
+          settingsService: widget.settingsService,
+        ),
       ),
     );
   }
@@ -56,7 +65,10 @@ class _HomePageState extends State<HomePage> {
   void _openList() {
     Navigator.of(context).push(
       CupertinoPageRoute(
-        builder: (_) => ListPage(apiService: widget.apiService),
+        builder: (_) => ListPage(
+          apiService: widget.apiService,
+          settingsService: widget.settingsService,
+        ),
       ),
     );
   }

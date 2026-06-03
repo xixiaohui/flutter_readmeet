@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   List<CardItem>? _featuredBlogs;
   List<CardItem>? _zhBlogs;
   List<CardItem>? _jaBlogs;
+  List<CardItem>? _shakespeareBlogs;
   String? _error;
 
   @override
@@ -37,6 +38,7 @@ class _HomePageState extends State<HomePage> {
     _loadFeatured();
     _loadZh();
     _loadJa();
+    _loadShakespeare();
   }
 
   Future<void> _loadFeatured() async {
@@ -74,6 +76,16 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _loadShakespeare() async {
+    try {
+      final results = await widget.apiService.searchAuthor('Shakespeare', limit: 6, offset: 0);
+      if (!mounted) return;
+      setState(() => _shakespeareBlogs = results);
+    } catch (_) {
+      // Non-critical — silently ignore
+    }
+  }
+
   void _openDetail(CardItem item) {
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
@@ -106,6 +118,20 @@ class _HomePageState extends State<HomePage> {
           settingsService: widget.settingsService,
           title: title,
           query: query,
+        ),
+      ),
+    );
+  }
+
+  void _openHotListAuthor(String title, String query) {
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (_) => HotPage(
+          apiService: widget.apiService,
+          settingsService: widget.settingsService,
+          title: title,
+          query: query,
+          useAuthorSearch: true,
         ),
       ),
     );
@@ -309,6 +335,56 @@ class _HomePageState extends State<HomePage> {
                   itemCount: _jaBlogs!.length,
                   itemBuilder: (_, i) =>
                       FeaturedCard(item: _jaBlogs![i], onTap: () => _openDetail(_jaBlogs![i])),
+                ),
+              ),
+            ],
+
+            // ── Shakespeare section ──
+            if (_shakespeareBlogs != null && _shakespeareBlogs!.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Shakespeare',
+                      style: TextStyle(
+                        fontSize: AppText.bodySize,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _openHotListAuthor('Shakespeare', 'Shakespeare'),
+                      child: const Text(
+                        '查看全部',
+                        style: TextStyle(
+                          fontSize: AppText.bodySize,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  itemCount: _shakespeareBlogs!.length,
+                  itemBuilder: (_, i) => FeaturedCard(
+                    item: _shakespeareBlogs![i],
+                    onTap: () => _openDetail(_shakespeareBlogs![i]),
+                  ),
                 ),
               ),
             ],

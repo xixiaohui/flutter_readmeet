@@ -17,6 +17,7 @@ class HotPage extends StatefulWidget {
   final ReaderSettingsService settingsService;
   final String title;
   final String query;
+  final bool useAuthorSearch;
 
   const HotPage({
     super.key,
@@ -24,6 +25,7 @@ class HotPage extends StatefulWidget {
     required this.settingsService,
     required this.title,
     required this.query,
+    this.useAuthorSearch = false,
   });
 
   @override
@@ -61,17 +63,20 @@ class _HotPageState extends State<HotPage> {
     }
   }
 
+  Future<List<CardItem>> _fetch(int limit, int offset) {
+    if (widget.useAuthorSearch) {
+      return widget.apiService.searchAuthor(widget.query, limit: limit, offset: offset);
+    }
+    return widget.apiService.searchBlogs(widget.query, limit: limit, offset: offset);
+  }
+
   Future<void> _load() async {
     setState(() {
       _isLoading = true;
       _error = null;
     });
     try {
-      final results = await widget.apiService.searchBlogs(
-        widget.query,
-        limit: _pageSize,
-        offset: 0,
-      );
+      final results = await _fetch(_pageSize, 0);
       if (!mounted) return;
       setState(() {
         _blogs = results;
@@ -93,11 +98,7 @@ class _HotPageState extends State<HotPage> {
 
     setState(() => _isLoadingMore = true);
     try {
-      final results = await widget.apiService.searchBlogs(
-        widget.query,
-        limit: _pageSize,
-        offset: _offset,
-      );
+      final results = await _fetch(_pageSize, _offset);
       if (!mounted) return;
       setState(() {
         _blogs.addAll(results);

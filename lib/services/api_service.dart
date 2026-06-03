@@ -86,6 +86,28 @@ class ApiService {
     }
   }
 
+  Future<List<CardItem>> searchAuthor(String query,
+      {int limit = 20, int offset = 0}) async {
+    final uri = Uri.parse(ApiConfig.blogSearchAuthor).replace(
+      queryParameters: {
+        'q': query,
+        'limit': limit.toString(),
+        'offset': offset.toString(),
+      },
+    );
+
+    final response = await _client.get(uri);
+
+    if (response.statusCode == 200) {
+      final list = (json.decode(response.body) as List<dynamic>)
+          .map((e) => CardItem.fromJson(e as Map<String, dynamic>))
+          .toList();
+      return list;
+    } else {
+      throw ApiException('搜索失败', statusCode: response.statusCode);
+    }
+  }
+
   void dispose() {
     _client.close();
   }

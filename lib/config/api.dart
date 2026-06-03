@@ -8,4 +8,6 @@ class ApiConfig {
   static String get blogSearch => '$baseUrl/blogs/search';
 
   static String get blogSearchAll => '$baseUrl/blogs/searchall';
+
+  static String get blogSearchAuthor => '$baseUrl/blogs/searchauthor';
 }

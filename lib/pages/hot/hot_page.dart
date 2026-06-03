@@ -8,14 +8,22 @@ import '../../widgets/loading_indicator.dart';
 import '../detail/detail_page.dart';
 import '../list/widgets/blog_row.dart';
 
+/// A paginated list page for featured content, driven by a search query.
+///
+/// [title] — navigation bar title (e.g. "中文精选", "日文精选").
+/// [query] — the `q` parameter sent to `searchBlogs` (e.g. "zh", "ja").
 class HotPage extends StatefulWidget {
   final ApiService apiService;
   final ReaderSettingsService settingsService;
+  final String title;
+  final String query;
 
   const HotPage({
     super.key,
     required this.apiService,
     required this.settingsService,
+    required this.title,
+    required this.query,
   });
 
   @override
@@ -60,7 +68,7 @@ class _HotPageState extends State<HotPage> {
     });
     try {
       final results = await widget.apiService.searchBlogs(
-        'zh',
+        widget.query,
         limit: _pageSize,
         offset: 0,
       );
@@ -86,7 +94,7 @@ class _HotPageState extends State<HotPage> {
     setState(() => _isLoadingMore = true);
     try {
       final results = await widget.apiService.searchBlogs(
-        'zh',
+        widget.query,
         limit: _pageSize,
         offset: _offset,
       );
@@ -120,12 +128,12 @@ class _HotPageState extends State<HotPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: AppColors.canvas,
-      navigationBar: const CupertinoNavigationBar(
+      navigationBar: CupertinoNavigationBar(
         backgroundColor: AppColors.canvasParchment,
         border: null,
         middle: Text(
-          '精选',
-          style: TextStyle(
+          widget.title,
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             color: AppColors.ink,
           ),

@@ -27,14 +27,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<CardItem>? _featuredBlogs;
-  List<CardItem>? _hotBlogs;
+  List<CardItem>? _zhBlogs;
+  List<CardItem>? _jaBlogs;
   String? _error;
 
   @override
   void initState() {
     super.initState();
     _loadFeatured();
-    _loadHot();
+    _loadZh();
+    _loadJa();
   }
 
   Future<void> _loadFeatured() async {
@@ -52,13 +54,23 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _loadHot() async {
+  Future<void> _loadZh() async {
     try {
       final results = await widget.apiService.searchBlogs('zh', limit: 6, offset: 0);
       if (!mounted) return;
-      setState(() => _hotBlogs = results);
+      setState(() => _zhBlogs = results);
     } catch (_) {
-      // Hot section is non-critical — silently ignore
+      // Non-critical — silently ignore
+    }
+  }
+
+  Future<void> _loadJa() async {
+    try {
+      final results = await widget.apiService.searchBlogs('ja', limit: 6, offset: 0);
+      if (!mounted) return;
+      setState(() => _jaBlogs = results);
+    } catch (_) {
+      // Non-critical — silently ignore
     }
   }
 
@@ -86,12 +98,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _openHotList() {
+  void _openHotList(String title, String query) {
     Navigator.of(context).push(
       CupertinoPageRoute(
         builder: (_) => HotPage(
           apiService: widget.apiService,
           settingsService: widget.settingsService,
+          title: title,
+          query: query,
         ),
       ),
     );
@@ -203,8 +217,8 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-            // ── Hot / 精选 section ──
-            if (_hotBlogs != null && _hotBlogs!.isNotEmpty) ...[
+            // ── 中文精选 section ──
+            if (_zhBlogs != null && _zhBlogs!.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.lg),
               Padding(
                 padding: const EdgeInsets.fromLTRB(
@@ -217,7 +231,7 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      '精选',
+                      '中文精选',
                       style: TextStyle(
                         fontSize: AppText.bodySize,
                         fontWeight: FontWeight.w600,
@@ -225,7 +239,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: _openHotList,
+                      onTap: () => _openHotList('中文精选', 'zh'),
                       child: const Text(
                         '查看全部',
                         style: TextStyle(
@@ -244,9 +258,57 @@ class _HomePageState extends State<HomePage> {
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.lg,
                   ),
-                  itemCount: _hotBlogs!.length,
+                  itemCount: _zhBlogs!.length,
                   itemBuilder: (_, i) =>
-                      FeaturedCard(item: _hotBlogs![i], onTap: () => _openDetail(_hotBlogs![i])),
+                      FeaturedCard(item: _zhBlogs![i], onTap: () => _openDetail(_zhBlogs![i])),
+                ),
+              ),
+            ],
+
+            // ── 日文精选 section ──
+            if (_jaBlogs != null && _jaBlogs!.isNotEmpty) ...[
+              const SizedBox(height: AppSpacing.lg),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  0,
+                  AppSpacing.lg,
+                  AppSpacing.sm,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      '日文精选',
+                      style: TextStyle(
+                        fontSize: AppText.bodySize,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _openHotList('日文精选', 'ja'),
+                      child: const Text(
+                        '查看全部',
+                        style: TextStyle(
+                          fontSize: AppText.bodySize,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 170,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                  ),
+                  itemCount: _jaBlogs!.length,
+                  itemBuilder: (_, i) =>
+                      FeaturedCard(item: _jaBlogs![i], onTap: () => _openDetail(_jaBlogs![i])),
                 ),
               ),
             ],

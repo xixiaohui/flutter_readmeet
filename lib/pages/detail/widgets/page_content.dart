@@ -75,38 +75,111 @@ class PageContent extends StatelessWidget {
   Widget _buildRichText(
       List<int> indices, ReaderSettingsService s, Color textColor, bool isDark) {
     final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
-    final spans = <InlineSpan>[];
 
-    // Build concatenated spans preserving original \n line breaks
+    // 1. Build full page text with separators, tracking segment boundaries
+    final buf = StringBuffer();
+    final segInfos = <_SegInfo>[];
     for (int i = 0; i < indices.length; i++) {
       final seg = allSegments[indices[i]];
-      final segStyle = _baseStyle(seg, s, textColor, scale, isDark);
-      final annSpans = _buildAnnotatedSpans(
-          text: seg.text, baseStyle: segStyle, annotationStore: annotationStore);
+      final style = _baseStyle(seg, s, textColor, scale, isDark);
 
-      // Spacing BEFORE block-level headings
-      if (_isBlockStyle(seg.style) && spans.isNotEmpty) {
-        spans.add(TextSpan(text: '\n', style: _spacerStyle(segStyle)));
+      // Separator before block headings
+      if (_isBlockStyle(seg.style) && buf.isNotEmpty) {
+        segInfos.add(_SegInfo(
+            start: buf.length,
+            end: buf.length + 1,
+            globalBase: 0,
+            style: _spacerStyle(style),
+            isSep: true));
+        buf.write('\n');
       }
 
-      spans.addAll(annSpans);
+      final start = buf.length;
+      buf.write(seg.text);
+      segInfos.add(_SegInfo(
+          start: start,
+          end: buf.length,
+          globalBase: seg.globalOffset,
+          style: style,
+          isSep: false));
 
-      // Add separator after EVERY segment except the last:
-      // - Block elements: spacer newline
-      // - Body lines within a paragraph: single \n to preserve line breaks
-      // - Paragraph boundaries (marked by isBlockEnd): double spacing
+      // Separator after
       if (i < indices.length - 1) {
         final nextSeg = allSegments[indices[i + 1]];
-        if (_isBlockStyle(seg.style) || _isBlockStyle(nextSeg.style)) {
-          spans.add(TextSpan(text: '\n', style: _spacerStyle(segStyle)));
-        } else if (seg.isBlockEnd) {
-          // Paragraph boundary: two newlines
-          spans.add(TextSpan(text: '\n\n', style: _spacerStyle(segStyle)));
-        } else {
-          // Intra-paragraph line: preserve original \n
-          spans.add(const TextSpan(text: '\n'));
+        final sepLen = seg.isBlockEnd &&
+                !_isBlockStyle(seg.style) &&
+                !_isBlockStyle(nextSeg.style)
+            ? 2
+            : 1;
+        final sepStyle = (_isBlockStyle(seg.style) ||
+                _isBlockStyle(nextSeg.style) ||
+                seg.isBlockEnd)
+            ? _spacerStyle(style)
+            : style;
+        final sepStart = buf.length;
+        buf.write('\n' * sepLen);
+        segInfos.add(_SegInfo(
+            start: sepStart,
+            end: buf.length,
+            globalBase: 0,
+            style: sepStyle,
+            isSep: true));
+      }
+    }
+
+    final fullText = buf.toString();
+
+    // 2. Find all annotation matches in full text
+    final breakPoints = <int>{0, fullText.length};
+    for (final a in annotationStore.annotations) {
+      int pos = 0;
+      while ((pos = fullText.indexOf(a.selectedText, pos)) != -1) {
+        breakPoints.add(pos);
+        breakPoints.add(pos + a.selectedText.length);
+        pos += a.selectedText.length;
+      }
+    }
+
+    // 3. Build spans from breakpoints, applying segment styles + annotations
+    final sorted = breakPoints.toList()..sort();
+    final spans = <InlineSpan>[];
+    for (int i = 0; i < sorted.length - 1; i++) {
+      final subStart = sorted[i];
+      final subEnd = sorted[i + 1];
+      if (subStart >= subEnd) continue;
+      final subText = fullText.substring(subStart, subEnd);
+
+      // Find which segment this span belongs to
+      var style = const TextStyle();
+      for (final info in segInfos.reversed) {
+        if (subStart >= info.start && subStart < info.end) {
+          style = info.style;
+          break;
         }
       }
+
+      // Check if any annotation covers this span (for highlights/underlines)
+      for (final a in annotationStore.annotations) {
+        int pos = 0;
+        while ((pos = fullText.indexOf(a.selectedText, pos)) != -1) {
+          final aEnd = pos + a.selectedText.length;
+          if (subStart >= pos && subEnd <= aEnd) {
+            if (a.type == AnnotationType.highlight) {
+              style = style.copyWith(backgroundColor: Color(a.color));
+            }
+            if (a.type == AnnotationType.underline) {
+              style = style.copyWith(
+                decoration: TextDecoration.underline,
+                decorationColor: Color(a.color),
+                decorationThickness: 2,
+              );
+            }
+          }
+          pos += a.selectedText.length;
+        }
+      }
+
+      spans.add(TextSpan(text: subText, style: style));
     }
 
     return SelectableText.rich(
@@ -171,72 +244,29 @@ class PageContent extends StatelessWidget {
     int localCursor = 0;
     for (int i = 0; i < indices.length; i++) {
       final seg = allSegments[indices[i]];
+
+      // Skip separator before block headings
+      if (_isBlockStyle(seg.style) && i > 0) localCursor += 1;
+
       final segLen = seg.text.length;
       if (localPos <= localCursor + segLen) {
         return seg.globalOffset + (localPos - localCursor);
       }
       localCursor += segLen;
-      // Account for separator characters between segments
+
+      // Separator after
       if (i < indices.length - 1) {
         final nextSeg = allSegments[indices[i + 1]];
-        if (_isBlockStyle(seg.style) && i > 0) localCursor += 1;
-        if (_isBlockStyle(seg.style) || _isBlockStyle(nextSeg.style)) {
-          localCursor += 1; // single \n
-        } else if (seg.isBlockEnd) {
+        if (seg.isBlockEnd &&
+            !_isBlockStyle(seg.style) &&
+            !_isBlockStyle(nextSeg.style)) {
           localCursor += 2; // \n\n
         } else {
-          localCursor += 1; // single \n
+          localCursor += 1; // \n
         }
       }
     }
     return allSegments[indices.last].globalOffset;
-  }
-
-  List<TextSpan> _buildAnnotatedSpans({
-    required String text,
-    required TextStyle baseStyle,
-    required AnnotationStore annotationStore,
-  }) {
-    final matches = <_TextMatch>[];
-    for (final a in annotationStore.annotations) {
-      int pos = 0;
-      while ((pos = text.indexOf(a.selectedText, pos)) != -1) {
-        matches.add(_TextMatch(
-            start: pos, end: pos + a.selectedText.length, annotation: a));
-        pos += a.selectedText.length;
-      }
-    }
-    matches.sort((a, b) => a.start.compareTo(b.start));
-
-    if (matches.isEmpty) return [TextSpan(text: text, style: baseStyle)];
-
-    final spans = <TextSpan>[];
-    int cursor = 0;
-    for (final m in matches) {
-      if (m.start > cursor) {
-        spans.add(
-            TextSpan(text: text.substring(cursor, m.start), style: baseStyle));
-      }
-      var style = baseStyle;
-      final a = m.annotation;
-      if (a.type == AnnotationType.highlight) {
-        style = style.copyWith(backgroundColor: Color(a.color));
-      }
-      if (a.type == AnnotationType.underline) {
-        style = style.copyWith(
-          decoration: TextDecoration.underline,
-          decorationColor: Color(a.color),
-          decorationThickness: 2,
-        );
-      }
-      spans.add(
-          TextSpan(text: text.substring(m.start, m.end), style: style));
-      cursor = m.end;
-    }
-    if (cursor < text.length) {
-      spans.add(TextSpan(text: text.substring(cursor), style: baseStyle));
-    }
-    return spans;
   }
 
   Widget _buildMenu(
@@ -278,12 +308,19 @@ class PageContent extends StatelessWidget {
   }
 }
 
-class _TextMatch {
+class _SegInfo {
   final int start;
   final int end;
-  final Annotation annotation;
-  const _TextMatch(
-      {required this.start, required this.end, required this.annotation});
+  final int globalBase;
+  final TextStyle style;
+  final bool isSep;
+  const _SegInfo({
+    required this.start,
+    required this.end,
+    required this.globalBase,
+    required this.style,
+    required this.isSep,
+  });
 }
 
 class _DropdownMenu extends StatelessWidget {

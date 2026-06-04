@@ -119,9 +119,13 @@ class _DetailPageState extends State<DetailPage> {
   List<PageSlice> _calculatePages() {
     final segments = _allSegments;
     if (segments == null || segments.isEmpty) return [];
-    final size = MediaQuery.of(context).size;
-    final navHeight = MediaQuery.of(context).padding.top + 44; // nav bar
-    final pageHeight = size.height - navHeight - 80; // 80 for page indicator
+    final media = MediaQuery.of(context);
+    final size = media.size;
+    // Nav bar area: status bar + CupertinoNavigationBar (~44px)
+    final navHeight = media.padding.top + 44;
+    // Bottom area: tab bar (~50px) + home indicator + page indicator (~30px margin)
+    final bottomHeight = media.padding.bottom + 80;
+    final pageHeight = size.height - navHeight - bottomHeight;
     return PageCalculator.paginate(
       segments: segments,
       pageHeight: pageHeight,

@@ -198,9 +198,11 @@ class _DetailPageState extends State<DetailPage> {
   Color _navBgColor() {
     switch (widget.settingsService.backgroundColor) {
       case 'dark':
-        return AppColors.surfaceTile1.withValues(alpha: 0.9);
+        return CupertinoDynamicColor.resolve(
+            CupertinoColors.darkBackgroundGray, context);
       default:
-        return AppColors.canvas.withValues(alpha: 0.9);
+        return CupertinoDynamicColor.resolve(
+            CupertinoColors.systemBackground, context);
     }
   }
 
@@ -211,6 +213,11 @@ class _DetailPageState extends State<DetailPage> {
       builder: (context, _) {
         // Recalculate pages when settings change
         final slices = _calculatePages();
+        final isDark = widget.settingsService.backgroundColor == 'dark';
+        // iOS status bar style
+        SystemChrome.setSystemUIOverlayStyle(
+          isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
+        );
         return CupertinoPageScaffold(
           backgroundColor: _bgColor(),
           navigationBar: CupertinoNavigationBar(

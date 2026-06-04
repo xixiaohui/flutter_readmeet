@@ -64,8 +64,8 @@ class PageContent extends StatelessWidget {
 
           // Segments
           Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.xxl),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

@@ -1,3 +1,4 @@
+import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import '../../../models/card_item.dart';
 import '../../../services/annotation_store.dart';
@@ -67,6 +68,9 @@ class _PageReaderState extends State<PageReader> {
         PageView.builder(
           controller: _controller,
           itemCount: slices.length,
+          physics: const BouncingScrollPhysics(
+            parent: PageScrollPhysics(),
+          ),
           onPageChanged: (page) {
             setState(() => _currentPage = page);
             widget.onPageChanged?.call(page);
@@ -94,10 +98,10 @@ class _PageReaderState extends State<PageReader> {
             );
           },
         ),
-        // Page indicator
+        // Page indicator — above home indicator on iOS
         if (slices.length > 1)
           Positioned(
-            bottom: 24,
+            bottom: Platform.isIOS ? 34 : 24,
             left: 0,
             right: 0,
             child: Center(

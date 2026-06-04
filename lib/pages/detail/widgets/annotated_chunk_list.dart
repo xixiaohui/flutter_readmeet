@@ -195,31 +195,76 @@ class AnnotatedChunkList extends StatelessWidget {
       letterSpacing: seg.style == MdStyle.h1 ? -0.3 : null,
     );
 
-    // Annotation decorations
-    final anns = annotationStore.annotationsInRange(
-        trueGlobalOffset, trueGlobalOffset + seg.text.length);
-    var style = ts;
-    for (final a in anns) {
-      if (a.type == AnnotationType.highlight) {
-        style = style.copyWith(backgroundColor: Color(a.color));
-      }
-      if (a.type == AnnotationType.underline) {
-        style = style.copyWith(
-          decoration: TextDecoration.underline,
-          decorationColor: Color(a.color),
-          decorationThickness: 2,
-        );
-      }
-    }
+    // Build TextSpan children split at annotation boundaries so that
+    // only the annotated portion of text gets highlighted — not the
+    // entire segment.
+    final spans = _buildAnnotatedSpans(
+      text: seg.text,
+      baseStyle: ts,
+      segGlobalOffset: trueGlobalOffset,
+    );
 
     return Padding(
       padding: EdgeInsets.only(top: topPad ?? 0),
-      child: SelectableText(
-        seg.text,
+      child: SelectableText.rich(
+        TextSpan(children: spans),
         contextMenuBuilder: (ctx, st) => _buildMenu(ctx, st, trueGlobalOffset),
-        style: style,
       ),
     );
+  }
+
+  /// Split [text] into [TextSpan] children at annotation boundary points.
+  List<TextSpan> _buildAnnotatedSpans({
+    required String text,
+    required TextStyle baseStyle,
+    required int segGlobalOffset,
+  }) {
+    final segStart = segGlobalOffset;
+    final segEnd = segGlobalOffset + text.length;
+
+    // Collect all annotation boundaries within this segment.
+    final breakPoints = <int>{0, text.length};
+
+    for (final a in annotationStore.annotationsInRange(segStart, segEnd)) {
+      final relStart = (a.startOffset - segStart).clamp(0, text.length);
+      final relEnd = (a.endOffset - segStart).clamp(0, text.length);
+      if (relStart < relEnd) {
+        breakPoints.add(relStart);
+        breakPoints.add(relEnd);
+      }
+    }
+
+    final sorted = breakPoints.toList()..sort();
+    final spans = <TextSpan>[];
+
+    for (int i = 0; i < sorted.length - 1; i++) {
+      final subStart = sorted[i];
+      final subEnd = sorted[i + 1];
+      if (subStart >= subEnd) continue;
+
+      final subText = text.substring(subStart, subEnd);
+      final globalSubStart = segStart + subStart;
+      final globalSubEnd = segStart + subEnd;
+
+      var style = baseStyle;
+      final anns = annotationStore.annotationsInRange(globalSubStart, globalSubEnd);
+      for (final a in anns) {
+        if (a.type == AnnotationType.highlight) {
+          style = style.copyWith(backgroundColor: Color(a.color));
+        }
+        if (a.type == AnnotationType.underline) {
+          style = style.copyWith(
+            decoration: TextDecoration.underline,
+            decorationColor: Color(a.color),
+            decorationThickness: 2,
+          );
+        }
+      }
+
+      spans.add(TextSpan(text: subText, style: style));
+    }
+
+    return spans;
   }
 
   Widget _buildMenu(

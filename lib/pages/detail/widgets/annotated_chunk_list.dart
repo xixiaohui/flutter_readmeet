@@ -272,61 +272,79 @@ class AnnotatedChunkList extends StatelessWidget {
     return AdaptiveTextSelectionToolbar(
       anchors: st.contextMenuAnchors,
       children: [
-        _MenuBtn(
-          icon: Icons.copy,
-          label: '复制',
-          onTap: () {
-            st.copySelection(SelectionChangedCause.toolbar);
-            st.hideToolbar();
-          },
-        ),
-        _MenuBtn(
-          icon: Icons.select_all,
-          label: '全选',
-          onTap: () {
-            st.selectAll(SelectionChangedCause.toolbar);
-            st.hideToolbar();
-          },
-        ),
-        const SizedBox(width: 6),
-        _MenuBtn(
-          icon: Icons.format_paint,
-          label: '高亮',
-          onTap: () =>
-              _onSelectAction(ctx, st, localBaseOffset, AnnotationType.highlight),
-        ),
-        _MenuBtn(
-          icon: Icons.format_underline,
-          label: '下划线',
-          onTap: () =>
-              _onSelectAction(ctx, st, localBaseOffset, AnnotationType.underline),
-        ),
-        _MenuBtn(
-          icon: Icons.notes,
-          label: '笔记',
-          onTap: () {
-            final sel = st.textEditingValue.selection;
-            if (!sel.isValid || sel.isCollapsed) return;
-            final text = st.textEditingValue.text;
-            final selectedText = text.substring(sel.start, sel.end);
-            st.hideToolbar();
-            onAddNote?.call(selectedText, localBaseOffset + sel.start,
-                localBaseOffset + sel.end);
-          },
-        ),
-        const SizedBox(width: 6),
-        _MenuBtn(
-          icon: Icons.image,
-          label: '海报',
-          onTap: () {
-            final sel = st.textEditingValue.selection;
-            if (!sel.isValid || sel.isCollapsed) return;
-            final text = st.textEditingValue.text;
-            final selectedText = text.substring(sel.start, sel.end);
-            st.hideToolbar();
-            onPoster?.call(selectedText, localBaseOffset + sel.start,
-                localBaseOffset + sel.end);
-          },
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _MenuBtn(
+                icon: Icons.copy,
+                label: '复制',
+                onTap: () {
+                  st.copySelection(SelectionChangedCause.toolbar);
+                  st.hideToolbar();
+                },
+              ),
+              _MenuBtn(
+                icon: Icons.select_all,
+                label: '全选',
+                onTap: () {
+                  st.selectAll(SelectionChangedCause.toolbar);
+                  st.hideToolbar();
+                },
+              ),
+              Container(
+                width: 1,
+                height: 24,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                color: AppColors.hairline,
+              ),
+              _MenuBtn(
+                icon: Icons.format_paint,
+                label: '高亮',
+                onTap: () => _onSelectAction(
+                    ctx, st, localBaseOffset, AnnotationType.highlight),
+              ),
+              _MenuBtn(
+                icon: Icons.format_underline,
+                label: '下划线',
+                onTap: () => _onSelectAction(
+                    ctx, st, localBaseOffset, AnnotationType.underline),
+              ),
+              _MenuBtn(
+                icon: Icons.notes,
+                label: '笔记',
+                onTap: () {
+                  final sel = st.textEditingValue.selection;
+                  if (!sel.isValid || sel.isCollapsed) return;
+                  final text = st.textEditingValue.text;
+                  final selectedText = text.substring(sel.start, sel.end);
+                  st.hideToolbar();
+                  onAddNote?.call(selectedText,
+                      localBaseOffset + sel.start, localBaseOffset + sel.end);
+                },
+              ),
+              Container(
+                width: 1,
+                height: 24,
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                color: AppColors.hairline,
+              ),
+              _MenuBtn(
+                icon: Icons.image,
+                label: '海报',
+                onTap: () {
+                  final sel = st.textEditingValue.selection;
+                  if (!sel.isValid || sel.isCollapsed) return;
+                  final text = st.textEditingValue.text;
+                  final selectedText = text.substring(sel.start, sel.end);
+                  st.hideToolbar();
+                  onPoster?.call(selectedText,
+                      localBaseOffset + sel.start, localBaseOffset + sel.end);
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -374,15 +392,17 @@ class _MenuBtn extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        child: Row(
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 44),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 14, color: AppColors.ink),
-            const SizedBox(width: 4),
+            Icon(icon, size: 20, color: AppColors.ink),
+            const SizedBox(height: 4),
             Text(label,
-                style: const TextStyle(fontSize: 11, color: AppColors.ink)),
+                style: const TextStyle(fontSize: 12, color: AppColors.ink)),
           ],
         ),
       ),

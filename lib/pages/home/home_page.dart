@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> {
         leading: Padding(
           padding: EdgeInsets.only(left: 16),
           child: Text(
-            'READMEET',
+            'ReadMeet',
             style: TextStyle(
               fontSize: AppText.taglineSize,
               fontWeight: FontWeight.w600,

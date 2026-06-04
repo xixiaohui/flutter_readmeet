@@ -4,6 +4,7 @@ import 'services/api_service.dart';
 import 'services/reader_settings_service.dart';
 import 'pages/home/home_page.dart';
 import 'pages/list/list_page.dart';
+import 'pages/annotations/global_annotations_page.dart';
 import 'pages/setting/setting_page.dart';
 
 class App extends StatelessWidget {
@@ -53,6 +54,11 @@ class App extends StatelessWidget {
               label: '全部文章',
             ),
             BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.pencil),
+              activeIcon: Icon(CupertinoIcons.pencil),
+              label: '标记',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.settings),
               activeIcon: Icon(CupertinoIcons.settings_solid),
               label: '设置',
@@ -76,6 +82,13 @@ class App extends StatelessWidget {
                 ),
               );
             case 2:
+              return CupertinoTabView(
+                builder: (_) => GlobalAnnotationsPage(
+                  apiService: apiService,
+                  settingsService: settingsService,
+                ),
+              );
+            case 3:
               return CupertinoTabView(
                 builder: (_) => SettingPage(settingsService: settingsService),
               );

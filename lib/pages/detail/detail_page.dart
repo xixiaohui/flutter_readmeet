@@ -40,6 +40,7 @@ class _DetailPageState extends State<DetailPage> {
   String? _error;
   List<MarkdownSegment>? _allSegments;
   int _currentPage = 0;
+  int _totalPages = 0;
 
   @override
   void initState() {
@@ -101,10 +102,8 @@ class _DetailPageState extends State<DetailPage> {
   void _saveProgress() {
     if (!mounted) return;
     final blog = _blog;
-    if (blog == null) return;
-    final slices = _calculatePages();
-    if (slices.isEmpty) return;
-    final total = slices.length;
+    if (blog == null || _totalPages == 0) return;
+    final total = _totalPages;
     _progressService.save(ReadingProgress(
       blogId: widget.blogId,
       pageIndex: _currentPage,
@@ -116,20 +115,13 @@ class _DetailPageState extends State<DetailPage> {
     ));
   }
 
-  List<PageSlice> _calculatePages() {
+  List<PageSlice> _calculatePages(double availableHeight, double availableWidth) {
     final segments = _allSegments;
     if (segments == null || segments.isEmpty) return [];
-    final media = MediaQuery.of(context);
-    final size = media.size;
-    // Nav bar area: status bar + CupertinoNavigationBar (~44px)
-    final navHeight = media.padding.top + 44;
-    // Bottom area: tab bar (~50px) + home indicator + page indicator (~30px margin)
-    final bottomHeight = media.padding.bottom + 80;
-    final pageHeight = size.height - navHeight - bottomHeight;
     return PageCalculator.paginate(
       segments: segments,
-      pageHeight: pageHeight,
-      pageWidth: size.width,
+      pageHeight: availableHeight,
+      pageWidth: availableWidth,
       settings: widget.settingsService,
     );
   }
@@ -215,10 +207,7 @@ class _DetailPageState extends State<DetailPage> {
     return ListenableBuilder(
       listenable: widget.settingsService,
       builder: (context, _) {
-        // Recalculate pages when settings change
-        final slices = _calculatePages();
         final isDark = widget.settingsService.backgroundColor == 'dark';
-        // iOS status bar style
         SystemChrome.setSystemUIOverlayStyle(
           isDark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
         );
@@ -284,7 +273,13 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
           ),
-          child: _buildBody(slices),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final slices = _calculatePages(
+                  constraints.maxHeight, constraints.maxWidth);
+              return _buildBody(slices);
+            },
+          ),
         );
       },
     );
@@ -307,6 +302,7 @@ class _DetailPageState extends State<DetailPage> {
       return const LoadingIndicator(message: '排版中...');
     }
 
+    _totalPages = slices.length;
     return PageReader(
       slices: slices,
       allSegments: _allSegments!,

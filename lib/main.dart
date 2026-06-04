@@ -3,9 +3,10 @@ import 'app.dart';
 import 'services/api_service.dart';
 import 'services/reader_settings_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final apiService = ApiService();
   final settingsService = ReaderSettingsService();
-  settingsService.load(); // Pre-load saved preferences before first frame
+  await settingsService.load(); // Ensure settings loaded before first frame
   runApp(App(apiService: apiService, settingsService: settingsService));
 }

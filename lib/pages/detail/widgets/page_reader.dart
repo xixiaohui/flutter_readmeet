@@ -1,6 +1,7 @@
 import 'dart:io' show Platform;
 import 'package:flutter/cupertino.dart';
 import '../../../models/card_item.dart';
+import '../../../theme/app_theme.dart';
 import '../../../services/annotation_store.dart';
 import '../../../services/reader_settings_service.dart';
 import '../services/page_calculator.dart';
@@ -98,25 +99,17 @@ class _PageReaderState extends State<PageReader> {
             );
           },
         ),
-        // Page indicator — bottom-right corner
+        // Page indicator — bottom-right corner, no background
         if (slices.length > 1)
           Positioned(
             bottom: Platform.isIOS ? 34 : 24,
             right: 20,
-            child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-              decoration: BoxDecoration(
-                color: const Color(0x66000000),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                '${_currentPage + 1} / ${slices.length}',
-                style: const TextStyle(
-                    color: Color(0xCCFFFFFF),
-                    fontSize: 12,
-                    fontFeatures: [FontFeature.tabularFigures()]),
-              ),
+            child: Text(
+              '${_currentPage + 1} / ${slices.length}',
+              style: TextStyle(
+                  color: AppColors.inkMuted48,
+                  fontSize: 13,
+                  fontFeatures: const [FontFeature.tabularFigures()]),
             ),
           ),
       ],

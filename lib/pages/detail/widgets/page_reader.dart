@@ -97,33 +97,29 @@ class _PageReaderState extends State<PageReader> {
             );
           },
         ),
-        // Page indicator — vertically centered, right-aligned, stacked
+        // Page indicator — bottom-right, stacked, same style
         if (slices.length > 1)
           Positioned(
-            right: 16,
-            top: 0,
-            bottom: 0,
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${_currentPage + 1}',
-                    style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        fontFeatures: [FontFeature.tabularFigures()]),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    '${slices.length}',
-                    style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF8E8E93),
-                        fontFeatures: [FontFeature.tabularFigures()]),
-                  ),
-                ],
-              ),
+            bottom: 24,
+            right: 20,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${_currentPage + 1}',
+                  style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF8E8E93),
+                      fontFeatures: [FontFeature.tabularFigures()]),
+                ),
+                Text(
+                  '${slices.length}',
+                  style: const TextStyle(
+                      fontSize: 14,
+                      color: Color(0xFF8E8E93),
+                      fontFeatures: [FontFeature.tabularFigures()]),
+                ),
+              ],
             ),
           ),
       ],

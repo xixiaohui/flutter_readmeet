@@ -178,6 +178,7 @@ class _DetailPageState extends State<DetailPage> {
       BuildContext context,
       SelectableRegionState state,
       AnnotationType type) async {
+    final navigator = Navigator.of(context);
     state.copySelection(SelectionChangedCause.toolbar);
     await Future.delayed(const Duration(milliseconds: 50));
     final data = await Clipboard.getData(Clipboard.kTextPlain);
@@ -186,19 +187,18 @@ class _DetailPageState extends State<DetailPage> {
 
     if (text.isEmpty) return;
 
-    // Show color picker
     final colors = type == AnnotationType.highlight
         ? AnnotationColors.highlightColors
         : AnnotationColors.underlineColors;
     final selectedColor = await showCupertinoModalPopup<int>(
-      context: context,
+      context: navigator.context,
       builder: (_) => _ColorPickerSheet(colors: colors),
     );
 
     if (selectedColor != null && mounted) {
       _annotationStore.add(
         selectedText: text,
-        startOffset: 0, // approximate — offset tracking needs full-text index
+        startOffset: 0,
         endOffset: text.length,
         type: type,
         color: selectedColor,
@@ -208,6 +208,7 @@ class _DetailPageState extends State<DetailPage> {
 
   void _onAddNote(
       BuildContext context, SelectableRegionState state) async {
+    final navigator = Navigator.of(context);
     state.copySelection(SelectionChangedCause.toolbar);
     await Future.delayed(const Duration(milliseconds: 50));
     final data = await Clipboard.getData(Clipboard.kTextPlain);
@@ -217,7 +218,7 @@ class _DetailPageState extends State<DetailPage> {
     if (text.isEmpty) return;
 
     final note = await showCupertinoDialog<String>(
-      context: context,
+      context: navigator.context,
       builder: (_) => _NoteInputDialog(initialText: text),
     );
 
@@ -235,6 +236,7 @@ class _DetailPageState extends State<DetailPage> {
 
   void _onPoster(
       BuildContext context, SelectableRegionState state) async {
+    final navigator = Navigator.of(context);
     state.copySelection(SelectionChangedCause.toolbar);
     await Future.delayed(const Duration(milliseconds: 50));
     final data = await Clipboard.getData(Clipboard.kTextPlain);
@@ -248,7 +250,7 @@ class _DetailPageState extends State<DetailPage> {
     final formattedDate = date.length >= 10 ? date.substring(0, 10) : date;
 
     if (!mounted) return;
-    Navigator.of(context).push(
+    navigator.push(
       CupertinoPageRoute(
         builder: (_) => PosterPreview(
           quote: text,
@@ -411,12 +413,12 @@ class _MenuBtn extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-        child: Column(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 18, color: AppColors.ink),
-            const SizedBox(height: 2),
+            Icon(icon, size: 14, color: AppColors.ink),
+            const SizedBox(width: 4),
             Text(label,
                 style: const TextStyle(fontSize: 11, color: AppColors.ink)),
           ],

@@ -64,7 +64,7 @@ class AnnotationSummaryPage extends StatelessWidget {
   }
 
   void _confirmDeleteAll(BuildContext context) {
-    final navigator = Navigator.of(context);
+    final navigator = Navigator.of(context, rootNavigator: true);
     showCupertinoDialog(
       context: context,
       builder: (_) => CupertinoAlertDialog(
@@ -72,13 +72,15 @@ class AnnotationSummaryPage extends StatelessWidget {
         content: const Text('此操作不可撤销'),
         actions: [
           CupertinoDialogAction(
-            onPressed: () => navigator.pop(),
+            onPressed: () {
+              if (navigator.canPop()) navigator.pop();
+            },
             child: const Text('取消'),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
             onPressed: () {
-              navigator.pop();
+              if (navigator.canPop()) navigator.pop();
               for (final a in store.annotations.toList()) {
                 store.delete(a.id);
               }
@@ -185,10 +187,10 @@ class _AnnotationCardState extends State<_AnnotationCard> {
   }
 
   void _addNote(BuildContext context) {
-    final navigator = Navigator.of(context);
+    final navigator = Navigator.of(context, rootNavigator: true);
     final controller = TextEditingController();
     showCupertinoDialog(
-      context: context,
+      context: navigator.context,
       builder: (_) => CupertinoAlertDialog(
         title: const Text('添加笔记'),
         content: Padding(
@@ -202,13 +204,15 @@ class _AnnotationCardState extends State<_AnnotationCard> {
         ),
         actions: [
           CupertinoDialogAction(
-            onPressed: () => navigator.pop(),
+            onPressed: () {
+              if (navigator.canPop()) navigator.pop();
+            },
             child: const Text('取消'),
           ),
           CupertinoDialogAction(
             onPressed: () {
               final text = controller.text.trim();
-              navigator.pop();
+              if (navigator.canPop()) navigator.pop();
               if (text.isNotEmpty) {
                 final updated = [
                   ...widget.annotation.notes,

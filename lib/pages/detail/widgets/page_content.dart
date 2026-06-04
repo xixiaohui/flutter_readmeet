@@ -47,101 +47,65 @@ class PageContent extends StatelessWidget {
     final s = settings;
     final isDark = s.backgroundColor == 'dark';
     final textColor = isDark ? AppColors.onDark : AppColors.ink;
-    final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
+
+    // Collect all segment indices for this page
+    final indices = slice.segmentIndices;
 
     return SingleChildScrollView(
       physics: const ClampingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Hero + header only on first page
           if (slice.isFirstPage && blog != null) ...[
             DetailHeroImage(imageUrl: blog!.img),
             ContentHeader(
                 blog: blog!,
                 hasCover: blog!.img != null && blog!.img!.isNotEmpty),
           ],
-
-          // Segments
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.xxl),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (final idx in slice.segmentIndices)
-                  _buildSegment(
-                      allSegments[idx], s, textColor, scale, isDark),
-              ],
-            ),
+            child: _buildRichText(indices, s, textColor, isDark),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildSegment(MarkdownSegment seg, ReaderSettingsService s,
+  Widget _buildRichText(
+      List<int> indices, ReaderSettingsService s, Color textColor, bool isDark) {
+    final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
+    final spans = <InlineSpan>[];
+
+    // Build concatenated spans with newline separators between blocks
+    for (int i = 0; i < indices.length; i++) {
+      final seg = allSegments[indices[i]];
+      final segStyle = _baseStyle(seg, s, textColor, scale, isDark);
+      final annSpans = _buildAnnotatedSpans(
+          text: seg.text, baseStyle: segStyle, annotationStore: annotationStore);
+      spans.addAll(annSpans);
+
+      // Add block separator (newline) after block elements
+      if (seg.isBlockEnd || i < indices.length - 1) {
+        // Add spacing between segments with a newline unless it's inline
+        final nextSeg = i + 1 < indices.length ? allSegments[indices[i + 1]] : null;
+        final needsGap = seg.style != nextSeg?.style || _isBlockStyle(seg.style);
+        if (needsGap || seg.isBlockEnd) {
+          spans.add(const TextSpan(text: '\n'));
+        }
+      }
+    }
+
+    return SelectableText.rich(
+      TextSpan(children: spans),
+      contextMenuBuilder: (ctx, st) =>
+          _buildMenu(ctx, st, indices),
+    );
+  }
+
+  TextStyle _baseStyle(MarkdownSegment seg, ReaderSettingsService s,
       Color textColor, double scale, bool isDark) {
-    double? topPad;
-    switch (seg.style) {
-      case MdStyle.h1:
-        topPad = AppSpacing.xl;
-      case MdStyle.h2:
-        topPad = AppSpacing.lg;
-      case MdStyle.h3:
-        topPad = AppSpacing.md;
-      default:
-        break;
-    }
-
-    // Code block
-    if (seg.style == MdStyle.code) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(AppSpacing.sm),
-          decoration: BoxDecoration(
-            color:
-                isDark ? AppColors.inkMuted80 : AppColors.canvasParchment,
-            borderRadius: BorderRadius.circular(AppRadius.sm),
-          ),
-          child: SelectableText(
-            seg.text,
-            style: TextStyle(fontSize: 15, color: textColor),
-          ),
-        ),
-      );
-    }
-
-    // Blockquote
-    if (seg.style == MdStyle.blockquote) {
-      return Padding(
-        padding:
-            const EdgeInsets.only(left: AppSpacing.md, top: 4, bottom: 4),
-        child: Container(
-          decoration: const BoxDecoration(
-            border: Border(
-                left: BorderSide(color: AppColors.primary, width: 3)),
-          ),
-          padding: const EdgeInsets.only(left: AppSpacing.md),
-          child: SelectableText(
-            seg.text,
-            style: TextStyle(
-              fontSize: s.fontSize,
-              height: s.lineHeight,
-              color: textColor,
-              fontWeight: FontWeight.w300,
-              fontStyle: FontStyle.italic,
-              fontFamily: s.fontFamily,
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Normal segment with annotation support
-    final ts = TextStyle(
+    return TextStyle(
       fontSize: seg.style == MdStyle.h1
           ? AppText.displayMdSize * scale
           : seg.style == MdStyle.h2
@@ -163,24 +127,44 @@ class PageContent extends StatelessWidget {
               seg.style == MdStyle.h2 ||
               seg.style == MdStyle.h3
           ? FontWeight.w600
-          : FontWeight.w400,
-      fontStyle:
-          seg.style == MdStyle.italic ? FontStyle.italic : FontStyle.normal,
+          : seg.style == MdStyle.blockquote
+              ? FontWeight.w300
+              : FontWeight.w400,
+      fontStyle: seg.style == MdStyle.italic || seg.style == MdStyle.blockquote
+          ? FontStyle.italic
+          : FontStyle.normal,
       letterSpacing: seg.style == MdStyle.h1 ? -0.3 : null,
     );
+  }
 
-    final segGlobalOffset = seg.globalOffset;
-    final spans = _buildAnnotatedSpans(
-        text: seg.text, baseStyle: ts, annotationStore: annotationStore);
+  bool _isBlockStyle(MdStyle style) {
+    switch (style) {
+      case MdStyle.h1:
+      case MdStyle.h2:
+      case MdStyle.h3:
+      case MdStyle.blockquote:
+      case MdStyle.code:
+        return true;
+      default:
+        return false;
+    }
+  }
 
-    return Padding(
-      padding: EdgeInsets.only(top: topPad ?? 0),
-      child: SelectableText.rich(
-        TextSpan(children: spans),
-        contextMenuBuilder: (ctx, st) =>
-            _buildMenu(ctx, st, segGlobalOffset),
-      ),
-    );
+  /// Find the global offset for a given local position in the concatenated text.
+  int _localToGlobal(int localPos, List<int> indices) {
+    int localCursor = 0;
+    for (final idx in indices) {
+      final seg = allSegments[idx];
+      final segLen = seg.text.length;
+      if (localPos <= localCursor + segLen) {
+        return seg.globalOffset + (localPos - localCursor);
+      }
+      localCursor += segLen;
+      // Account for newline separators
+      localCursor += 1; // '\n'
+    }
+    // Fallback: last segment
+    return allSegments[indices.last].globalOffset;
   }
 
   List<TextSpan> _buildAnnotatedSpans({
@@ -231,7 +215,7 @@ class PageContent extends StatelessWidget {
   }
 
   Widget _buildMenu(
-      BuildContext ctx, EditableTextState st, int localBaseOffset) {
+      BuildContext ctx, EditableTextState st, List<int> indices) {
     final sel = st.textEditingValue.selection;
     final selLen = sel.isValid && !sel.isCollapsed
         ? (sel.end - sel.start).abs()
@@ -239,13 +223,32 @@ class PageContent extends StatelessWidget {
 
     if (selLen < 2) return const SizedBox.shrink();
 
+    // Convert local selection offsets to global article offsets
+    final globalStart = _localToGlobal(sel.start, indices);
+    final globalEnd = _localToGlobal(sel.end, indices);
+    final text = st.textEditingValue.text;
+    final selectedText =
+        (sel.start < text.length && sel.end <= text.length)
+            ? text.substring(sel.start, sel.end)
+            : '';
+
     return _DropdownMenu(
       ctx: ctx,
-      st: st,
-      localBaseOffset: localBaseOffset,
-      onAnnotate: onAnnotate,
-      onAddNote: onAddNote,
-      onPoster: onPoster,
+      onCopy: () {
+        st.copySelection(SelectionChangedCause.toolbar);
+        st.hideToolbar();
+      },
+      onSelectAll: () {
+        st.selectAll(SelectionChangedCause.toolbar);
+        st.hideToolbar();
+      },
+      onHide: () => st.hideToolbar(),
+      selectedText: selectedText,
+      startOffset: globalStart,
+      endOffset: globalEnd,
+      onAnnotateCall: onAnnotate,
+      onAddNoteCall: onAddNote,
+      onPosterCall: onPoster,
     );
   }
 }
@@ -260,74 +263,58 @@ class _TextMatch {
 
 class _DropdownMenu extends StatelessWidget {
   final BuildContext ctx;
-  final EditableTextState st;
-  final int localBaseOffset;
-  final AnnotationCallback onAnnotate;
-  final void Function(String, int, int)? onAddNote;
-  final void Function(String, int, int)? onPoster;
+  final VoidCallback onCopy;
+  final VoidCallback onSelectAll;
+  final VoidCallback onHide;
+  final String selectedText;
+  final int startOffset;
+  final int endOffset;
+  final AnnotationCallback onAnnotateCall;
+  final void Function(String, int, int)? onAddNoteCall;
+  final void Function(String, int, int)? onPosterCall;
 
   const _DropdownMenu({
     required this.ctx,
-    required this.st,
-    required this.localBaseOffset,
-    required this.onAnnotate,
-    this.onAddNote,
-    this.onPoster,
+    required this.onCopy,
+    required this.onSelectAll,
+    required this.onHide,
+    required this.selectedText,
+    required this.startOffset,
+    required this.endOffset,
+    required this.onAnnotateCall,
+    this.onAddNoteCall,
+    this.onPosterCall,
   });
 
   @override
   Widget build(BuildContext context) {
     final items = <_MenuItem>[
-      _MenuItem(
-          icon: Icons.copy,
-          label: '复制',
-          onTap: () {
-            st.copySelection(SelectionChangedCause.toolbar);
-            st.hideToolbar();
-          }),
-      _MenuItem(
-          icon: Icons.select_all,
-          label: '全选',
-          onTap: () {
-            st.selectAll(SelectionChangedCause.toolbar);
-            st.hideToolbar();
-          }),
+      _MenuItem(icon: Icons.copy, label: '复制', onTap: () {
+        onCopy();
+        onHide();
+      }),
+      _MenuItem(icon: Icons.select_all, label: '全选', onTap: () {
+        onSelectAll();
+        onHide();
+      }),
       _MenuItem.divider,
-      _MenuItem(
-          icon: Icons.format_paint,
-          label: '高亮标记',
-          onTap: () =>
-              _onSelectAction(AnnotationType.highlight)),
-      _MenuItem(
-          icon: Icons.format_underline,
-          label: '下划线',
-          onTap: () =>
-              _onSelectAction(AnnotationType.underline)),
-      _MenuItem(
-          icon: Icons.notes,
-          label: '添加笔记',
-          onTap: () {
-            final sel = st.textEditingValue.selection;
-            if (!sel.isValid || sel.isCollapsed) return;
-            final text = st.textEditingValue.text;
-            final selectedText = text.substring(sel.start, sel.end);
-            st.hideToolbar();
-            onAddNote?.call(selectedText,
-                localBaseOffset + sel.start, localBaseOffset + sel.end);
-          }),
+      _MenuItem(icon: Icons.format_paint, label: '高亮标记', onTap: () {
+        onHide();
+        _onSelectAction(AnnotationType.highlight);
+      }),
+      _MenuItem(icon: Icons.format_underline, label: '下划线', onTap: () {
+        onHide();
+        _onSelectAction(AnnotationType.underline);
+      }),
+      _MenuItem(icon: Icons.notes, label: '添加笔记', onTap: () {
+        onHide();
+        onAddNoteCall?.call(selectedText, startOffset, endOffset);
+      }),
       _MenuItem.divider,
-      _MenuItem(
-          icon: Icons.image,
-          label: '生成海报',
-          onTap: () {
-            final sel = st.textEditingValue.selection;
-            if (!sel.isValid || sel.isCollapsed) return;
-            final text = st.textEditingValue.text;
-            final selectedText = text.substring(sel.start, sel.end);
-            st.hideToolbar();
-            onPoster?.call(selectedText,
-                localBaseOffset + sel.start, localBaseOffset + sel.end);
-          }),
+      _MenuItem(icon: Icons.image, label: '生成海报', onTap: () {
+        onHide();
+        onPosterCall?.call(selectedText, startOffset, endOffset);
+      }),
     ];
 
     return Align(
@@ -362,14 +349,6 @@ class _DropdownMenu extends StatelessWidget {
   }
 
   void _onSelectAction(AnnotationType type) {
-    final sel = st.textEditingValue.selection;
-    if (!sel.isValid || sel.isCollapsed) return;
-    final text = st.textEditingValue.text;
-    final selectedText = text.substring(sel.start, sel.end);
-    final globalStart = localBaseOffset + sel.start;
-    final globalEnd = localBaseOffset + sel.end;
-    st.hideToolbar();
-
     final colors = type == AnnotationType.highlight
         ? AnnotationColors.highlightColors
         : AnnotationColors.underlineColors;
@@ -378,10 +357,10 @@ class _DropdownMenu extends StatelessWidget {
       builder: (_) => _ColorPickerSheet(colors: colors),
     ).then((selectedColor) {
       if (selectedColor != null) {
-        onAnnotate(
+        onAnnotateCall(
           selectedText: selectedText,
-          startOffset: globalStart,
-          endOffset: globalEnd,
+          startOffset: startOffset,
+          endOffset: endOffset,
           type: type,
           color: selectedColor,
         );

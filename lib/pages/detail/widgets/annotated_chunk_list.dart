@@ -288,7 +288,7 @@ class AnnotatedChunkList extends StatelessWidget {
         st.hideToolbar();
       }),
       _MenuItem.divider,
-      _MenuItem(icon: Icons.format_paint, label: '高亮标记', onTap: () =>
+      _MenuItem(icon: Icons.format_paint, label: '高亮标注', onTap: () =>
           _onSelectAction(
               ctx, st, localBaseOffset, AnnotationType.highlight)),
       _MenuItem(icon: Icons.format_underline, label: '下划线', onTap: () =>
@@ -402,10 +402,13 @@ class _DropdownRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      behavior: HitTestBehavior.opaque,
       onTap: item.onTap,
       child: Container(
+        width: double.infinity,
         constraints: const BoxConstraints(minHeight: 46),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        alignment: Alignment.centerLeft,
         child: Row(
           children: [
             if (item.icon != null) ...[

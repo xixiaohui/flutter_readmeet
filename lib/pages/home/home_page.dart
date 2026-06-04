@@ -256,10 +256,8 @@ class _HomePageState extends State<HomePage> {
             // Hero tile — shows skeleton while loading
             if (_heroBlog != null)
               HeroTile(item: _heroBlog!, onTap: () => _openDetail(_heroBlog!))
-            else ...[
+            else
               const _HeroSkeleton(),
-              const SizedBox(height: AppSpacing.xl),
-            ],
 
             // Featured cards section
             if (featured.isNotEmpty)
@@ -769,14 +767,10 @@ class _HeroSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 200,
-      margin: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: AppColors.canvasParchment,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-      ),
+      height: 280,
+      color: AppColors.surfaceTile1,
       child: const Center(
-        child: CupertinoActivityIndicator(),
+        child: CupertinoActivityIndicator(color: AppColors.onDark),
       ),
     );
   }

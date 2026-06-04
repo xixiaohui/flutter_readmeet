@@ -28,19 +28,16 @@ class _GlobalAnnotationsPageState extends State<GlobalAnnotationsPage> {
   List<_AnnotationGroup> _groups = [];
   bool _isLoading = true;
 
-  bool _didInitialLoad = false;
-
   @override
   void initState() {
     super.initState();
     _loadAll();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // Reload when tab becomes visible (CupertinoTabScaffold rebuilds on tab switch)
-    if (_didInitialLoad) _loadAll();
+  void _refreshOnVisible() {
+    // Reload annotations every time this tab becomes visible.
+    // Called from build() via post-frame callback.
+    _loadAll();
   }
 
   Future<void> _loadAll() async {
@@ -71,21 +68,21 @@ class _GlobalAnnotationsPageState extends State<GlobalAnnotationsPage> {
         setState(() {
           _groups = groups;
           _isLoading = false;
-          _didInitialLoad = true;
         });
       }
     } catch (_) {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _didInitialLoad = true;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Reload data every time this tab is selected (build is called on tab switch)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _refreshOnVisible();
+    });
     return CupertinoPageScaffold(
       backgroundColor: AppColors.canvasParchment,
       navigationBar: const CupertinoNavigationBar(

@@ -77,21 +77,25 @@ class PageContent extends StatelessWidget {
     final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
     final spans = <InlineSpan>[];
 
-    // Build concatenated spans with newline separators between blocks
+    // Build concatenated spans with paragraph separation
     for (int i = 0; i < indices.length; i++) {
       final seg = allSegments[indices[i]];
       final segStyle = _baseStyle(seg, s, textColor, scale, isDark);
       final annSpans = _buildAnnotatedSpans(
           text: seg.text, baseStyle: segStyle, annotationStore: annotationStore);
+
+      // Spacing BEFORE block-level headings
+      if (_isBlockStyle(seg.style) && spans.isNotEmpty) {
+        spans.add(TextSpan(text: '\n', style: _spacerStyle(segStyle)));
+      }
+
       spans.addAll(annSpans);
 
-      // Add block separator (newline) after block elements
-      if (seg.isBlockEnd || i < indices.length - 1) {
-        // Add spacing between segments with a newline unless it's inline
-        final nextSeg = i + 1 < indices.length ? allSegments[indices[i + 1]] : null;
-        final needsGap = seg.style != nextSeg?.style || _isBlockStyle(seg.style);
-        if (needsGap || seg.isBlockEnd) {
-          spans.add(const TextSpan(text: '\n'));
+      // Paragraph break after body paragraphs
+      if (i < indices.length - 1) {
+        final nextSeg = allSegments[indices[i + 1]];
+        if (_isBlockStyle(seg.style) || _isBlockStyle(nextSeg.style)) {
+          spans.add(TextSpan(text: '\n', style: _spacerStyle(segStyle)));
         }
       }
     }
@@ -137,6 +141,9 @@ class PageContent extends StatelessWidget {
     );
   }
 
+  TextStyle _spacerStyle(TextStyle base) =>
+      base.copyWith(fontSize: base.fontSize! * 0.6, height: 1.0);
+
   bool _isBlockStyle(MdStyle style) {
     switch (style) {
       case MdStyle.h1:
@@ -153,17 +160,22 @@ class PageContent extends StatelessWidget {
   /// Find the global offset for a given local position in the concatenated text.
   int _localToGlobal(int localPos, List<int> indices) {
     int localCursor = 0;
-    for (final idx in indices) {
-      final seg = allSegments[idx];
+    for (int i = 0; i < indices.length; i++) {
+      final seg = allSegments[indices[i]];
       final segLen = seg.text.length;
       if (localPos <= localCursor + segLen) {
         return seg.globalOffset + (localPos - localCursor);
       }
       localCursor += segLen;
-      // Account for newline separators
-      localCursor += 1; // '\n'
+      // Account for separator newlines
+      if (_isBlockStyle(seg.style) && i > 0) localCursor += 1;
+      if (i < indices.length - 1) {
+        final nextSeg = allSegments[indices[i + 1]];
+        if (_isBlockStyle(seg.style) || _isBlockStyle(nextSeg.style)) {
+          localCursor += 1;
+        }
+      }
     }
-    // Fallback: last segment
     return allSegments[indices.last].globalOffset;
   }
 

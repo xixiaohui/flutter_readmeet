@@ -3,6 +3,7 @@ enum AnnotationType { highlight, underline }
 class Annotation {
   final String id;
   final String blogId;
+  final String? blogTitle;
   final int startOffset;
   final int endOffset;
   final String selectedText;
@@ -15,6 +16,7 @@ class Annotation {
   const Annotation({
     required this.id,
     required this.blogId,
+    this.blogTitle,
     required this.startOffset,
     required this.endOffset,
     required this.selectedText,
@@ -34,6 +36,7 @@ class Annotation {
   Map<String, dynamic> toJson() => {
         'id': id,
         'blogId': blogId,
+        'blogTitle': blogTitle,
         'startOffset': startOffset,
         'endOffset': endOffset,
         'selectedText': selectedText,
@@ -56,6 +59,7 @@ class Annotation {
     return Annotation(
       id: json['id'] as String,
       blogId: json['blogId'] as String,
+      blogTitle: json['blogTitle'] as String?,
       startOffset: json['startOffset'] as int,
       endOffset: json['endOffset'] as int,
       selectedText: json['selectedText'] as String,

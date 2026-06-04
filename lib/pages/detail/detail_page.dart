@@ -143,6 +143,7 @@ class _DetailPageState extends State<DetailPage> {
       type: type,
       color: color,
       notes: notes,
+      blogTitle: _blog?.title,
     );
   }
 
@@ -159,6 +160,7 @@ class _DetailPageState extends State<DetailPage> {
         type: AnnotationType.highlight,
         color: AnnotationColors.yellow,
         notes: [note],
+        blogTitle: _blog?.title,
       );
     }
   }

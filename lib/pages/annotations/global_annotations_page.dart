@@ -141,7 +141,7 @@ class _GroupCard extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.md, AppSpacing.sm, AppSpacing.md, 0),
             child: Text(
-              'Article ${group.blogId}',
+              group.annotations.first.blogTitle ?? group.blogId,
               style: const TextStyle(
                   fontSize: AppText.finePrintSize,
                   color: AppColors.inkMuted48,

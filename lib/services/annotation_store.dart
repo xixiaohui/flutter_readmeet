@@ -42,11 +42,13 @@ class AnnotationStore extends ChangeNotifier {
     required AnnotationType type,
     required int color,
     List<String> notes = const [],
+    String? blogTitle,
   }) async {
     final now = DateTime.now();
     final ann = Annotation(
       id: '${now.millisecondsSinceEpoch}_${_annotations.length}',
       blogId: _blogId ?? '',
+      blogTitle: blogTitle,
       startOffset: startOffset,
       endOffset: endOffset,
       selectedText: selectedText,

@@ -275,8 +275,10 @@ class _DetailPageState extends State<DetailPage> {
           ),
           child: LayoutBuilder(
             builder: (context, constraints) {
-              final slices = _calculatePages(
-                  constraints.maxHeight, constraints.maxWidth);
+              // Subtract safety margin: TextPainter estimates may be off
+              // by ~1-2px per segment. With 10+ segments, this accumulates.
+              final pageHeight = constraints.maxHeight - 24;
+              final slices = _calculatePages(pageHeight, constraints.maxWidth);
               return _buildBody(slices);
             },
           ),

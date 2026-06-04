@@ -50,7 +50,7 @@ class PageContent extends StatelessWidget {
     final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
 
     return SingleChildScrollView(
-      physics: const NeverScrollableScrollPhysics(),
+      physics: const ClampingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

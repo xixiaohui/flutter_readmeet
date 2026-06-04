@@ -72,7 +72,7 @@ class _GlobalAnnotationsPageState extends State<GlobalAnnotationsPage> {
       navigationBar: const CupertinoNavigationBar(
         backgroundColor: AppColors.canvas,
         border: null,
-        middle: Text('标记',
+        middle: Text('标注列表',
             style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.ink)),
       ),
       child: SafeArea(
@@ -80,7 +80,7 @@ class _GlobalAnnotationsPageState extends State<GlobalAnnotationsPage> {
             ? const Center(child: CupertinoActivityIndicator())
             : _groups.isEmpty
                 ? const Center(
-                    child: Text('暂无标记',
+                    child: Text('暂无标注',
                         style: TextStyle(
                             fontSize: AppText.bodySize,
                             color: AppColors.inkMuted48)))

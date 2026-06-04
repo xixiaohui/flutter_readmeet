@@ -15,7 +15,7 @@ void main() {
     // Verify the four tabs exist
     expect(find.text('首页'), findsOneWidget);
     expect(find.text('全部文章'), findsOneWidget);
-    expect(find.text('标记'), findsOneWidget);
+    expect(find.text('标注'), findsOneWidget);
     expect(find.text('设置'), findsOneWidget);
   });
 }

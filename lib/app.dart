@@ -56,7 +56,7 @@ class App extends StatelessWidget {
             BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.pencil),
               activeIcon: Icon(CupertinoIcons.pencil),
-              label: '标记',
+              label: '标注',
             ),
             BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.settings),

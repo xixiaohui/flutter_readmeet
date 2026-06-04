@@ -195,8 +195,8 @@ class _AnnotationCard extends StatelessWidget {
           ),
           CupertinoDialogAction(
             onPressed: () {
-              onEditNote(controller.text);
               navigator.pop();
+              onEditNote(controller.text);
             },
             child: const Text('保存'),
           ),

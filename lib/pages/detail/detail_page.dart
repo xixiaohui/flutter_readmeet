@@ -172,6 +172,7 @@ class _DetailPageState extends State<DetailPage> {
         articleTitle: blog.title,
         authorName: blog.authorName,
         date: formattedDate,
+        settings: widget.settingsService,
       ),
     ));
   }
@@ -237,7 +238,8 @@ class _DetailPageState extends State<DetailPage> {
                 Navigator.of(context).push(
                   CupertinoPageRoute(
                     builder: (_) => AnnotationSummaryPage(
-                        store: _annotationStore),
+                        store: _annotationStore,
+                        settings: widget.settingsService),
                   ),
                 );
               },

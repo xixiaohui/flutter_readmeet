@@ -1,33 +1,42 @@
 import 'package:flutter/cupertino.dart';
 import '../../models/annotation.dart';
 import '../../services/annotation_store.dart';
+import '../../services/reader_settings_service.dart';
 import '../../theme/app_theme.dart';
 
 /// Lists all annotations for the current article.
 /// Accessible from the detail page nav bar.
 class AnnotationSummaryPage extends StatelessWidget {
   final AnnotationStore store;
+  final ReaderSettingsService settings;
   final VoidCallback? onDeleteAll;
 
   const AnnotationSummaryPage({
     super.key,
     required this.store,
+    required this.settings,
     this.onDeleteAll,
   });
 
   @override
   Widget build(BuildContext context) {
+    final s = settings;
     return CupertinoPageScaffold(
       backgroundColor: AppColors.canvasParchment,
       navigationBar: CupertinoNavigationBar(
-        middle: Text('我的标注 (${store.count})'),
+        middle: Text('我的标注 (${store.count})',
+            style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: s.fontSize,
+                color: AppColors.ink)),
         trailing: store.count > 0
             ? CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: () => _confirmDeleteAll(context),
-                child: const Text('清空',
-                    style:
-                        TextStyle(color: AppColors.inkMuted48, fontSize: 16)),
+                child: Text('清空',
+                    style: TextStyle(
+                        color: AppColors.inkMuted48,
+                        fontSize: s.fontSize - 1)),
               )
             : null,
       ),
@@ -37,10 +46,10 @@ class AnnotationSummaryPage extends StatelessWidget {
           builder: (context, _) {
             final anns = store.annotations;
             if (anns.isEmpty) {
-              return const Center(
+              return Center(
                 child: Text('暂无标注',
                     style: TextStyle(
-                        fontSize: AppText.bodySize,
+                        fontSize: s.fontSize,
                         color: AppColors.inkMuted48)),
               );
             }
@@ -52,6 +61,7 @@ class AnnotationSummaryPage extends StatelessWidget {
                   const SizedBox(height: AppSpacing.sm),
               itemBuilder: (_, i) => _AnnotationCard(
                 annotation: anns[i],
+                settings: s,
                 onDelete: () => store.delete(anns[i].id),
                 onEditNotes: (notes) =>
                     store.update(anns[i].id, notes: notes),
@@ -96,11 +106,13 @@ class AnnotationSummaryPage extends StatelessWidget {
 
 class _AnnotationCard extends StatefulWidget {
   final Annotation annotation;
+  final ReaderSettingsService settings;
   final VoidCallback onDelete;
   final ValueChanged<List<String>> onEditNotes;
 
   const _AnnotationCard({
     required this.annotation,
+    required this.settings,
     required this.onDelete,
     required this.onEditNotes,
   });
@@ -113,6 +125,9 @@ class _AnnotationCardState extends State<_AnnotationCard> {
   @override
   Widget build(BuildContext context) {
     final ann = widget.annotation;
+    final s = widget.settings;
+    final bodySize = s.fontSize;
+    final smallSize = s.fontSize - 3;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.canvas,
@@ -129,8 +144,8 @@ class _AnnotationCardState extends State<_AnnotationCard> {
             Text(ann.selectedText,
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(
-                    fontSize: AppText.bodySize,
+                style: TextStyle(
+                    fontSize: bodySize,
                     color: AppColors.ink,
                     height: 1.4)),
             if (ann.hasNote) ...[
@@ -138,8 +153,8 @@ class _AnnotationCardState extends State<_AnnotationCard> {
               ...ann.notes.map((n) => Padding(
                     padding: const EdgeInsets.only(bottom: 2),
                     child: Text('📝 $n',
-                        style: const TextStyle(
-                            fontSize: AppText.finePrintSize,
+                        style: TextStyle(
+                            fontSize: smallSize,
                             color: AppColors.inkMuted48)),
                   )),
             ],
@@ -152,9 +167,9 @@ class _AnnotationCardState extends State<_AnnotationCard> {
                       horizontal: 12, vertical: 4),
                   minimumSize: Size.zero,
                   onPressed: () => _addNote(context),
-                  child: const Text('笔记',
+                  child: Text('笔记',
                       style: TextStyle(
-                          fontSize: AppText.finePrintSize,
+                          fontSize: smallSize,
                           color: AppColors.primary)),
                 ),
                 if (ann.hasNote)
@@ -163,9 +178,9 @@ class _AnnotationCardState extends State<_AnnotationCard> {
                         horizontal: 12, vertical: 4),
                     minimumSize: Size.zero,
                     onPressed: () => _clearNotes(),
-                    child: const Text('清空笔记',
+                    child: Text('清空笔记',
                         style: TextStyle(
-                            fontSize: AppText.finePrintSize,
+                            fontSize: smallSize,
                             color: AppColors.inkMuted48)),
                   ),
                 CupertinoButton(
@@ -173,9 +188,9 @@ class _AnnotationCardState extends State<_AnnotationCard> {
                       horizontal: 12, vertical: 4),
                   minimumSize: Size.zero,
                   onPressed: widget.onDelete,
-                  child: const Text('删除',
+                  child: Text('删除',
                       style: TextStyle(
-                          fontSize: AppText.finePrintSize,
+                          fontSize: smallSize,
                           color: CupertinoColors.destructiveRed)),
                 ),
               ],

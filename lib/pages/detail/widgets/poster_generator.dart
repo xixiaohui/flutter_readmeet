@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gal/gal.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../services/reader_settings_service.dart';
 import '../../../theme/app_theme.dart';
 
 /// Shows a poster preview sheet and saves the poster PNG to the phone gallery.
@@ -12,6 +13,7 @@ class PosterPreview extends StatelessWidget {
   final String authorName;
   final String date;
   final int? highlightColor;
+  final ReaderSettingsService settings;
 
   const PosterPreview({
     super.key,
@@ -19,12 +21,18 @@ class PosterPreview extends StatelessWidget {
     required this.articleTitle,
     required this.authorName,
     required this.date,
+    required this.settings,
     this.highlightColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final key = GlobalKey();
+    final s = settings;
+    final quoteSize = s.fontSize + 4;
+    final metaSize = s.fontSize - 3;
+    final tinySize = s.fontSize - 5;
+    final fontFam = s.fontFamily;
 
     return CupertinoPageScaffold(
       backgroundColor: AppColors.canvasParchment,
@@ -66,11 +74,12 @@ class PosterPreview extends StatelessWidget {
                     ),
                     child: Text(
                       quote,
-                      style: const TextStyle(
-                        fontSize: 21,
+                      style: TextStyle(
+                        fontSize: quoteSize,
                         fontWeight: FontWeight.w400,
                         color: AppColors.ink,
                         height: 1.6,
+                        fontFamily: fontFam,
                       ),
                     ),
                   ),
@@ -78,26 +87,30 @@ class PosterPreview extends StatelessWidget {
 
                   Text(
                     '—— $articleTitle',
-                    style: const TextStyle(
-                        fontSize: 14, color: AppColors.inkMuted48),
+                    style: TextStyle(
+                        fontSize: metaSize,
+                        color: AppColors.inkMuted48,
+                        fontFamily: fontFam),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     '$authorName · $date',
-                    style: const TextStyle(
-                        fontSize: 12,
+                    style: TextStyle(
+                        fontSize: tinySize,
                         color: AppColors.inkMuted48,
-                        fontStyle: FontStyle.italic),
+                        fontStyle: FontStyle.italic,
+                        fontFamily: fontFam),
                   ),
                   const SizedBox(height: 32),
 
-                  const Align(
+                  Align(
                     alignment: Alignment.bottomRight,
                     child: Text('READMEET',
                         style: TextStyle(
-                            fontSize: 12,
+                            fontSize: tinySize,
                             color: AppColors.hairline,
-                            letterSpacing: 2)),
+                            letterSpacing: 2,
+                            fontFamily: fontFam)),
                   ),
                 ],
               ),

@@ -129,10 +129,15 @@ class PosterPreview extends StatelessWidget {
       if (context.mounted) {
         showCupertinoDialog(
           context: context,
-          builder: (_) => const CupertinoAlertDialog(
-            title: Text('已保存'),
-            content: Text('海报已保存到相册'),
-            actions: [CupertinoDialogAction(child: Text('确定'))],
+          builder: (_) => CupertinoAlertDialog(
+            title: const Text('已保存'),
+            content: const Text('海报已保存到相册'),
+            actions: [
+              CupertinoDialogAction(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('确定'),
+              ),
+            ],
           ),
         );
       }

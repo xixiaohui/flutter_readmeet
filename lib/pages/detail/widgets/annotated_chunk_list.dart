@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart'
     show
-        AdaptiveTextSelectionToolbar,
         EditableTextState,
         Icons,
         SelectionChangedCause,
@@ -269,84 +268,79 @@ class AnnotatedChunkList extends StatelessWidget {
 
   Widget _buildMenu(
       BuildContext ctx, EditableTextState st, int localBaseOffset) {
-    return AdaptiveTextSelectionToolbar(
-      anchors: st.contextMenuAnchors,
-      children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _MenuBtn(
-                icon: Icons.copy,
-                label: '复制',
-                onTap: () {
-                  st.copySelection(SelectionChangedCause.toolbar);
-                  st.hideToolbar();
-                },
-              ),
-              _MenuBtn(
-                icon: Icons.select_all,
-                label: '全选',
-                onTap: () {
-                  st.selectAll(SelectionChangedCause.toolbar);
-                  st.hideToolbar();
-                },
-              ),
-              Container(
-                width: 1,
-                height: 24,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                color: AppColors.hairline,
-              ),
-              _MenuBtn(
-                icon: Icons.format_paint,
-                label: '高亮',
-                onTap: () => _onSelectAction(
-                    ctx, st, localBaseOffset, AnnotationType.highlight),
-              ),
-              _MenuBtn(
-                icon: Icons.format_underline,
-                label: '下划线',
-                onTap: () => _onSelectAction(
-                    ctx, st, localBaseOffset, AnnotationType.underline),
-              ),
-              _MenuBtn(
-                icon: Icons.notes,
-                label: '笔记',
-                onTap: () {
-                  final sel = st.textEditingValue.selection;
-                  if (!sel.isValid || sel.isCollapsed) return;
-                  final text = st.textEditingValue.text;
-                  final selectedText = text.substring(sel.start, sel.end);
-                  st.hideToolbar();
-                  onAddNote?.call(selectedText,
-                      localBaseOffset + sel.start, localBaseOffset + sel.end);
-                },
-              ),
-              Container(
-                width: 1,
-                height: 24,
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                color: AppColors.hairline,
-              ),
-              _MenuBtn(
-                icon: Icons.image,
-                label: '海报',
-                onTap: () {
-                  final sel = st.textEditingValue.selection;
-                  if (!sel.isValid || sel.isCollapsed) return;
-                  final text = st.textEditingValue.text;
-                  final selectedText = text.substring(sel.start, sel.end);
-                  st.hideToolbar();
-                  onPoster?.call(selectedText,
-                      localBaseOffset + sel.start, localBaseOffset + sel.end);
-                },
-              ),
-            ],
-          ),
+    return Container(
+      decoration: BoxDecoration(
+        color: CupertinoDynamicColor.resolve(
+            CupertinoColors.tertiarySystemBackground, ctx),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(color: Color(0x1A000000), blurRadius: 8, offset: Offset(0, 2)),
+        ],
+      ),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _MenuBtn(
+              icon: Icons.copy,
+              label: '复制',
+              onTap: () {
+                st.copySelection(SelectionChangedCause.toolbar);
+                st.hideToolbar();
+              },
+            ),
+            _MenuBtn(
+              icon: Icons.select_all,
+              label: '全选',
+              onTap: () {
+                st.selectAll(SelectionChangedCause.toolbar);
+                st.hideToolbar();
+              },
+            ),
+            Container(width: 1, height: 24, color: AppColors.hairline),
+            _MenuBtn(
+              icon: Icons.format_paint,
+              label: '高亮',
+              onTap: () => _onSelectAction(
+                  ctx, st, localBaseOffset, AnnotationType.highlight),
+            ),
+            _MenuBtn(
+              icon: Icons.format_underline,
+              label: '下划线',
+              onTap: () => _onSelectAction(
+                  ctx, st, localBaseOffset, AnnotationType.underline),
+            ),
+            _MenuBtn(
+              icon: Icons.notes,
+              label: '笔记',
+              onTap: () {
+                final sel = st.textEditingValue.selection;
+                if (!sel.isValid || sel.isCollapsed) return;
+                final text = st.textEditingValue.text;
+                final selectedText = text.substring(sel.start, sel.end);
+                st.hideToolbar();
+                onAddNote?.call(selectedText,
+                    localBaseOffset + sel.start, localBaseOffset + sel.end);
+              },
+            ),
+            Container(width: 1, height: 24, color: AppColors.hairline),
+            _MenuBtn(
+              icon: Icons.image,
+              label: '海报',
+              onTap: () {
+                final sel = st.textEditingValue.selection;
+                if (!sel.isValid || sel.isCollapsed) return;
+                final text = st.textEditingValue.text;
+                final selectedText = text.substring(sel.start, sel.end);
+                st.hideToolbar();
+                onPoster?.call(selectedText,
+                    localBaseOffset + sel.start, localBaseOffset + sel.end);
+              },
+            ),
+          ],
         ),
-      ],
+      ),
     );
   }
 

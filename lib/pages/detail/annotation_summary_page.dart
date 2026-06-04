@@ -31,7 +31,7 @@ class AnnotationSummaryPage extends StatelessWidget {
     return CupertinoPageScaffold(
       backgroundColor: AppColors.canvasParchment,
       navigationBar: CupertinoNavigationBar(
-        middle: Text('我的标注 (${store.count})',
+        middle: Text('$articleTitle · ${store.count}',
             style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: s.fontSize,

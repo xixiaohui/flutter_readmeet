@@ -212,7 +212,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-      backgroundColor: AppColors.canvas,
+      backgroundColor: AppColors.surfaceBlack,
       navigationBar: const CupertinoNavigationBar(
         backgroundColor: AppColors.surfaceBlack,
         border: null,
@@ -248,65 +248,69 @@ class _HomePageState extends State<HomePage> {
 
     final featured = _featuredBlogs ?? [];
 
-    return SafeArea(
-      top: false,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Hero tile — shows skeleton while loading
-            if (_heroBlog != null)
-              HeroTile(item: _heroBlog!, onTap: () => _openDetail(_heroBlog!))
-            else
-              const _HeroSkeleton(),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Hero tile — shows skeleton while loading
+          if (_heroBlog != null)
+            HeroTile(item: _heroBlog!, onTap: () => _openDetail(_heroBlog!))
+          else
+            const _HeroSkeleton(),
 
-            // Featured cards section
-            if (featured.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      '最新文章',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
+          // ── Below-hero content (white background) ──
+          Container(
+            color: AppColors.canvas,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Featured cards section
+                if (featured.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.lg,
+                      AppSpacing.lg,
+                      AppSpacing.sm,
                     ),
-                    GestureDetector(
-                      onTap: () => _openHotList('最新文章', '最新'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          '最新文章',
+                          style: TextStyle(
+                            fontSize: AppText.bodySize,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.ink,
+                          ),
                         ),
-                      ),
+                        GestureDetector(
+                          onTap: () => _openHotList('最新文章', '最新'),
+                          child: const Text(
+                            '查看全部',
+                            style: TextStyle(
+                              fontSize: AppText.bodySize,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-
-            if (featured.isNotEmpty)
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
                   ),
-                  itemCount: featured.length,
-                  itemBuilder: (_, i) =>
-                      FeaturedCard(item: featured[i], onTap: () => _openDetail(featured[i])),
-                ),
-              ),
+
+                if (featured.isNotEmpty)
+                  SizedBox(
+                    height: 170,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.lg,
+                      ),
+                      itemCount: featured.length,
+                      itemBuilder: (_, i) =>
+                          FeaturedCard(item: featured[i], onTap: () => _openDetail(featured[i])),
+                    ),
+                  ),
 
             // ── 中文精选 section ──
             if (_zhBlogs != null && _zhBlogs!.isNotEmpty) ...[
@@ -755,8 +759,10 @@ class _HomePageState extends State<HomePage> {
             ],
 
             const SizedBox(height: AppSpacing.xl),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

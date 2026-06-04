@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../models/card_item.dart';
 import '../../services/api_service.dart';
+import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/loading_indicator.dart';
@@ -15,6 +16,7 @@ import '../list/widgets/blog_row.dart';
 class HotPage extends StatefulWidget {
   final ApiService apiService;
   final ReaderSettingsService settingsService;
+  final FavoriteService favoriteService;
   final String title;
   final String query;
   final bool useAuthorSearch;
@@ -24,6 +26,7 @@ class HotPage extends StatefulWidget {
     super.key,
     required this.apiService,
     required this.settingsService,
+    required this.favoriteService,
     required this.title,
     required this.query,
     this.useAuthorSearch = false,
@@ -145,6 +148,7 @@ class _HotPageState extends State<HotPage> {
           apiService: widget.apiService,
           blogId: item.id,
           settingsService: widget.settingsService,
+          favoriteService: widget.favoriteService,
         ),
       ),
     );

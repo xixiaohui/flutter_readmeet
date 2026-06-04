@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../models/card_item.dart';
 import '../../services/api_service.dart';
+import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/loading_indicator.dart';
@@ -12,11 +13,13 @@ import 'widgets/blog_row.dart';
 class ListPage extends StatefulWidget {
   final ApiService apiService;
   final ReaderSettingsService settingsService;
+  final FavoriteService favoriteService;
 
   const ListPage({
     super.key,
     required this.apiService,
     required this.settingsService,
+    required this.favoriteService,
   });
 
   @override
@@ -183,6 +186,7 @@ class _ListPageState extends State<ListPage> {
           apiService: widget.apiService,
           blogId: item.id,
           settingsService: widget.settingsService,
+          favoriteService: widget.favoriteService,
         ),
       ),
     );

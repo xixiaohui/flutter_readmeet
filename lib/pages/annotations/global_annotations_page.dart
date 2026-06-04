@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/annotation.dart';
 import '../../services/api_service.dart';
+import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
 import '../../theme/app_theme.dart';
 import '../detail/detail_page.dart';
@@ -10,11 +11,13 @@ import '../detail/detail_page.dart';
 class GlobalAnnotationsPage extends StatefulWidget {
   final ApiService apiService;
   final ReaderSettingsService settingsService;
+  final FavoriteService favoriteService;
 
   const GlobalAnnotationsPage({
     super.key,
     required this.apiService,
     required this.settingsService,
+    required this.favoriteService,
   });
 
   @override
@@ -121,6 +124,7 @@ class _GlobalAnnotationsPageState extends State<GlobalAnnotationsPage> {
           apiService: widget.apiService,
           blogId: ann.blogId,
           settingsService: widget.settingsService,
+          favoriteService: widget.favoriteService,
         ),
       ),
     );

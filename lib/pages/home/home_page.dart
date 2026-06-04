@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../../models/card_item.dart';
 import '../../../services/api_service.dart';
+import '../../../services/favorite_service.dart';
 import '../../../services/reader_settings_service.dart';
 import '../../../theme/app_theme.dart';
 import '../../../widgets/loading_indicator.dart';
@@ -13,11 +14,13 @@ import '../detail/detail_page.dart';
 class HomePage extends StatefulWidget {
   final ApiService apiService;
   final ReaderSettingsService settingsService;
+  final FavoriteService favoriteService;
 
   const HomePage({
     super.key,
     required this.apiService,
     required this.settingsService,
+    required this.favoriteService,
   });
 
   @override
@@ -177,6 +180,7 @@ class _HomePageState extends State<HomePage> {
           apiService: widget.apiService,
           blogId: item.id,
           settingsService: widget.settingsService,
+          favoriteService: widget.favoriteService,
         ),
       ),
     );
@@ -188,6 +192,7 @@ class _HomePageState extends State<HomePage> {
         builder: (_) => HotPage(
           apiService: widget.apiService,
           settingsService: widget.settingsService,
+          favoriteService: widget.favoriteService,
           title: title,
           query: query,
         ),
@@ -201,6 +206,7 @@ class _HomePageState extends State<HomePage> {
         builder: (_) => HotPage(
           apiService: widget.apiService,
           settingsService: widget.settingsService,
+          favoriteService: widget.favoriteService,
           title: title,
           query: query,
           useAuthorSearch: true,

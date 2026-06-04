@@ -6,6 +6,7 @@ import '../../models/card_item.dart';
 import '../../models/reading_progress.dart';
 import '../../services/annotation_store.dart';
 import '../../services/api_service.dart';
+import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
 import '../../services/reading_progress_service.dart';
 import '../../theme/app_theme.dart';
@@ -20,12 +21,14 @@ class DetailPage extends StatefulWidget {
   final ApiService apiService;
   final String blogId;
   final ReaderSettingsService settingsService;
+  final FavoriteService favoriteService;
 
   const DetailPage({
     super.key,
     required this.apiService,
     required this.blogId,
     required this.settingsService,
+    required this.favoriteService,
   });
 
   @override
@@ -236,43 +239,80 @@ class _DetailPageState extends State<DetailPage> {
                 ],
               ),
             ),
-            trailing: GestureDetector(
-              onTap: () {
-                HapticFeedback.lightImpact();
-                Navigator.of(context).push(CupertinoPageRoute(
-                  builder: (_) {
-                    final blog = _blog!;
-                    final date = blog.createdAt ?? '';
-                    return AnnotationSummaryPage(
-                      store: _annotationStore,
-                      settings: widget.settingsService,
-                      articleTitle: blog.title,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Favorite toggle
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    final blog = _blog;
+                    if (blog == null) return;
+                    widget.favoriteService.toggle(
+                      blogId: blog.id,
+                      title: blog.title,
                       authorName: blog.authorName,
-                      date: date.length >= 10
-                          ? date.substring(0, 10)
-                          : date,
+                      coverImg: blog.img,
                     );
                   },
-                ));
-              },
-              child: ListenableBuilder(
-                listenable: _annotationStore,
-                builder: (_, child) => Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(CupertinoIcons.pencil,
-                        color: AppColors.primary, size: 18),
-                    if (_annotationStore.count > 0) ...[
-                      const SizedBox(width: 2),
-                      Text('${_annotationStore.count}',
-                          style: const TextStyle(
-                              fontSize: AppText.finePrintSize,
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.w600)),
-                    ],
-                  ],
+                  child: ListenableBuilder(
+                    listenable: widget.favoriteService,
+                    builder: (_, _a) {
+                      final isFav = widget.favoriteService
+                          .isFavorited(widget.blogId);
+                      return Icon(
+                        isFav
+                            ? CupertinoIcons.heart_fill
+                            : CupertinoIcons.heart,
+                        color: isFav
+                            ? CupertinoColors.destructiveRed
+                            : AppColors.primary,
+                        size: 20,
+                      );
+                    },
+                  ),
                 ),
-              ),
+                const SizedBox(width: 16),
+                // Annotation button
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.of(context).push(CupertinoPageRoute(
+                      builder: (_) {
+                        final blog = _blog!;
+                        final date = blog.createdAt ?? '';
+                        return AnnotationSummaryPage(
+                          store: _annotationStore,
+                          settings: widget.settingsService,
+                          articleTitle: blog.title,
+                          authorName: blog.authorName,
+                          date: date.length >= 10
+                              ? date.substring(0, 10)
+                              : date,
+                        );
+                      },
+                    ));
+                  },
+                  child: ListenableBuilder(
+                    listenable: _annotationStore,
+                    builder: (_, child) => Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(CupertinoIcons.pencil,
+                            color: AppColors.primary, size: 18),
+                        if (_annotationStore.count > 0) ...[
+                          const SizedBox(width: 2),
+                          Text('${_annotationStore.count}',
+                              style: const TextStyle(
+                                  fontSize: AppText.finePrintSize,
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.w600)),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           child: LayoutBuilder(

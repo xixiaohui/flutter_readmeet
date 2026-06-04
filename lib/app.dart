@@ -1,20 +1,24 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'services/api_service.dart';
+import 'services/favorite_service.dart';
 import 'services/reader_settings_service.dart';
 import 'pages/home/home_page.dart';
 import 'pages/list/list_page.dart';
+import 'pages/favorites/favorites_page.dart';
 import 'pages/annotations/global_annotations_page.dart';
 import 'pages/setting/setting_page.dart';
 
 class App extends StatelessWidget {
   final ApiService apiService;
   final ReaderSettingsService settingsService;
+  final FavoriteService favoriteService;
 
   const App({
     super.key,
     required this.apiService,
     required this.settingsService,
+    required this.favoriteService,
   });
 
   @override
@@ -54,6 +58,11 @@ class App extends StatelessWidget {
               label: '全部文章',
             ),
             BottomNavigationBarItem(
+              icon: Icon(CupertinoIcons.bookmark),
+              activeIcon: Icon(CupertinoIcons.bookmark_fill),
+              label: '收藏',
+            ),
+            BottomNavigationBarItem(
               icon: Icon(CupertinoIcons.pencil),
               activeIcon: Icon(CupertinoIcons.pencil),
               label: '标注',
@@ -72,6 +81,7 @@ class App extends StatelessWidget {
                 builder: (_) => HomePage(
                   apiService: apiService,
                   settingsService: settingsService,
+                  favoriteService: favoriteService,
                 ),
               );
             case 1:
@@ -79,16 +89,26 @@ class App extends StatelessWidget {
                 builder: (_) => ListPage(
                   apiService: apiService,
                   settingsService: settingsService,
+                  favoriteService: favoriteService,
                 ),
               );
             case 2:
               return CupertinoTabView(
-                builder: (_) => GlobalAnnotationsPage(
+                builder: (_) => FavoritesPage(
                   apiService: apiService,
                   settingsService: settingsService,
+                  favoriteService: favoriteService,
                 ),
               );
             case 3:
+              return CupertinoTabView(
+                builder: (_) => GlobalAnnotationsPage(
+                  apiService: apiService,
+                  settingsService: settingsService,
+                  favoriteService: favoriteService,
+                ),
+              );
+            case 4:
               return CupertinoTabView(
                 builder: (_) => SettingPage(settingsService: settingsService),
               );
@@ -97,6 +117,7 @@ class App extends StatelessWidget {
                 builder: (_) => HomePage(
                   apiService: apiService,
                   settingsService: settingsService,
+                  favoriteService: favoriteService,
                 ),
               );
           }

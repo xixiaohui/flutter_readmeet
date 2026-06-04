@@ -260,68 +260,6 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  void _showAnnotationPopup(Annotation ann) {
-    showCupertinoModalPopup(
-      context: context,
-      builder: (_) => CupertinoActionSheet(
-        title: Text(ann.selectedText,
-            maxLines: 2, overflow: TextOverflow.ellipsis),
-        message: ann.hasNote ? Text('📝 ${ann.note}') : null,
-        actions: [
-          CupertinoActionSheetAction(
-            onPressed: () {
-              Navigator.pop(context);
-              _onChangeColor(ann);
-            },
-            child: const Text('更换颜色'),
-          ),
-          CupertinoActionSheetAction(
-            onPressed: () {
-              Navigator.pop(context);
-              _onEditNote(ann);
-            },
-            child: Text(ann.hasNote ? '编辑笔记' : '添加笔记'),
-          ),
-          CupertinoActionSheetAction(
-            isDestructiveAction: true,
-            onPressed: () {
-              _annotationStore.delete(ann.id);
-              Navigator.pop(context);
-            },
-            child: const Text('删除标记'),
-          ),
-        ],
-        cancelButton: CupertinoActionSheetAction(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
-        ),
-      ),
-    );
-  }
-
-  void _onChangeColor(Annotation ann) async {
-    final colors = ann.type == AnnotationType.highlight
-        ? AnnotationColors.highlightColors
-        : AnnotationColors.underlineColors;
-    final selectedColor = await showCupertinoModalPopup<int>(
-      context: context,
-      builder: (_) => _ColorPickerSheet(colors: colors),
-    );
-    if (selectedColor != null) {
-      _annotationStore.update(ann.id, color: selectedColor);
-    }
-  }
-
-  void _onEditNote(Annotation ann) async {
-    final note = await showCupertinoDialog<String>(
-      context: context,
-      builder: (_) => _NoteInputDialog(initialText: ann.note ?? ''),
-    );
-    if (note != null) {
-      _annotationStore.update(ann.id, note: note);
-    }
-  }
-
   Color _bgColor() {
     switch (widget.settingsService.backgroundColor) {
       case 'white':
@@ -389,7 +327,7 @@ class _DetailPageState extends State<DetailPage> {
               },
               child: ListenableBuilder(
                 listenable: _annotationStore,
-                builder: (_, _a) => Row(
+                builder: (_, child) => Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Icon(CupertinoIcons.pencil,

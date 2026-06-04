@@ -146,7 +146,7 @@ class _AnnotationCard extends StatelessWidget {
                 CupertinoButton(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 4),
-                  minSize: 0,
+                  minimumSize: Size.zero,
                   onPressed: () => _editNote(context),
                   child: const Text('笔记',
                       style: TextStyle(
@@ -156,7 +156,7 @@ class _AnnotationCard extends StatelessWidget {
                 CupertinoButton(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 4),
-                  minSize: 0,
+                  minimumSize: Size.zero,
                   onPressed: onDelete,
                   child: const Text('删除',
                       style: TextStyle(

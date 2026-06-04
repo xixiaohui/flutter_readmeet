@@ -16,6 +16,8 @@ import '../../widgets/loading_indicator.dart';
 import 'widgets/hero_image.dart';
 import 'widgets/content_card.dart';
 import 'widgets/annotated_chunk_list.dart';
+import 'annotation_summary_page.dart';
+import 'widgets/poster_generator.dart';
 
 class DetailPage extends StatefulWidget {
   final ApiService apiService;
@@ -162,6 +164,12 @@ class _DetailPageState extends State<DetailPage> {
           label: '笔记',
           onTap: () => _onAddNote(context, state),
         ),
+        const SizedBox(width: 6),
+        _MenuBtn(
+          icon: Icons.image,
+          label: '海报',
+          onTap: () => _onPoster(context, state),
+        ),
       ],
     );
   }
@@ -223,6 +231,33 @@ class _DetailPageState extends State<DetailPage> {
         note: note,
       );
     }
+  }
+
+  void _onPoster(
+      BuildContext context, SelectableRegionState state) async {
+    state.copySelection(SelectionChangedCause.toolbar);
+    await Future.delayed(const Duration(milliseconds: 50));
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text ?? '';
+    state.hideToolbar();
+
+    if (text.isEmpty || _blog == null) return;
+
+    final blog = _blog!;
+    final date = blog.createdAt ?? '';
+    final formattedDate = date.length >= 10 ? date.substring(0, 10) : date;
+
+    if (!mounted) return;
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (_) => PosterPreview(
+          quote: text,
+          articleTitle: blog.title,
+          authorName: blog.authorName,
+          date: formattedDate,
+        ),
+      ),
+    );
   }
 
   void _showAnnotationPopup(Annotation ann) {
@@ -343,11 +378,35 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
             trailing: GestureDetector(
-              onTap: () => HapticFeedback.lightImpact(),
-              child: const Icon(
-                CupertinoIcons.share,
-                color: AppColors.primary,
-                size: 20,
+              onTap: () {
+                HapticFeedback.lightImpact();
+                Navigator.of(context).push(
+                  CupertinoPageRoute(
+                    builder: (_) => AnnotationSummaryPage(
+                        store: _annotationStore),
+                  ),
+                );
+              },
+              child: ListenableBuilder(
+                listenable: _annotationStore,
+                builder: (_, _a) => Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(CupertinoIcons.pencil,
+                        color: AppColors.primary, size: 18),
+                    if (_annotationStore.count > 0) ...[
+                      const SizedBox(width: 2),
+                      Text(
+                        '${_annotationStore.count}',
+                        style: const TextStyle(
+                          fontSize: AppText.finePrintSize,
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
               ),
             ),
           ),

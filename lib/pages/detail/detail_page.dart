@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../models/card_item.dart';
 import '../../models/reading_progress.dart';
+import '../../services/annotation_store.dart';
 import '../../services/api_service.dart';
 import '../../services/reader_settings_service.dart';
 import '../../services/reading_progress_service.dart';
@@ -11,7 +12,7 @@ import '../../utils/markdown_chunker.dart';
 import '../../widgets/loading_indicator.dart';
 import 'widgets/hero_image.dart';
 import 'widgets/content_card.dart';
-import 'widgets/markdown_chunk_list.dart';
+import 'widgets/annotated_chunk_list.dart';
 
 class DetailPage extends StatefulWidget {
   final ApiService apiService;
@@ -32,6 +33,7 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage> {
   final _scrollController = ScrollController();
   final _progressService = ReadingProgressService();
+  final _annotationStore = AnnotationStore();
   Timer? _debounceTimer;
 
   CardItem? _blog;
@@ -48,7 +50,8 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void dispose() {
     _debounceTimer?.cancel();
-    _saveProgress(); // save immediately on exit
+    _saveProgress();
+    _annotationStore.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
@@ -69,6 +72,7 @@ class _DetailPageState extends State<DetailPage> {
             ? MarkdownChunker.chunk(blog.content!)
             : [];
       });
+      _annotationStore.load(widget.blogId);
       _restoreProgress();
     } catch (e) {
       if (!mounted) return;
@@ -210,9 +214,10 @@ class _DetailPageState extends State<DetailPage> {
             child: ContentHeader(blog: blog, hasCover: hasCover),
           ),
           if (chunks.isNotEmpty)
-            MarkdownChunkList(
+            AnnotatedChunkList(
               chunks: chunks,
               settingsService: widget.settingsService,
+              annotationStore: _annotationStore,
             )
           else
             const SliverToBoxAdapter(child: SizedBox.shrink()),

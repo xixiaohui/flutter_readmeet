@@ -41,7 +41,7 @@ class AnnotationStore extends ChangeNotifier {
     required int endOffset,
     required AnnotationType type,
     required int color,
-    String? note,
+    List<String> notes = const [],
   }) async {
     final now = DateTime.now();
     final ann = Annotation(
@@ -52,7 +52,7 @@ class AnnotationStore extends ChangeNotifier {
       selectedText: selectedText,
       type: type,
       color: color,
-      note: note,
+      notes: notes,
       createdAt: now,
       updatedAt: now,
     );
@@ -61,10 +61,10 @@ class AnnotationStore extends ChangeNotifier {
     await _persist();
   }
 
-  Future<void> update(String id, {int? color, String? note}) async {
+  Future<void> update(String id, {int? color, List<String>? notes}) async {
     final idx = _annotations.indexWhere((a) => a.id == id);
     if (idx == -1) return;
-    _annotations[idx] = _annotations[idx].copyWith(color: color, note: note);
+    _annotations[idx] = _annotations[idx].copyWith(color: color, notes: notes);
     notifyListeners();
     await _persist();
   }

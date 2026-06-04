@@ -53,7 +53,8 @@ class AnnotationSummaryPage extends StatelessWidget {
               itemBuilder: (_, i) => _AnnotationCard(
                 annotation: anns[i],
                 onDelete: () => store.delete(anns[i].id),
-                onEditNote: (note) => store.update(anns[i].id, note: note),
+                onEditNotes: (notes) =>
+                    store.update(anns[i].id, notes: notes),
               ),
             );
           },
@@ -77,10 +78,10 @@ class AnnotationSummaryPage extends StatelessWidget {
           CupertinoDialogAction(
             isDestructiveAction: true,
             onPressed: () {
+              navigator.pop();
               for (final a in store.annotations.toList()) {
                 store.delete(a.id);
               }
-              navigator.pop();
               onDeleteAll?.call();
             },
             child: const Text('清空'),
@@ -91,28 +92,31 @@ class AnnotationSummaryPage extends StatelessWidget {
   }
 }
 
-class _AnnotationCard extends StatelessWidget {
+class _AnnotationCard extends StatefulWidget {
   final Annotation annotation;
   final VoidCallback onDelete;
-  final ValueChanged<String> onEditNote;
+  final ValueChanged<List<String>> onEditNotes;
 
   const _AnnotationCard({
     required this.annotation,
     required this.onDelete,
-    required this.onEditNote,
+    required this.onEditNotes,
   });
 
   @override
+  State<_AnnotationCard> createState() => _AnnotationCardState();
+}
+
+class _AnnotationCardState extends State<_AnnotationCard> {
+  @override
   Widget build(BuildContext context) {
+    final ann = widget.annotation;
     return Container(
       decoration: BoxDecoration(
         color: AppColors.canvas,
         borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border(
-          left: BorderSide(
-            color: Color(annotation.color),
-            width: 3,
-          ),
+          left: BorderSide(color: Color(ann.color), width: 3),
         ),
       ),
       child: Padding(
@@ -120,25 +124,22 @@ class _AnnotationCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              annotation.selectedText,
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: AppText.bodySize,
-                color: AppColors.ink,
-                height: 1.4,
-              ),
-            ),
-            if (annotation.hasNote) ...[
-              const SizedBox(height: AppSpacing.xs),
-              Text(
-                '📝 ${annotation.note}',
+            Text(ann.selectedText,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
-                  fontSize: AppText.finePrintSize,
-                  color: AppColors.inkMuted48,
-                ),
-              ),
+                    fontSize: AppText.bodySize,
+                    color: AppColors.ink,
+                    height: 1.4)),
+            if (ann.hasNote) ...[
+              const SizedBox(height: AppSpacing.xs),
+              ...ann.notes.map((n) => Padding(
+                    padding: const EdgeInsets.only(bottom: 2),
+                    child: Text('📝 $n',
+                        style: const TextStyle(
+                            fontSize: AppText.finePrintSize,
+                            color: AppColors.inkMuted48)),
+                  )),
             ],
             const SizedBox(height: AppSpacing.sm),
             Row(
@@ -148,17 +149,28 @@ class _AnnotationCard extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 4),
                   minimumSize: Size.zero,
-                  onPressed: () => _editNote(context),
+                  onPressed: () => _addNote(context),
                   child: const Text('笔记',
                       style: TextStyle(
                           fontSize: AppText.finePrintSize,
                           color: AppColors.primary)),
                 ),
+                if (ann.hasNote)
+                  CupertinoButton(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 4),
+                    minimumSize: Size.zero,
+                    onPressed: () => _clearNotes(),
+                    child: const Text('清空笔记',
+                        style: TextStyle(
+                            fontSize: AppText.finePrintSize,
+                            color: AppColors.inkMuted48)),
+                  ),
                 CupertinoButton(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 4),
                   minimumSize: Size.zero,
-                  onPressed: onDelete,
+                  onPressed: widget.onDelete,
                   child: const Text('删除',
                       style: TextStyle(
                           fontSize: AppText.finePrintSize,
@@ -172,20 +184,20 @@ class _AnnotationCard extends StatelessWidget {
     );
   }
 
-  void _editNote(BuildContext context) {
+  void _addNote(BuildContext context) {
     final navigator = Navigator.of(context);
-    final controller =
-        TextEditingController(text: annotation.note ?? '');
+    final controller = TextEditingController();
     showCupertinoDialog(
       context: context,
       builder: (_) => CupertinoAlertDialog(
-        title: const Text('笔记'),
+        title: const Text('添加笔记'),
         content: Padding(
           padding: const EdgeInsets.only(top: 12),
           child: CupertinoTextField(
             controller: controller,
             autofocus: true,
             maxLines: 4,
+            placeholder: '写下你的想法...',
           ),
         ),
         actions: [
@@ -195,13 +207,24 @@ class _AnnotationCard extends StatelessWidget {
           ),
           CupertinoDialogAction(
             onPressed: () {
+              final text = controller.text.trim();
               navigator.pop();
-              onEditNote(controller.text);
+              if (text.isNotEmpty) {
+                final updated = [
+                  ...widget.annotation.notes,
+                  text,
+                ];
+                widget.onEditNotes(updated);
+              }
             },
             child: const Text('保存'),
           ),
         ],
       ),
     );
+  }
+
+  void _clearNotes() {
+    widget.onEditNotes([]);
   }
 }

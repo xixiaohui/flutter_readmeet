@@ -156,7 +156,7 @@ class _AnnotationBadge extends StatelessWidget {
       context: context,
       builder: (_) => CupertinoAlertDialog(
         title: const Text('笔记'),
-        content: Text(ann.note ?? ''),
+        content: Text(ann.notes.join('\n')),
         actions: [
           CupertinoDialogAction(
             onPressed: () => Navigator.pop(context),

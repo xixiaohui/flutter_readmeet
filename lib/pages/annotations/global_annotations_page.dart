@@ -176,7 +176,7 @@ class _GroupCard extends StatelessWidget {
                       if (ann.hasNote)
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
-                          child: Text('📝 ${ann.note}',
+                          child: Text('📝 ${ann.notes.first}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(

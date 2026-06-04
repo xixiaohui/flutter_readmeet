@@ -8,7 +8,7 @@ class Annotation {
   final String selectedText;
   final AnnotationType type;
   final int color;
-  final String? note;
+  final List<String> notes;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -22,10 +22,10 @@ class Annotation {
     required this.color,
     required this.createdAt,
     required this.updatedAt,
-    this.note,
+    this.notes = const [],
   });
 
-  bool get hasNote => note != null && note!.isNotEmpty;
+  bool get hasNote => notes.isNotEmpty;
 
   /// Whether this annotation's offset range intersects [start, end).
   bool intersects(int start, int end) =>
@@ -39,27 +39,37 @@ class Annotation {
         'selectedText': selectedText,
         'type': type.name,
         'color': color,
-        'note': note,
+        'notes': notes,
         'createdAt': createdAt.toIso8601String(),
         'updatedAt': updatedAt.toIso8601String(),
       };
 
-  factory Annotation.fromJson(Map<String, dynamic> json) => Annotation(
-        id: json['id'] as String,
-        blogId: json['blogId'] as String,
-        startOffset: json['startOffset'] as int,
-        endOffset: json['endOffset'] as int,
-        selectedText: json['selectedText'] as String,
-        type: AnnotationType.values.byName(json['type'] as String),
-        color: json['color'] as int,
-        note: json['note'] as String?,
-        createdAt: DateTime.parse(json['createdAt'] as String),
-        updatedAt: DateTime.parse(json['updatedAt'] as String),
-      );
+  factory Annotation.fromJson(Map<String, dynamic> json) {
+    final notesRaw = json['notes'];
+    final notesList = <String>[];
+    // Support migration from old single-note format
+    if (notesRaw is List) {
+      notesList.addAll(notesRaw.cast<String>());
+    } else if (json['note'] is String && (json['note'] as String).isNotEmpty) {
+      notesList.add(json['note'] as String);
+    }
+    return Annotation(
+      id: json['id'] as String,
+      blogId: json['blogId'] as String,
+      startOffset: json['startOffset'] as int,
+      endOffset: json['endOffset'] as int,
+      selectedText: json['selectedText'] as String,
+      type: AnnotationType.values.byName(json['type'] as String),
+      color: json['color'] as int,
+      notes: notesList,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+    );
+  }
 
   Annotation copyWith({
     int? color,
-    String? note,
+    List<String>? notes,
   }) =>
       Annotation(
         id: id,
@@ -69,7 +79,7 @@ class Annotation {
         selectedText: selectedText,
         type: type,
         color: color ?? this.color,
-        note: note ?? this.note,
+        notes: notes ?? this.notes,
         createdAt: createdAt,
         updatedAt: DateTime.now(),
       );

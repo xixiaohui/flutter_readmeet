@@ -131,7 +131,7 @@ class _DetailPageState extends State<DetailPage> {
     required int endOffset,
     required AnnotationType type,
     required int color,
-    String? note,
+    List<String> notes = const [],
   }) {
     _annotationStore.add(
       selectedText: selectedText,
@@ -139,14 +139,14 @@ class _DetailPageState extends State<DetailPage> {
       endOffset: endOffset,
       type: type,
       color: color,
-      note: note,
+      notes: notes,
     );
   }
 
   void _onAddNoteCallback(String text, int start, int end) async {
     final note = await showCupertinoDialog<String>(
       context: context,
-      builder: (_) => _NoteInputDialog(initialText: text),
+      builder: (_) => _NoteInputDialog(initialText: ''),
     );
     if (note != null && note.isNotEmpty && mounted) {
       _annotationStore.add(
@@ -155,7 +155,7 @@ class _DetailPageState extends State<DetailPage> {
         endOffset: end,
         type: AnnotationType.highlight,
         color: AnnotationColors.yellow,
-        note: note,
+        notes: [note],
       );
     }
   }

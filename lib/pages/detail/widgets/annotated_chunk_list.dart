@@ -18,7 +18,7 @@ typedef AnnotationCallback = void Function({
   required int endOffset,
   required AnnotationType type,
   required int color,
-  String? note,
+  List<String> notes,
 });
 
 class AnnotatedChunkList extends StatelessWidget {

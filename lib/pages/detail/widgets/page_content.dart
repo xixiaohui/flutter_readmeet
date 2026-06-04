@@ -77,7 +77,7 @@ class PageContent extends StatelessWidget {
     final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
     final spans = <InlineSpan>[];
 
-    // Build concatenated spans with paragraph separation
+    // Build concatenated spans preserving original \n line breaks
     for (int i = 0; i < indices.length; i++) {
       final seg = allSegments[indices[i]];
       final segStyle = _baseStyle(seg, s, textColor, scale, isDark);
@@ -91,11 +91,20 @@ class PageContent extends StatelessWidget {
 
       spans.addAll(annSpans);
 
-      // Paragraph break after body paragraphs
+      // Add separator after EVERY segment except the last:
+      // - Block elements: spacer newline
+      // - Body lines within a paragraph: single \n to preserve line breaks
+      // - Paragraph boundaries (marked by isBlockEnd): double spacing
       if (i < indices.length - 1) {
         final nextSeg = allSegments[indices[i + 1]];
         if (_isBlockStyle(seg.style) || _isBlockStyle(nextSeg.style)) {
           spans.add(TextSpan(text: '\n', style: _spacerStyle(segStyle)));
+        } else if (seg.isBlockEnd) {
+          // Paragraph boundary: two newlines
+          spans.add(TextSpan(text: '\n\n', style: _spacerStyle(segStyle)));
+        } else {
+          // Intra-paragraph line: preserve original \n
+          spans.add(const TextSpan(text: '\n'));
         }
       }
     }
@@ -167,12 +176,16 @@ class PageContent extends StatelessWidget {
         return seg.globalOffset + (localPos - localCursor);
       }
       localCursor += segLen;
-      // Account for separator newlines
-      if (_isBlockStyle(seg.style) && i > 0) localCursor += 1;
+      // Account for separator characters between segments
       if (i < indices.length - 1) {
         final nextSeg = allSegments[indices[i + 1]];
+        if (_isBlockStyle(seg.style) && i > 0) localCursor += 1;
         if (_isBlockStyle(seg.style) || _isBlockStyle(nextSeg.style)) {
-          localCursor += 1;
+          localCursor += 1; // single \n
+        } else if (seg.isBlockEnd) {
+          localCursor += 2; // \n\n
+        } else {
+          localCursor += 1; // single \n
         }
       }
     }

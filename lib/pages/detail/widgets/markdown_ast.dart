@@ -4,10 +4,10 @@ enum MdStyle { body, h1, h2, h3, bold, italic, code, blockquote }
 class MarkdownSegment {
   final String text;
   final MdStyle style;
-  final bool isBlockEnd;
+  bool isBlockEnd; // mutable for paragraph boundary tracking
   final int globalOffset;
 
-  const MarkdownSegment({
+  MarkdownSegment({
     required this.text,
     required this.style,
     required this.isBlockEnd,
@@ -88,7 +88,11 @@ List<MarkdownSegment> parseMarkdownToSegments(String markdown) {
       _addSegment(segments, text, MdStyle.h1, true, offset);
       offset += text.length;
     } else if (trimmed.isEmpty) {
-      // Empty line — skip but don't count as text
+      // Empty line — mark previous segment as paragraph boundary
+      if (segments.isNotEmpty) {
+        segments.last.isBlockEnd = true;
+      }
+      // Track that we crossed a paragraph boundary for the next segment
     } else {
       // --- Body paragraph ---
       _processInline(segments, trimmed, offset);

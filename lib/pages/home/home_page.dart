@@ -249,6 +249,7 @@ class _HomePageState extends State<HomePage> {
     final featured = _featuredBlogs ?? [];
 
     return SafeArea(
+      top: false,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

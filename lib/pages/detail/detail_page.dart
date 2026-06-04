@@ -46,6 +46,7 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void initState() {
     super.initState();
+    widget.settingsService.load(); // sync settings before rendering
     _loadDetail();
     _scrollController.addListener(_onScroll);
   }

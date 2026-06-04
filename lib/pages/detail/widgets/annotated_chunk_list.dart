@@ -318,29 +318,31 @@ class AnnotatedChunkList extends StatelessWidget {
       ]);
     }
 
-    return IntrinsicWidth(
-      child: Container(
-        constraints: const BoxConstraints(minWidth: 180, maxWidth: 260),
-        decoration: BoxDecoration(
-          color: CupertinoDynamicColor.resolve(
-              CupertinoColors.systemBackground, ctx),
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: const [
-            BoxShadow(
-                color: Color(0x33000000), blurRadius: 12,
-                offset: Offset(0, 4)),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: items.map((item) {
-            if (identical(item, _MenuItem.divider)) {
-              return const Divider(height: 1, indent: 16, endIndent: 16);
-            }
-            return _DropdownRow(item: item);
-          }).toList(),
+    return Align(
+      child: SizedBox(
+        width: 240,
+        child: Container(
+          decoration: BoxDecoration(
+            color: CupertinoDynamicColor.resolve(
+                CupertinoColors.systemBackground, ctx),
+            borderRadius: BorderRadius.circular(14),
+            boxShadow: const [
+              BoxShadow(
+                  color: Color(0x33000000), blurRadius: 12,
+                  offset: Offset(0, 4)),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: items.map((item) {
+              if (identical(item, _MenuItem.divider)) {
+                return const Divider(height: 1, indent: 16, endIndent: 16);
+              }
+              return _DropdownRow(item: item);
+            }).toList(),
+          ),
         ),
       ),
     );

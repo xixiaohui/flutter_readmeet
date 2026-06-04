@@ -56,17 +56,25 @@ class AnnotatedChunkList extends StatelessWidget {
             return SliverList.separated(
               itemCount: chunks.length,
               itemBuilder: (context, index) {
-                final segments = parseMarkdownToSegments(chunks[index]);
-                final chunkBase = cumulativeOffset;
+                final parsed = parseMarkdownToSegments(chunks[index]);
 
-                // Calculate total plain-text length of this chunk and add to
-                // running total so that the *next* chunk's offsets continue
-                // from the correct position.
-                int chunkLength = 0;
-                for (final seg in segments) {
-                  chunkLength += seg.text.length;
-                }
-                cumulativeOffset += chunkLength;
+                // Recalculate offsets sequentially by summing segment text
+                // lengths — the parser's own offset values are unreliable
+                // because markdown syntax chars confuse inline processing.
+                int running = cumulativeOffset;
+                final segments = parsed.map((seg) {
+                  final s = MarkdownSegment(
+                    text: seg.text,
+                    style: seg.style,
+                    isBlockEnd: seg.isBlockEnd,
+                    globalOffset: running,
+                  );
+                  running += seg.text.length;
+                  return s;
+                }).toList();
+
+                final chunkBase = cumulativeOffset;
+                cumulativeOffset = running;
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(

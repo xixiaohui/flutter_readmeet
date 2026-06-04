@@ -119,21 +119,58 @@ void _addSegment(List<MarkdownSegment> list, String text, MdStyle style,
   }
 }
 
-/// Process inline formatting: bold (**text**) and italic (*text*).
+/// Process inline formatting: bold, italic, links, inline code.
 void _processInline(
     List<MarkdownSegment> list, String line, int baseOffset) {
   int pos = 0;
 
   while (pos < line.length) {
+    // Link: [text](url)
+    final linkStart = line.indexOf('[', pos);
+    if (linkStart != -1) {
+      final linkTextEnd = line.indexOf('](', linkStart);
+      if (linkTextEnd != -1) {
+        final linkUrlEnd = line.indexOf(')', linkTextEnd + 2);
+        if (linkUrlEnd != -1) {
+          // Text before link
+          if (linkStart > pos) {
+            _processInlinePlain(list, line.substring(pos, linkStart), MdStyle.body,
+                baseOffset + pos);
+          }
+          // Link text (strip the URL, keep the text)
+          final linkText =
+              line.substring(linkStart + 1, linkTextEnd);
+          _addSegment(list, linkText, MdStyle.body, false,
+              baseOffset + linkStart);
+          pos = linkUrlEnd + 1;
+          continue;
+        }
+      }
+    }
+
+    // Inline code: `text`
+    final codeStart = line.indexOf('`', pos);
+    if (codeStart != -1) {
+      final codeEnd = line.indexOf('`', codeStart + 1);
+      if (codeEnd != -1 && codeEnd > codeStart + 1) {
+        if (codeStart > pos) {
+          _processInlinePlain(list, line.substring(pos, codeStart), MdStyle.body,
+              baseOffset + pos);
+        }
+        final codeText = line.substring(codeStart + 1, codeEnd);
+        _addSegment(list, codeText, MdStyle.code, false, baseOffset + codeStart);
+        pos = codeEnd + 1;
+        continue;
+      }
+    }
+
     // Bold: **text**
     final boldStart = line.indexOf('**', pos);
-    // Italic: *text* (but not **)
     final italicStart = line.indexOf('*', pos);
 
     if (boldStart != -1 && (italicStart == -1 || boldStart <= italicStart)) {
-      // Text before bold
       if (boldStart > pos) {
-        _addSegment(list, line.substring(pos, boldStart), MdStyle.body, false,
+        _processInlinePlain(list, line.substring(pos, boldStart), MdStyle.body,
             baseOffset + pos);
       }
       final boldEnd = line.indexOf('**', boldStart + 2);
@@ -142,20 +179,17 @@ void _processInline(
         _addSegment(list, text, MdStyle.bold, false, baseOffset + boldStart);
         pos = boldEnd + 2;
       } else {
-        // Unclosed bold — treat as plain
         _addSegment(list, line.substring(pos), MdStyle.body, false,
             baseOffset + pos);
         return;
       }
     } else if (italicStart != -1 && line.length > italicStart + 1) {
-      // Check it's not the start of **
       if (line[italicStart + 1] == '*') {
-        // Actually a bold — handled above, skip
         pos = italicStart + 1;
         continue;
       }
       if (italicStart > pos) {
-        _addSegment(list, line.substring(pos, italicStart), MdStyle.body, false,
+        _processInlinePlain(list, line.substring(pos, italicStart), MdStyle.body,
             baseOffset + pos);
       }
       final italicEnd = line.indexOf('*', italicStart + 1);
@@ -170,9 +204,8 @@ void _processInline(
         return;
       }
     } else {
-      // Rest is plain text
       if (pos < line.length) {
-        _addSegment(list, line.substring(pos), MdStyle.body, false,
+        _processInlinePlain(list, line.substring(pos), MdStyle.body,
             baseOffset + pos);
       }
       return;
@@ -180,11 +213,24 @@ void _processInline(
   }
 }
 
+void _processInlinePlain(List<MarkdownSegment> list, String text,
+    MdStyle style, int offset) {
+  // Recursively process the text for links and code that might be nested
+  // within bold/italic. For simplicity, strip remaining syntax:
+  final clean = text
+      .replaceAll(RegExp(r'\[([^\]]*)\]\([^)]*\)'), r'$1') // links
+      .replaceAll(RegExp(r'`([^`]*)`'), r'$1'); // inline code
+  if (clean.isNotEmpty) {
+    _addSegment(list, clean, style, false, offset);
+  }
+}
+
 /// Length of text after stripping markdown inline syntax.
 int _plainLength(String text) {
   return text
+      .replaceAll(RegExp(r'\[([^\]]*)\]\([^)]*\)'), r'$1')
+      .replaceAll(RegExp(r'`([^`]*)`'), r'$1')
       .replaceAll('**', '')
       .replaceAll('*', '')
-      .replaceAll('`', '')
       .length;
 }

@@ -274,8 +274,9 @@ class AnnotatedChunkList extends StatelessWidget {
         ? (sel.end - sel.start).abs()
         : 0;
 
-    // Single-char: show minimal dropdown (just Copy)
-    // Multi-char: show full annotation dropdown
+    // Don't show menu for single-char or collapsed selection
+    if (selLen < 2) return const SizedBox.shrink();
+
     final items = <_MenuItem>[
       _MenuItem(icon: Icons.copy, label: '复制', onTap: () {
         st.copySelection(SelectionChangedCause.toolbar);
@@ -285,18 +286,14 @@ class AnnotatedChunkList extends StatelessWidget {
         st.selectAll(SelectionChangedCause.toolbar);
         st.hideToolbar();
       }),
-    ];
-
-    if (selLen >= 2) {
-      items.addAll([
-        _MenuItem.divider,
-        _MenuItem(icon: Icons.format_paint, label: '高亮标记', onTap: () =>
-            _onSelectAction(
-                ctx, st, localBaseOffset, AnnotationType.highlight)),
-        _MenuItem(icon: Icons.format_underline, label: '下划线', onTap: () =>
-            _onSelectAction(
-                ctx, st, localBaseOffset, AnnotationType.underline)),
-        _MenuItem(icon: Icons.notes, label: '添加笔记', onTap: () {
+      _MenuItem.divider,
+      _MenuItem(icon: Icons.format_paint, label: '高亮标记', onTap: () =>
+          _onSelectAction(
+              ctx, st, localBaseOffset, AnnotationType.highlight)),
+      _MenuItem(icon: Icons.format_underline, label: '下划线', onTap: () =>
+          _onSelectAction(
+              ctx, st, localBaseOffset, AnnotationType.underline)),
+      _MenuItem(icon: Icons.notes, label: '添加笔记', onTap: () {
           final sel = st.textEditingValue.selection;
           if (!sel.isValid || sel.isCollapsed) return;
           final text = st.textEditingValue.text;
@@ -315,8 +312,7 @@ class AnnotatedChunkList extends StatelessWidget {
           onPoster?.call(selectedText,
               localBaseOffset + sel.start, localBaseOffset + sel.end);
         }),
-      ]);
-    }
+    ];
 
     return Align(
       child: SizedBox(

@@ -237,9 +237,17 @@ class _DetailPageState extends State<DetailPage> {
                 HapticFeedback.lightImpact();
                 Navigator.of(context).push(
                   CupertinoPageRoute(
-                    builder: (_) => AnnotationSummaryPage(
+                    builder: (_) {
+                      final blog = _blog!;
+                      final date = blog.createdAt ?? '';
+                      return AnnotationSummaryPage(
                         store: _annotationStore,
-                        settings: widget.settingsService),
+                        settings: widget.settingsService,
+                        articleTitle: blog.title,
+                        authorName: blog.authorName,
+                        date: date.length >= 10 ? date.substring(0, 10) : date,
+                      );
+                    },
                   ),
                 );
               },

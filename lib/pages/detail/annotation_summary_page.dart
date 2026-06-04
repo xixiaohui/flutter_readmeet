@@ -3,18 +3,25 @@ import '../../models/annotation.dart';
 import '../../services/annotation_store.dart';
 import '../../services/reader_settings_service.dart';
 import '../../theme/app_theme.dart';
+import 'widgets/poster_generator.dart';
 
 /// Lists all annotations for the current article.
 /// Accessible from the detail page nav bar.
 class AnnotationSummaryPage extends StatelessWidget {
   final AnnotationStore store;
   final ReaderSettingsService settings;
+  final String articleTitle;
+  final String authorName;
+  final String date;
   final VoidCallback? onDeleteAll;
 
   const AnnotationSummaryPage({
     super.key,
     required this.store,
     required this.settings,
+    required this.articleTitle,
+    required this.authorName,
+    required this.date,
     this.onDeleteAll,
   });
 
@@ -62,6 +69,9 @@ class AnnotationSummaryPage extends StatelessWidget {
               itemBuilder: (_, i) => _AnnotationCard(
                 annotation: anns[i],
                 settings: s,
+                articleTitle: articleTitle,
+                authorName: authorName,
+                date: date,
                 onDelete: () => store.delete(anns[i].id),
                 onEditNotes: (notes) =>
                     store.update(anns[i].id, notes: notes),
@@ -107,12 +117,18 @@ class AnnotationSummaryPage extends StatelessWidget {
 class _AnnotationCard extends StatefulWidget {
   final Annotation annotation;
   final ReaderSettingsService settings;
+  final String articleTitle;
+  final String authorName;
+  final String date;
   final VoidCallback onDelete;
   final ValueChanged<List<String>> onEditNotes;
 
   const _AnnotationCard({
     required this.annotation,
     required this.settings,
+    required this.articleTitle,
+    required this.authorName,
+    required this.date,
     required this.onDelete,
     required this.onEditNotes,
   });
@@ -162,6 +178,16 @@ class _AnnotationCardState extends State<_AnnotationCard> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
+                CupertinoButton(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 4),
+                  minimumSize: Size.zero,
+                  onPressed: () => _openPoster(context),
+                  child: Text('海报',
+                      style: TextStyle(
+                          fontSize: smallSize,
+                          color: AppColors.primary)),
+                ),
                 CupertinoButton(
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 4),
@@ -241,6 +267,20 @@ class _AnnotationCardState extends State<_AnnotationCard> {
         ],
       ),
     );
+  }
+
+  void _openPoster(BuildContext context) {
+    final ann = widget.annotation;
+    Navigator.of(context).push(CupertinoPageRoute(
+      builder: (_) => PosterPreview(
+        quote: ann.selectedText,
+        articleTitle: widget.articleTitle,
+        authorName: widget.authorName,
+        date: widget.date,
+        settings: widget.settings,
+        highlightColor: ann.color,
+      ),
+    ));
   }
 
   void _clearNotes() {

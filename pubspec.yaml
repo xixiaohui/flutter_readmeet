@@ -39,7 +39,7 @@ dependencies:
   cached_network_image: ^3.4.1
   intl: ^0.20.2
   shared_preferences: ^2.3.0
-  image_gallery_saver: ^2.0.3
+  gal: ^2.3.0
   permission_handler: ^11.3.0
 
 dev_dependencies:

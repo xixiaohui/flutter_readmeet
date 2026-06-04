@@ -1,7 +1,7 @@
 import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:gal/gal.dart';
 import 'package:permission_handler/permission_handler.dart';
 import '../../../theme/app_theme.dart';
 
@@ -110,10 +110,8 @@ class PosterPreview extends StatelessWidget {
 
   void _onSave(BuildContext context, GlobalKey key) async {
     try {
-      // Request permission
       await Permission.storage.request();
 
-      // Capture the RepaintBoundary
       final boundary =
           key.currentContext?.findRenderObject() as RenderRepaintBoundary?;
       if (boundary == null) return;
@@ -123,25 +121,18 @@ class PosterPreview extends StatelessWidget {
       if (byteData == null) return;
 
       final bytes = byteData.buffer.asUint8List();
-      final result = await ImageGallerySaver.saveImage(
+      await Gal.putImageBytes(
         bytes,
         name: 'readmeet_${DateTime.now().millisecondsSinceEpoch}',
-        quality: 100,
       );
 
       if (context.mounted) {
-        final success = result['isSuccess'] == true;
         showCupertinoDialog(
           context: context,
-          builder: (_) => CupertinoAlertDialog(
-            title: Text(success ? '已保存' : '保存失败'),
-            content: Text(success ? '海报已保存到相册' : '请检查存储权限'),
-            actions: [
-              CupertinoDialogAction(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('确定'),
-              ),
-            ],
+          builder: (_) => const CupertinoAlertDialog(
+            title: Text('已保存'),
+            content: Text('海报已保存到相册'),
+            actions: [CupertinoDialogAction(child: Text('确定'))],
           ),
         );
       }
@@ -151,7 +142,7 @@ class PosterPreview extends StatelessWidget {
           context: context,
           builder: (_) => CupertinoAlertDialog(
             title: const Text('保存失败'),
-            content: Text(e.toString()),
+            content: Text('请检查相册权限'),
             actions: [
               CupertinoDialogAction(
                 onPressed: () => Navigator.pop(context),

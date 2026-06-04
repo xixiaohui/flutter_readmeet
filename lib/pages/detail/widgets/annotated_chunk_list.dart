@@ -52,12 +52,21 @@ class AnnotatedChunkList extends StatelessWidget {
           listenable: annotationStore,
           builder: (context, _) {
             final s = settingsService;
+            int cumulativeOffset = 0;
             return SliverList.separated(
               itemCount: chunks.length,
               itemBuilder: (context, index) {
                 final segments = parseMarkdownToSegments(chunks[index]);
-                final baseOffset =
-                    segments.isNotEmpty ? segments.first.globalOffset : 0;
+                final chunkBase = cumulativeOffset;
+
+                // Calculate total plain-text length of this chunk and add to
+                // running total so that the *next* chunk's offsets continue
+                // from the correct position.
+                int chunkLength = 0;
+                for (final seg in segments) {
+                  chunkLength += seg.text.length;
+                }
+                cumulativeOffset += chunkLength;
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(
@@ -67,7 +76,7 @@ class AnnotatedChunkList extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       for (final seg in segments)
-                        _buildSegment(seg, s, baseOffset),
+                        _buildSegment(seg, s, chunkBase),
                     ],
                   ),
                 );
@@ -86,7 +95,7 @@ class AnnotatedChunkList extends StatelessWidget {
     final isDark = s.backgroundColor == 'dark';
     final textColor = isDark ? AppColors.onDark : AppColors.ink;
     final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
-    final segGlobalOffset = seg.globalOffset - chunkBaseOffset;
+    final trueGlobalOffset = chunkBaseOffset + seg.globalOffset;
     double? topPad;
 
     switch (seg.style) {
@@ -116,7 +125,7 @@ class AnnotatedChunkList extends StatelessWidget {
           child: SelectableText(
             seg.text,
             contextMenuBuilder:
-                (ctx, st) => _buildMenu(ctx, st, segGlobalOffset),
+                (ctx, st) => _buildMenu(ctx, st, trueGlobalOffset),
             style: TextStyle(fontSize: 15, color: textColor),
           ),
         ),
@@ -136,7 +145,7 @@ class AnnotatedChunkList extends StatelessWidget {
           child: SelectableText(
             seg.text,
             contextMenuBuilder:
-                (ctx, st) => _buildMenu(ctx, st, segGlobalOffset),
+                (ctx, st) => _buildMenu(ctx, st, trueGlobalOffset),
             style: TextStyle(
               fontSize: s.fontSize,
               height: s.lineHeight,
@@ -180,7 +189,7 @@ class AnnotatedChunkList extends StatelessWidget {
 
     // Annotation decorations
     final anns = annotationStore.annotationsInRange(
-        seg.globalOffset, seg.globalOffset + seg.text.length);
+        trueGlobalOffset, trueGlobalOffset + seg.text.length);
     var style = ts;
     for (final a in anns) {
       if (a.type == AnnotationType.highlight) {
@@ -199,7 +208,7 @@ class AnnotatedChunkList extends StatelessWidget {
       padding: EdgeInsets.only(top: topPad ?? 0),
       child: SelectableText(
         seg.text,
-        contextMenuBuilder: (ctx, st) => _buildMenu(ctx, st, segGlobalOffset),
+        contextMenuBuilder: (ctx, st) => _buildMenu(ctx, st, trueGlobalOffset),
         style: style,
       ),
     );

@@ -219,49 +219,50 @@ class AnnotatedChunkList extends StatelessWidget {
     required TextStyle baseStyle,
     required int segGlobalOffset,
   }) {
-    final segStart = segGlobalOffset;
-    final segEnd = segGlobalOffset + text.length;
-
-    // Collect all annotation boundaries within this segment.
-    final breakPoints = <int>{0, text.length};
-
-    for (final a in annotationStore.annotationsInRange(segStart, segEnd)) {
-      final relStart = (a.startOffset - segStart).clamp(0, text.length);
-      final relEnd = (a.endOffset - segStart).clamp(0, text.length);
-      if (relStart < relEnd) {
-        breakPoints.add(relStart);
-        breakPoints.add(relEnd);
+    // Text-based matching: find each annotation by its actual text within
+    // the segment. This is robust against offset drift between reloads.
+    final matches = <_TextMatch>[];
+    for (final a in annotationStore.annotations) {
+      int pos = 0;
+      while ((pos = text.indexOf(a.selectedText, pos)) != -1) {
+        matches.add(_TextMatch(
+            start: pos, end: pos + a.selectedText.length, annotation: a));
+        pos += a.selectedText.length;
       }
     }
+    matches.sort((a, b) => a.start.compareTo(b.start));
 
-    final sorted = breakPoints.toList()..sort();
+    if (matches.isEmpty) {
+      return [TextSpan(text: text, style: baseStyle)];
+    }
+
+    // Build spans split at annotation boundaries
     final spans = <TextSpan>[];
-
-    for (int i = 0; i < sorted.length - 1; i++) {
-      final subStart = sorted[i];
-      final subEnd = sorted[i + 1];
-      if (subStart >= subEnd) continue;
-
-      final subText = text.substring(subStart, subEnd);
-      final globalSubStart = segStart + subStart;
-      final globalSubEnd = segStart + subEnd;
-
-      var style = baseStyle;
-      final anns = annotationStore.annotationsInRange(globalSubStart, globalSubEnd);
-      for (final a in anns) {
-        if (a.type == AnnotationType.highlight) {
-          style = style.copyWith(backgroundColor: Color(a.color));
-        }
-        if (a.type == AnnotationType.underline) {
-          style = style.copyWith(
-            decoration: TextDecoration.underline,
-            decorationColor: Color(a.color),
-            decorationThickness: 2,
-          );
-        }
+    int cursor = 0;
+    for (final m in matches) {
+      if (m.start > cursor) {
+        spans.add(TextSpan(
+            text: text.substring(cursor, m.start), style: baseStyle));
       }
-
-      spans.add(TextSpan(text: subText, style: style));
+      var style = baseStyle;
+      final a = m.annotation;
+      if (a.type == AnnotationType.highlight) {
+        style = style.copyWith(backgroundColor: Color(a.color));
+      }
+      if (a.type == AnnotationType.underline) {
+        style = style.copyWith(
+          decoration: TextDecoration.underline,
+          decorationColor: Color(a.color),
+          decorationThickness: 2,
+        );
+      }
+      spans.add(TextSpan(
+          text: text.substring(m.start, m.end), style: style));
+      cursor = m.end;
+    }
+    if (cursor < text.length) {
+      spans.add(TextSpan(
+          text: text.substring(cursor), style: baseStyle));
     }
 
     return spans;
@@ -374,6 +375,14 @@ class AnnotatedChunkList extends StatelessWidget {
       }
     });
   }
+}
+
+class _TextMatch {
+  final int start;
+  final int end;
+  final Annotation annotation;
+  const _TextMatch(
+      {required this.start, required this.end, required this.annotation});
 }
 
 class _MenuItem {

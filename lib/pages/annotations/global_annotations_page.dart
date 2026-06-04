@@ -25,13 +25,23 @@ class _GlobalAnnotationsPageState extends State<GlobalAnnotationsPage> {
   List<_AnnotationGroup> _groups = [];
   bool _isLoading = true;
 
+  bool _didInitialLoad = false;
+
   @override
   void initState() {
     super.initState();
     _loadAll();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Reload when tab becomes visible (CupertinoTabScaffold rebuilds on tab switch)
+    if (_didInitialLoad) _loadAll();
+  }
+
   Future<void> _loadAll() async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -58,10 +68,16 @@ class _GlobalAnnotationsPageState extends State<GlobalAnnotationsPage> {
         setState(() {
           _groups = groups;
           _isLoading = false;
+          _didInitialLoad = true;
         });
       }
     } catch (_) {
-      if (mounted) setState(() => _isLoading = false);
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+          _didInitialLoad = true;
+        });
+      }
     }
   }
 

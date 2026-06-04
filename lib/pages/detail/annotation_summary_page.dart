@@ -63,6 +63,7 @@ class AnnotationSummaryPage extends StatelessWidget {
   }
 
   void _confirmDeleteAll(BuildContext context) {
+    final navigator = Navigator.of(context);
     showCupertinoDialog(
       context: context,
       builder: (_) => CupertinoAlertDialog(
@@ -70,7 +71,7 @@ class AnnotationSummaryPage extends StatelessWidget {
         content: const Text('此操作不可撤销'),
         actions: [
           CupertinoDialogAction(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => navigator.pop(),
             child: const Text('取消'),
           ),
           CupertinoDialogAction(
@@ -79,7 +80,7 @@ class AnnotationSummaryPage extends StatelessWidget {
               for (final a in store.annotations.toList()) {
                 store.delete(a.id);
               }
-              Navigator.pop(context);
+              navigator.pop();
               onDeleteAll?.call();
             },
             child: const Text('清空'),
@@ -172,6 +173,7 @@ class _AnnotationCard extends StatelessWidget {
   }
 
   void _editNote(BuildContext context) {
+    final navigator = Navigator.of(context);
     final controller =
         TextEditingController(text: annotation.note ?? '');
     showCupertinoDialog(
@@ -188,13 +190,13 @@ class _AnnotationCard extends StatelessWidget {
         ),
         actions: [
           CupertinoDialogAction(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => navigator.pop(),
             child: const Text('取消'),
           ),
           CupertinoDialogAction(
             onPressed: () {
               onEditNote(controller.text);
-              Navigator.pop(context);
+              navigator.pop();
             },
             child: const Text('保存'),
           ),

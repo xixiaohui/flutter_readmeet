@@ -98,27 +98,24 @@ class _PageReaderState extends State<PageReader> {
             );
           },
         ),
-        // Page indicator — above home indicator on iOS
+        // Page indicator — bottom-right corner
         if (slices.length > 1)
           Positioned(
             bottom: Platform.isIOS ? 34 : 24,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                decoration: BoxDecoration(
-                  color: const Color(0x99000000),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${_currentPage + 1} / ${slices.length}',
-                  style: const TextStyle(
-                      color: Color(0xCCFFFFFF),
-                      fontSize: 13,
-                      fontFeatures: [FontFeature.tabularFigures()]),
-                ),
+            right: 20,
+            child: Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(
+                color: const Color(0x66000000),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                '${_currentPage + 1} / ${slices.length}',
+                style: const TextStyle(
+                    color: Color(0xCCFFFFFF),
+                    fontSize: 12,
+                    fontFeatures: [FontFeature.tabularFigures()]),
               ),
             ),
           ),

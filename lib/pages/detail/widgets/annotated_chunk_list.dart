@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../../../models/annotation.dart';
 import '../../../services/annotation_store.dart';
 import '../../../services/reader_settings_service.dart';
@@ -89,7 +89,7 @@ class AnnotatedChunkList extends StatelessWidget {
             color: isDark ? AppColors.inkMuted80 : AppColors.canvasParchment,
             borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
-          child: SelectableText(
+          child: Text(
             seg.text,
             style: TextStyle(fontSize: 15, color: textColor),
           ),
@@ -107,7 +107,7 @@ class AnnotatedChunkList extends StatelessWidget {
                 Border(left: BorderSide(color: AppColors.primary, width: 3)),
           ),
           padding: const EdgeInsets.only(left: AppSpacing.md),
-          child: SelectableText(
+          child: Text(
             seg.text,
             style: TextStyle(
               fontSize: s.fontSize,
@@ -170,7 +170,7 @@ class AnnotatedChunkList extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.only(top: topPad ?? 0),
-      child: SelectableText(seg.text, style: style),
+      child: Text(seg.text, style: style),
     );
   }
 }

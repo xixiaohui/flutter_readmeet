@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart'
+    show AdaptiveTextSelectionToolbar, Icons, SelectionArea;
 import 'package:flutter/services.dart';
+import '../../models/annotation.dart';
 import '../../models/card_item.dart';
 import '../../models/reading_progress.dart';
 import '../../services/annotation_store.dart';
@@ -120,6 +123,170 @@ class _DetailPageState extends State<DetailPage> {
     ));
   }
 
+  // ── Context Menu ──
+
+  Widget _buildContextMenu(
+      BuildContext context, SelectableRegionState state) {
+    return AdaptiveTextSelectionToolbar(
+      anchors: state.contextMenuAnchors,
+      children: [
+        _MenuBtn(
+          icon: Icons.copy,
+          label: '复制',
+          onTap: () {
+            state.copySelection(SelectionChangedCause.toolbar);
+            state.hideToolbar();
+          },
+        ),
+        _MenuBtn(
+          icon: Icons.select_all,
+          label: '全选',
+          onTap: () {
+            state.selectAll(SelectionChangedCause.toolbar);
+            state.hideToolbar();
+          },
+        ),
+        const SizedBox(width: 6),
+        _MenuBtn(
+          icon: Icons.format_paint,
+          label: '高亮',
+          onTap: () => _onAnnotate(context, state, AnnotationType.highlight),
+        ),
+        _MenuBtn(
+          icon: Icons.format_underline,
+          label: '下划线',
+          onTap: () => _onAnnotate(context, state, AnnotationType.underline),
+        ),
+        _MenuBtn(
+          icon: Icons.notes,
+          label: '笔记',
+          onTap: () => _onAddNote(context, state),
+        ),
+      ],
+    );
+  }
+
+  void _onAnnotate(
+      BuildContext context,
+      SelectableRegionState state,
+      AnnotationType type) async {
+    state.copySelection(SelectionChangedCause.toolbar);
+    await Future.delayed(const Duration(milliseconds: 50));
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text ?? '';
+    state.hideToolbar();
+
+    if (text.isEmpty) return;
+
+    // Show color picker
+    final colors = type == AnnotationType.highlight
+        ? AnnotationColors.highlightColors
+        : AnnotationColors.underlineColors;
+    final selectedColor = await showCupertinoModalPopup<int>(
+      context: context,
+      builder: (_) => _ColorPickerSheet(colors: colors),
+    );
+
+    if (selectedColor != null && mounted) {
+      _annotationStore.add(
+        selectedText: text,
+        startOffset: 0, // approximate — offset tracking needs full-text index
+        endOffset: text.length,
+        type: type,
+        color: selectedColor,
+      );
+    }
+  }
+
+  void _onAddNote(
+      BuildContext context, SelectableRegionState state) async {
+    state.copySelection(SelectionChangedCause.toolbar);
+    await Future.delayed(const Duration(milliseconds: 50));
+    final data = await Clipboard.getData(Clipboard.kTextPlain);
+    final text = data?.text ?? '';
+    state.hideToolbar();
+
+    if (text.isEmpty) return;
+
+    final note = await showCupertinoDialog<String>(
+      context: context,
+      builder: (_) => _NoteInputDialog(initialText: text),
+    );
+
+    if (note != null && note.isNotEmpty && mounted) {
+      _annotationStore.add(
+        selectedText: text,
+        startOffset: 0,
+        endOffset: text.length,
+        type: AnnotationType.highlight,
+        color: AnnotationColors.yellow,
+        note: note,
+      );
+    }
+  }
+
+  void _showAnnotationPopup(Annotation ann) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (_) => CupertinoActionSheet(
+        title: Text(ann.selectedText,
+            maxLines: 2, overflow: TextOverflow.ellipsis),
+        message: ann.hasNote ? Text('📝 ${ann.note}') : null,
+        actions: [
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              _onChangeColor(ann);
+            },
+            child: const Text('更换颜色'),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context);
+              _onEditNote(ann);
+            },
+            child: Text(ann.hasNote ? '编辑笔记' : '添加笔记'),
+          ),
+          CupertinoActionSheetAction(
+            isDestructiveAction: true,
+            onPressed: () {
+              _annotationStore.delete(ann.id);
+              Navigator.pop(context);
+            },
+            child: const Text('删除标记'),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('取消'),
+        ),
+      ),
+    );
+  }
+
+  void _onChangeColor(Annotation ann) async {
+    final colors = ann.type == AnnotationType.highlight
+        ? AnnotationColors.highlightColors
+        : AnnotationColors.underlineColors;
+    final selectedColor = await showCupertinoModalPopup<int>(
+      context: context,
+      builder: (_) => _ColorPickerSheet(colors: colors),
+    );
+    if (selectedColor != null) {
+      _annotationStore.update(ann.id, color: selectedColor);
+    }
+  }
+
+  void _onEditNote(Annotation ann) async {
+    final note = await showCupertinoDialog<String>(
+      context: context,
+      builder: (_) => _NoteInputDialog(initialText: ann.note ?? ''),
+    );
+    if (note != null) {
+      _annotationStore.update(ann.id, note: note);
+    }
+  }
+
   Color _bgColor() {
     switch (widget.settingsService.backgroundColor) {
       case 'white':
@@ -203,29 +370,147 @@ class _DetailPageState extends State<DetailPage> {
     final hasCover = blog.img != null && blog.img!.isNotEmpty;
     final chunks = _chunks ?? [];
 
-    return SafeArea(
-      child: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverToBoxAdapter(
-            child: DetailHeroImage(imageUrl: blog.img),
-          ),
-          SliverToBoxAdapter(
-            child: ContentHeader(blog: blog, hasCover: hasCover),
-          ),
-          if (chunks.isNotEmpty)
-            AnnotatedChunkList(
-              chunks: chunks,
-              settingsService: widget.settingsService,
-              annotationStore: _annotationStore,
-            )
-          else
-            const SliverToBoxAdapter(child: SizedBox.shrink()),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: AppSpacing.xxl),
-          ),
-        ],
+    return SelectionArea(
+      contextMenuBuilder: (context, state) =>
+          _buildContextMenu(context, state),
+      child: SafeArea(
+        child: CustomScrollView(
+          controller: _scrollController,
+          slivers: [
+            SliverToBoxAdapter(
+              child: DetailHeroImage(imageUrl: blog.img),
+            ),
+            SliverToBoxAdapter(
+              child: ContentHeader(blog: blog, hasCover: hasCover),
+            ),
+            if (chunks.isNotEmpty)
+              AnnotatedChunkList(
+                chunks: chunks,
+                settingsService: widget.settingsService,
+                annotationStore: _annotationStore,
+              )
+            else
+              const SliverToBoxAdapter(child: SizedBox.shrink()),
+            const SliverToBoxAdapter(
+              child: SizedBox(height: AppSpacing.xxl),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+// ── Context Menu Helpers ──
+
+class _MenuBtn extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  const _MenuBtn({required this.icon, required this.label, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 18, color: AppColors.ink),
+            const SizedBox(height: 2),
+            Text(label,
+                style: const TextStyle(fontSize: 11, color: AppColors.ink)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ColorPickerSheet extends StatelessWidget {
+  final List<int> colors;
+  const _ColorPickerSheet({required this.colors});
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoActionSheet(
+      title: const Text('选择颜色'),
+      actions: colors
+          .map((c) => CupertinoActionSheetAction(
+                onPressed: () => Navigator.pop(context, c),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: Color(c),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(
+                            color: AppColors.hairline, width: 0.5),
+                      ),
+                    ),
+                  ],
+                ),
+              ))
+          .toList(),
+      cancelButton: CupertinoActionSheetAction(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('取消'),
+      ),
+    );
+  }
+}
+
+class _NoteInputDialog extends StatefulWidget {
+  final String initialText;
+  const _NoteInputDialog({required this.initialText});
+
+  @override
+  State<_NoteInputDialog> createState() => _NoteInputDialogState();
+}
+
+class _NoteInputDialogState extends State<_NoteInputDialog> {
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.initialText);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoAlertDialog(
+      title: const Text('添加笔记'),
+      content: Padding(
+        padding: const EdgeInsets.only(top: 12),
+        child: CupertinoTextField(
+          controller: _controller,
+          autofocus: true,
+          maxLines: 4,
+          placeholder: '写下你的想法...',
+        ),
+      ),
+      actions: [
+        CupertinoDialogAction(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('取消'),
+        ),
+        CupertinoDialogAction(
+          onPressed: () => Navigator.pop(context, _controller.text),
+          child: const Text('保存'),
+        ),
+      ],
     );
   }
 }

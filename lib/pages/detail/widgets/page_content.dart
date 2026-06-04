@@ -334,8 +334,9 @@ class _DropdownMenu extends StatelessWidget {
   final AnnotationCallback onAnnotateCall;
   final void Function(String, int, int)? onAddNoteCall;
   final void Function(String, int, int)? onPosterCall;
+  final NavigatorState navigator;
 
-  const _DropdownMenu({
+  _DropdownMenu({
     required this.ctx,
     required this.onCopy,
     required this.onSelectAll,
@@ -346,7 +347,7 @@ class _DropdownMenu extends StatelessWidget {
     required this.onAnnotateCall,
     this.onAddNoteCall,
     this.onPosterCall,
-  });
+  }) : navigator = Navigator.of(ctx);
 
   @override
   Widget build(BuildContext context) {
@@ -415,7 +416,7 @@ class _DropdownMenu extends StatelessWidget {
         ? AnnotationColors.highlightColors
         : AnnotationColors.underlineColors;
     showCupertinoModalPopup<int>(
-      context: ctx,
+      context: navigator.context,
       builder: (_) => _ColorPickerSheet(colors: colors),
     ).then((selectedColor) {
       if (selectedColor != null) {

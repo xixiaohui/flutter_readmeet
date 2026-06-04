@@ -9,11 +9,10 @@ import '../../services/api_service.dart';
 import '../../services/reader_settings_service.dart';
 import '../../services/reading_progress_service.dart';
 import '../../theme/app_theme.dart';
-import '../../utils/markdown_chunker.dart';
 import '../../widgets/loading_indicator.dart';
-import 'widgets/hero_image.dart';
-import 'widgets/content_card.dart';
-import 'widgets/annotated_chunk_list.dart';
+import 'widgets/page_reader.dart';
+import 'widgets/markdown_ast.dart';
+import 'services/page_calculator.dart';
 import 'annotation_summary_page.dart';
 import 'widgets/poster_generator.dart';
 
@@ -34,30 +33,25 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
-  final _scrollController = ScrollController();
   final _progressService = ReadingProgressService();
   final _annotationStore = AnnotationStore();
-  Timer? _debounceTimer;
 
   CardItem? _blog;
   String? _error;
-  List<String>? _chunks;
+  List<MarkdownSegment>? _allSegments;
+  int _currentPage = 0;
 
   @override
   void initState() {
     super.initState();
-    widget.settingsService.load(); // sync settings before rendering
+    widget.settingsService.load();
     _loadDetail();
-    _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
-    _debounceTimer?.cancel();
     _saveProgress();
     _annotationStore.dispose();
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -65,16 +59,30 @@ class _DetailPageState extends State<DetailPage> {
     setState(() {
       _error = null;
       _blog = null;
-      _chunks = null;
+      _allSegments = null;
     });
     try {
       final blog = await widget.apiService.getBlogDetail(widget.blogId);
       if (!mounted) return;
+      final content = blog.content ?? '';
+      final rawSegments = content.isNotEmpty
+          ? parseMarkdownToSegments(content)
+          : <MarkdownSegment>[];
+      // Recalculate sequential offsets for the full article
+      int running = 0;
+      final segments = rawSegments.map((seg) {
+        final s = MarkdownSegment(
+          text: seg.text,
+          style: seg.style,
+          isBlockEnd: seg.isBlockEnd,
+          globalOffset: running,
+        );
+        running += seg.text.length;
+        return s;
+      }).toList();
       setState(() {
         _blog = blog;
-        _chunks = blog.content != null && blog.content!.isNotEmpty
-            ? MarkdownChunker.chunk(blog.content!)
-            : [];
+        _allSegments = segments;
       });
       _annotationStore.load(widget.blogId);
       _restoreProgress();
@@ -87,44 +95,42 @@ class _DetailPageState extends State<DetailPage> {
   Future<void> _restoreProgress() async {
     final saved = await _progressService.get(widget.blogId);
     if (!mounted || saved == null) return;
-    if (_scrollController.hasClients) {
-      _scrollController.jumpTo(saved.scrollOffset);
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted && _scrollController.hasClients) {
-          _scrollController.jumpTo(saved.scrollOffset);
-        }
-      });
-    }
-  }
-
-  void _onScroll() {
-    _debounceTimer?.cancel();
-    _debounceTimer = Timer(const Duration(milliseconds: 500), _saveProgress);
+    _currentPage = saved.pageIndex;
   }
 
   void _saveProgress() {
     if (!mounted) return;
     final blog = _blog;
     if (blog == null) return;
-    if (!_scrollController.hasClients) return;
-
-    final offset = _scrollController.offset;
-    final maxExtent = _scrollController.position.maxScrollExtent;
-    final progress =
-        maxExtent > 0 ? (offset / maxExtent).clamp(0.0, 1.0) : 0.0;
-
+    final slices = _calculatePages();
+    if (slices.isEmpty) return;
+    final total = slices.length;
     _progressService.save(ReadingProgress(
       blogId: widget.blogId,
-      scrollOffset: offset,
-      progress: progress,
+      pageIndex: _currentPage,
+      totalPages: total,
+      progress: total > 0 ? (_currentPage / total).clamp(0.0, 1.0) : 0.0,
       blogTitle: blog.title,
       coverImg: blog.img,
       updatedAt: DateTime.now(),
     ));
   }
 
-  // ── Annotation callbacks (passed to AnnotatedChunkList) ──
+  List<PageSlice> _calculatePages() {
+    final segments = _allSegments;
+    if (segments == null || segments.isEmpty) return [];
+    final size = MediaQuery.of(context).size;
+    final navHeight = MediaQuery.of(context).padding.top + 44; // nav bar
+    final pageHeight = size.height - navHeight - 80; // 80 for page indicator
+    return PageCalculator.paginate(
+      segments: segments,
+      pageHeight: pageHeight,
+      pageWidth: size.width,
+      settings: widget.settingsService,
+    );
+  }
+
+  // ── Annotation callbacks ──
 
   void _onAnnotate({
     required String selectedText,
@@ -203,6 +209,8 @@ class _DetailPageState extends State<DetailPage> {
     return ListenableBuilder(
       listenable: widget.settingsService,
       builder: (context, _) {
+        // Recalculate pages when settings change
+        final slices = _calculatePages();
         return CupertinoPageScaffold(
           backgroundColor: _bgColor(),
           navigationBar: CupertinoNavigationBar(
@@ -216,40 +224,34 @@ class _DetailPageState extends State<DetailPage> {
               child: const Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    CupertinoIcons.back,
-                    color: AppColors.primary,
-                    size: 20,
-                  ),
+                  Icon(CupertinoIcons.back,
+                      color: AppColors.primary, size: 20),
                   SizedBox(width: 4),
-                  Text(
-                    '返回',
-                    style: TextStyle(
-                      color: AppColors.primary,
-                      fontSize: AppText.bodySize,
-                    ),
-                  ),
+                  Text('返回',
+                      style: TextStyle(
+                          color: AppColors.primary,
+                          fontSize: AppText.bodySize)),
                 ],
               ),
             ),
             trailing: GestureDetector(
               onTap: () {
                 HapticFeedback.lightImpact();
-                Navigator.of(context).push(
-                  CupertinoPageRoute(
-                    builder: (_) {
-                      final blog = _blog!;
-                      final date = blog.createdAt ?? '';
-                      return AnnotationSummaryPage(
-                        store: _annotationStore,
-                        settings: widget.settingsService,
-                        articleTitle: blog.title,
-                        authorName: blog.authorName,
-                        date: date.length >= 10 ? date.substring(0, 10) : date,
-                      );
-                    },
-                  ),
-                );
+                Navigator.of(context).push(CupertinoPageRoute(
+                  builder: (_) {
+                    final blog = _blog!;
+                    final date = blog.createdAt ?? '';
+                    return AnnotationSummaryPage(
+                      store: _annotationStore,
+                      settings: widget.settingsService,
+                      articleTitle: blog.title,
+                      authorName: blog.authorName,
+                      date: date.length >= 10
+                          ? date.substring(0, 10)
+                          : date,
+                    );
+                  },
+                ));
               },
               child: ListenableBuilder(
                 listenable: _annotationStore,
@@ -260,27 +262,24 @@ class _DetailPageState extends State<DetailPage> {
                         color: AppColors.primary, size: 18),
                     if (_annotationStore.count > 0) ...[
                       const SizedBox(width: 2),
-                      Text(
-                        '${_annotationStore.count}',
-                        style: const TextStyle(
-                          fontSize: AppText.finePrintSize,
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      Text('${_annotationStore.count}',
+                          style: const TextStyle(
+                              fontSize: AppText.finePrintSize,
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w600)),
                     ],
                   ],
                 ),
               ),
             ),
           ),
-          child: _buildBody(),
+          child: _buildBody(slices),
         );
       },
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildBody(List<PageSlice> slices) {
     if (_error != null) {
       return ErrorView(message: _error!, onRetry: _loadDetail);
     }
@@ -289,36 +288,28 @@ class _DetailPageState extends State<DetailPage> {
       return const LoadingIndicator(message: '加载中...');
     }
 
-    final blog = _blog!;
-    final hasCover = blog.img != null && blog.img!.isNotEmpty;
-    final chunks = _chunks ?? [];
+    if (_allSegments == null || _allSegments!.isEmpty) {
+      return const EmptyView(message: '暂无内容');
+    }
 
-    return SafeArea(
-      child: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverToBoxAdapter(
-            child: DetailHeroImage(imageUrl: blog.img),
-          ),
-          SliverToBoxAdapter(
-            child: ContentHeader(blog: blog, hasCover: hasCover),
-          ),
-          if (chunks.isNotEmpty)
-            AnnotatedChunkList(
-              chunks: chunks,
-              settingsService: widget.settingsService,
-              annotationStore: _annotationStore,
-              onAnnotate: _onAnnotate,
-              onAddNote: _onAddNoteCallback,
-              onPoster: _onPosterCallback,
-            )
-          else
-            const SliverToBoxAdapter(child: SizedBox.shrink()),
-          const SliverToBoxAdapter(
-            child: SizedBox(height: AppSpacing.xxl),
-          ),
-        ],
-      ),
+    if (slices.isEmpty) {
+      return const LoadingIndicator(message: '排版中...');
+    }
+
+    return PageReader(
+      slices: slices,
+      allSegments: _allSegments!,
+      blog: _blog,
+      settingsService: widget.settingsService,
+      annotationStore: _annotationStore,
+      onAnnotate: _onAnnotate,
+      onAddNote: _onAddNoteCallback,
+      onPoster: _onPosterCallback,
+      initialPage: _currentPage,
+      onPageChanged: (page) {
+        _currentPage = page;
+        _saveProgress();
+      },
     );
   }
 }

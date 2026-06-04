@@ -1,6 +1,7 @@
 class ReadingProgress {
   final String blogId;
-  final double scrollOffset;
+  final int pageIndex;
+  final int totalPages;
   final double progress; // 0.0 ~ 1.0
   final String? blogTitle;
   final String? coverImg;
@@ -8,7 +9,8 @@ class ReadingProgress {
 
   const ReadingProgress({
     required this.blogId,
-    required this.scrollOffset,
+    required this.pageIndex,
+    required this.totalPages,
     required this.progress,
     this.blogTitle,
     this.coverImg,
@@ -17,7 +19,8 @@ class ReadingProgress {
 
   Map<String, dynamic> toJson() => {
         'blogId': blogId,
-        'scrollOffset': scrollOffset,
+        'pageIndex': pageIndex,
+        'totalPages': totalPages,
         'progress': progress,
         'blogTitle': blogTitle,
         'coverImg': coverImg,
@@ -27,7 +30,8 @@ class ReadingProgress {
   factory ReadingProgress.fromJson(Map<String, dynamic> json) =>
       ReadingProgress(
         blogId: json['blogId'] as String,
-        scrollOffset: (json['scrollOffset'] as num).toDouble(),
+        pageIndex: (json['pageIndex'] as num?)?.toInt() ?? 0,
+        totalPages: (json['totalPages'] as num?)?.toInt() ?? 1,
         progress: (json['progress'] as num).toDouble(),
         blogTitle: json['blogTitle'] as String?,
         coverImg: json['coverImg'] as String?,

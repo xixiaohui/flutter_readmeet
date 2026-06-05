@@ -1,6 +1,8 @@
 import 'author.dart';
 
 class CardItem {
+  static const String defaultImg = 'https://picsum.photos/id/74/400/300';
+
   final String id;
   final String? img;
   final String? tag;
@@ -60,6 +62,10 @@ class CardItem {
     }
     return [];
   }
+
+  /// Display image URL, falling back to a default placeholder if null/empty.
+  String get displayImg =>
+      (img != null && img!.isNotEmpty) ? img! : defaultImg;
 
   String get authorName =>
       authors.isNotEmpty ? (authors.first.name ?? '未知作者') : '未知作者';

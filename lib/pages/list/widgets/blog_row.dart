@@ -30,32 +30,31 @@ class BlogRow extends StatelessWidget {
             // Cover image
             ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.sm),
-              child: item.img != null && item.img!.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: item.img!,
-                      width: 90,
-                      height: 90,
-                      fit: BoxFit.cover,
-                      placeholder: (_, _) => Container(
-                        width: 90,
-                        height: 90,
-                        color: AppColors.hairline,
-                      ),
-                      errorWidget: (_, _, _) => Container(
-                        width: 90,
-                        height: 90,
-                        color: AppColors.hairline,
-                        child: const Icon(CupertinoIcons.photo,
-                            color: AppColors.inkMuted48),
-                      ),
-                    )
-                  : Container(
-                      width: 90,
-                      height: 90,
-                      color: AppColors.hairline,
-                      child: const Icon(CupertinoIcons.photo,
-                          color: AppColors.inkMuted48),
-                    ),
+              child: CachedNetworkImage(
+                imageUrl: item.displayImg,
+                width: 90,
+                height: 90,
+                fit: BoxFit.cover,
+                placeholder: (_, _) => Container(
+                  width: 90, height: 90, color: AppColors.hairline,
+                ),
+                errorWidget: (_, _, _) => CachedNetworkImage(
+                  imageUrl: CardItem.defaultImg,
+                  width: 90,
+                  height: 90,
+                  fit: BoxFit.cover,
+                  placeholder: (_, _) => Container(
+                    width: 90, height: 90, color: AppColors.hairline,
+                  ),
+                  errorWidget: (_, _, _) => Container(
+                    width: 90,
+                    height: 90,
+                    color: AppColors.hairline,
+                    child: const Icon(CupertinoIcons.photo,
+                        color: AppColors.inkMuted48),
+                  ),
+                ),
+              ),
             ),
             const SizedBox(width: AppSpacing.sm),
             // Text content

@@ -28,22 +28,21 @@ class FeaturedCard extends StatelessWidget {
             SizedBox(
               width: 140,
               height: 80,
-              child: item.img != null && item.img!.isNotEmpty
-                  ? CachedNetworkImage(
-                      imageUrl: item.img!,
-                      fit: BoxFit.cover,
-                      placeholder: (_, _) => Container(color: AppColors.hairline),
-                      errorWidget: (_, _, _) => Container(
-                        color: AppColors.hairline,
-                        child: const Icon(CupertinoIcons.photo,
-                            color: AppColors.inkMuted48),
-                      ),
-                    )
-                  : Container(
-                      color: AppColors.hairline,
-                      child: const Icon(CupertinoIcons.photo,
-                          color: AppColors.inkMuted48),
-                    ),
+              child: CachedNetworkImage(
+                imageUrl: item.displayImg,
+                fit: BoxFit.cover,
+                placeholder: (_, _) => Container(color: AppColors.hairline),
+                errorWidget: (_, _, _) => CachedNetworkImage(
+                  imageUrl: CardItem.defaultImg,
+                  fit: BoxFit.cover,
+                  placeholder: (_, _) => Container(color: AppColors.hairline),
+                  errorWidget: (_, _, _) => Container(
+                    color: AppColors.hairline,
+                    child: const Icon(CupertinoIcons.photo,
+                        color: AppColors.inkMuted48),
+                  ),
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(AppSpacing.sm),

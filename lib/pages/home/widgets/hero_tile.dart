@@ -26,19 +26,22 @@ class HeroTile extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (item.img != null && item.img!.isNotEmpty)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  child: Image.network(
-                    item.img!,
-                    key: ValueKey(item.img),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+                child: Image.network(
+                  item.displayImg,
+                  key: ValueKey(item.displayImg),
+                  height: 160,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Image.network(
+                    CardItem.defaultImg,
                     height: 160,
                     width: double.infinity,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => const SizedBox.shrink(),
                   ),
                 ),
-              if (item.img != null && item.img!.isNotEmpty)
+              ),
                 const SizedBox(height: AppSpacing.lg),
               Text(
                 item.title,

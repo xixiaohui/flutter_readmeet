@@ -8,6 +8,8 @@ class AnnotationStore extends ChangeNotifier {
 
   List<Annotation> _annotations = [];
   String? _blogId;
+  Future<void>? _pendingPersist;
+  bool _persistScheduled = false;
 
   List<Annotation> get annotations => List.unmodifiable(_annotations);
   int get count => _annotations.length;
@@ -60,7 +62,7 @@ class AnnotationStore extends ChangeNotifier {
     );
     _annotations.add(ann);
     notifyListeners();
-    await _persist();
+    _schedulePersist();
   }
 
   Future<void> update(String id, {int? color, List<String>? notes}) async {
@@ -68,13 +70,13 @@ class AnnotationStore extends ChangeNotifier {
     if (idx == -1) return;
     _annotations[idx] = _annotations[idx].copyWith(color: color, notes: notes);
     notifyListeners();
-    await _persist();
+    _schedulePersist();
   }
 
   Future<void> delete(String id) async {
     _annotations.removeWhere((a) => a.id == id);
     notifyListeners();
-    await _persist();
+    _schedulePersist();
   }
 
   /// All annotations that intersect the given offset range.
@@ -90,6 +92,24 @@ class AnnotationStore extends ChangeNotifier {
           a.intersects(start, end) &&
           a.startOffset == start &&
           a.endOffset == end);
+
+  /// Flush any pending persist immediately (call on page exit).
+  void flush() {
+    if (_pendingPersist != null) {
+      _persist();
+      _persistScheduled = false;
+    }
+  }
+
+  /// Debounced persist: writes to disk at most once per 500ms.
+  void _schedulePersist() {
+    if (_persistScheduled) return;
+    _persistScheduled = true;
+    _pendingPersist = Future.delayed(const Duration(milliseconds: 500), () {
+      _persistScheduled = false;
+      _persist();
+    });
+  }
 
   Future<void> _persist() async {
     if (_blogId == null) return;

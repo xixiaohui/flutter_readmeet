@@ -56,7 +56,7 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void dispose() {
     _saveProgress();
-    _annotationStore.dispose();
+    _annotationStore.flush();
     super.dispose();
   }
 

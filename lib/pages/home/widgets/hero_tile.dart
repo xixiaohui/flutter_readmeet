@@ -31,6 +31,7 @@ class HeroTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                   child: Image.network(
                     item.img!,
+                    key: ValueKey(item.img),
                     height: 160,
                     width: double.infinity,
                     fit: BoxFit.cover,

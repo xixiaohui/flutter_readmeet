@@ -6,6 +6,7 @@ import '../../models/card_item.dart';
 import '../../models/reading_progress.dart';
 import '../../services/annotation_store.dart';
 import '../../services/api_service.dart';
+import '../../services/content_cache_service.dart';
 import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
 import '../../services/reading_progress_service.dart';
@@ -65,35 +66,54 @@ class _DetailPageState extends State<DetailPage> {
       _blog = null;
       _allSegments = null;
     });
+
+    // 1. Try cache first — show instantly if available
+    try {
+      final cache = ContentCacheService();
+      final cached = await cache.get(widget.blogId);
+      if (cached != null && cached.content != null && mounted) {
+        final segments = _parseContent(cached.content!);
+        setState(() {
+          _blog = cached;
+          _allSegments = segments;
+        });
+        _annotationStore.load(widget.blogId);
+        _restoreProgress();
+      }
+    } catch (_) {}
+
+    // 2. Fetch from API to get latest content
     try {
       final blog = await widget.apiService.getBlogDetail(widget.blogId);
       if (!mounted) return;
-      final content = blog.content ?? '';
-      final rawSegments = content.isNotEmpty
-          ? parseMarkdownToSegments(content)
-          : <MarkdownSegment>[];
-      // Recalculate sequential offsets for the full article
-      int running = 0;
-      final segments = rawSegments.map((seg) {
-        final s = MarkdownSegment(
-          text: seg.text,
-          style: seg.style,
-          isBlockEnd: seg.isBlockEnd,
-          globalOffset: running,
-        );
-        running += seg.text.length;
-        return s;
-      }).toList();
+      final segments = _parseContent(blog.content ?? '');
       setState(() {
         _blog = blog;
         _allSegments = segments;
       });
       _annotationStore.load(widget.blogId);
       _restoreProgress();
+      // Cache the fresh data
+      ContentCacheService().set(widget.blogId, blog);
     } catch (e) {
       if (!mounted) return;
-      setState(() => _error = e.toString());
+      if (_blog == null) setState(() => _error = e.toString());
     }
+  }
+
+  List<MarkdownSegment> _parseContent(String content) {
+    final rawSegments = parseMarkdownToSegments(content);
+    int running = 0;
+    return rawSegments.map((seg) {
+      final s = MarkdownSegment(
+        text: seg.text,
+        style: seg.style,
+        isBlockEnd: seg.isBlockEnd,
+        globalOffset: running,
+      );
+      running += seg.text.length;
+      return s;
+    }).toList();
   }
 
   Future<void> _restoreProgress() async {

@@ -67,6 +67,19 @@ class CardItem {
   String get displayImg =>
       (img != null && img!.isNotEmpty) ? img! : defaultImg;
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'img': img,
+        'tag': tag,
+        'title': title,
+        'description': description,
+        'authors': authors.map((a) => {'name': a.name, 'avatar': a.avatar}).toList(),
+        'content': content,
+        'created_at': createdAt,
+        'slug': slug,
+        'blog_index': blogIndex,
+      };
+
   String get authorName =>
       authors.isNotEmpty ? (authors.first.name ?? '未知作者') : '未知作者';
 

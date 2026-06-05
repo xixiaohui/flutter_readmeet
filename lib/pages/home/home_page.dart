@@ -58,8 +58,10 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadHero() async {
+
+    const heroId = '23876'; // 徐霞客游记blog_index=23876
     try {
-      final blog = await widget.apiService.getHeroBlog('23876');
+      final blog = await widget.apiService.getHeroBlog(heroId);
       if (!mounted) return;
       setState(() => _heroBlog = blog);
     } catch (_) {

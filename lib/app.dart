@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/generated/app_localizations.dart';
 import 'services/api_service.dart';
 import 'services/favorite_service.dart';
 import 'services/reader_settings_service.dart';
@@ -9,7 +10,7 @@ import 'pages/favorites/favorites_page.dart';
 import 'pages/annotations/global_annotations_page.dart';
 import 'pages/setting/setting_page.dart';
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
   final ApiService apiService;
   final ReaderSettingsService settingsService;
   final FavoriteService favoriteService;
@@ -22,14 +23,63 @@ class App extends StatelessWidget {
   });
 
   @override
+  State<App> createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  Locale? _locale;
+
+  @override
+  void initState() {
+    super.initState();
+    _syncLocale();
+    widget.settingsService.addListener(_syncLocale);
+  }
+
+  @override
+  void dispose() {
+    widget.settingsService.removeListener(_syncLocale);
+    super.dispose();
+  }
+
+  void _syncLocale() {
+    final code = widget.settingsService.localeCode;
+    if (code == null) {
+      setState(() => _locale = null);
+    } else {
+      setState(() => _locale = Locale(code));
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return CupertinoApp(
-      title: 'Readmeet',
+      title: 'ReadMeet',
       debugShowCheckedModeBanner: false,
+      locale: _locale,
       localizationsDelegates: const [
-        DefaultMaterialLocalizations.delegate,
-        DefaultCupertinoLocalizations.delegate,
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
       ],
+      supportedLocales: const [
+        Locale('zh'),
+        Locale('zh', 'Hant'),
+        Locale('ja'),
+        Locale('en'),
+      ],
+      localeResolutionCallback: (locale, supportedLocales) {
+        if (_locale != null) return _locale;
+        if (locale != null) {
+          for (final supported in supportedLocales) {
+            if (supported.languageCode == locale.languageCode) {
+              return supported;
+            }
+          }
+        }
+        return const Locale('en');
+      },
       theme: const CupertinoThemeData(
         brightness: Brightness.light,
         primaryColor: CupertinoColors.activeBlue,
@@ -46,31 +96,31 @@ class App extends StatelessWidget {
             top: BorderSide(color: CupertinoColors.separator, width: 0.5),
           ),
           activeColor: CupertinoColors.activeBlue,
-          items: const [
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.house_fill),
-              activeIcon: Icon(CupertinoIcons.house_fill),
-              label: '首页',
+              icon: const Icon(CupertinoIcons.house_fill),
+              activeIcon: const Icon(CupertinoIcons.house_fill),
+              label: AppLocalizations.of(context)?.homeTab ?? '首页',
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.square_list),
-              activeIcon: Icon(CupertinoIcons.square_list_fill),
-              label: '全部文章',
+              icon: const Icon(CupertinoIcons.square_list),
+              activeIcon: const Icon(CupertinoIcons.square_list_fill),
+              label: AppLocalizations.of(context)?.allArticlesTab ?? '全部文章',
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.bookmark),
-              activeIcon: Icon(CupertinoIcons.bookmark_fill),
-              label: '收藏',
+              icon: const Icon(CupertinoIcons.bookmark),
+              activeIcon: const Icon(CupertinoIcons.bookmark_fill),
+              label: AppLocalizations.of(context)?.favoritesTab ?? '收藏',
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.pencil),
-              activeIcon: Icon(CupertinoIcons.pencil),
-              label: '标注',
+              icon: const Icon(CupertinoIcons.pencil),
+              activeIcon: const Icon(CupertinoIcons.pencil),
+              label: AppLocalizations.of(context)?.annotationsTab ?? '标注',
             ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.settings),
-              activeIcon: Icon(CupertinoIcons.settings_solid),
-              label: '设置',
+              icon: const Icon(CupertinoIcons.settings),
+              activeIcon: const Icon(CupertinoIcons.settings_solid),
+              label: AppLocalizations.of(context)?.settingsTab ?? '设置',
             ),
           ],
         ),
@@ -79,45 +129,46 @@ class App extends StatelessWidget {
             case 0:
               return CupertinoTabView(
                 builder: (_) => HomePage(
-                  apiService: apiService,
-                  settingsService: settingsService,
-                  favoriteService: favoriteService,
+                  apiService: widget.apiService,
+                  settingsService: widget.settingsService,
+                  favoriteService: widget.favoriteService,
                 ),
               );
             case 1:
               return CupertinoTabView(
                 builder: (_) => ListPage(
-                  apiService: apiService,
-                  settingsService: settingsService,
-                  favoriteService: favoriteService,
+                  apiService: widget.apiService,
+                  settingsService: widget.settingsService,
+                  favoriteService: widget.favoriteService,
                 ),
               );
             case 2:
               return CupertinoTabView(
                 builder: (_) => FavoritesPage(
-                  apiService: apiService,
-                  settingsService: settingsService,
-                  favoriteService: favoriteService,
+                  apiService: widget.apiService,
+                  settingsService: widget.settingsService,
+                  favoriteService: widget.favoriteService,
                 ),
               );
             case 3:
               return CupertinoTabView(
                 builder: (_) => GlobalAnnotationsPage(
-                  apiService: apiService,
-                  settingsService: settingsService,
-                  favoriteService: favoriteService,
+                  apiService: widget.apiService,
+                  settingsService: widget.settingsService,
+                  favoriteService: widget.favoriteService,
                 ),
               );
             case 4:
               return CupertinoTabView(
-                builder: (_) => SettingPage(settingsService: settingsService),
+                builder: (_) => SettingPage(
+                    settingsService: widget.settingsService),
               );
             default:
               return CupertinoTabView(
                 builder: (_) => HomePage(
-                  apiService: apiService,
-                  settingsService: settingsService,
-                  favoriteService: favoriteService,
+                  apiService: widget.apiService,
+                  settingsService: widget.settingsService,
+                  favoriteService: widget.favoriteService,
                 ),
               );
           }

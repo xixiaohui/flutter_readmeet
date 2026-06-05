@@ -8,6 +8,7 @@ class ReaderSettingsService extends ChangeNotifier {
   static const _keyParagraphSpacing = 'reader_paragraph_spacing';
   static const _keyFontFamily = 'reader_font_family';
   static const _keyBackgroundColor = 'reader_background_color';
+  static const _keyLocale = 'reader_locale';
 
   // Defaults matching existing AppText / AppSpacing design tokens
   static const double defaultFontSize = 17.0;
@@ -20,6 +21,7 @@ class ReaderSettingsService extends ChangeNotifier {
   double _paragraphSpacing = defaultParagraphSpacing;
   String? _fontFamily; // null = system default
   String _backgroundColor = defaultBackgroundColor;
+  String? _localeCode; // null = follow system
 
   // Getters
   double get fontSize => _fontSize;
@@ -27,6 +29,7 @@ class ReaderSettingsService extends ChangeNotifier {
   double get paragraphSpacing => _paragraphSpacing;
   String? get fontFamily => _fontFamily;
   String get backgroundColor => _backgroundColor;
+  String? get localeCode => _localeCode;
 
   // Human-readable labels for UI
   static const Map<String?, String> fontFamilyLabels = {
@@ -52,6 +55,7 @@ class ReaderSettingsService extends ChangeNotifier {
       _fontFamily = prefs.getString(_keyFontFamily);
       _backgroundColor =
           prefs.getString(_keyBackgroundColor) ?? defaultBackgroundColor;
+      _localeCode = prefs.getString(_keyLocale);
       notifyListeners();
     } catch (_) {
       // Fall back to defaults silently
@@ -88,6 +92,13 @@ class ReaderSettingsService extends ChangeNotifier {
     await _persist();
   }
 
+  Future<void> setLocale(String? code) async {
+    if (code == _localeCode) return;
+    _localeCode = code;
+    notifyListeners();
+    await _persist();
+  }
+
   Future<void> setBackgroundColor(String value) async {
     if (value == _backgroundColor) return;
     _backgroundColor = value;
@@ -107,6 +118,11 @@ class ReaderSettingsService extends ChangeNotifier {
         await prefs.remove(_keyFontFamily);
       }
       await prefs.setString(_keyBackgroundColor, _backgroundColor);
+      if (_localeCode != null) {
+        await prefs.setString(_keyLocale, _localeCode!);
+      } else {
+        await prefs.remove(_keyLocale);
+      }
     } catch (_) {
       // Silently ignore persistence failures
     }

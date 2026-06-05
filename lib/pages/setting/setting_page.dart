@@ -103,6 +103,16 @@ class _SettingPageState extends State<SettingPage> {
               onChanged: _s.setBackgroundColor,
             ),
 
+            const SizedBox(height: AppSpacing.md),
+
+            _SectionLabel('语言'),
+            _SegmentedRow<String>(
+              value: _s.localeCode ?? 'system',
+              options: const ['system', 'zh', 'zh_Hant', 'ja', 'en'],
+              labels: const ['跟随系统', '中文简体', '中文繁體', '日本語', 'English'],
+              onChanged: (v) => _s.setLocale(v == 'system' ? null : v),
+            ),
+
             const SizedBox(height: AppSpacing.xxl),
               ],
             );

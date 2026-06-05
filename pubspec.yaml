@@ -38,6 +38,8 @@ dependencies:
   flutter_markdown: ^0.7.6
   cached_network_image: ^3.4.1
   intl: ^0.20.2
+  flutter_localizations:
+    sdk: flutter
   shared_preferences: ^2.3.0
   gal: ^2.3.0
   permission_handler: ^11.3.0
@@ -58,6 +60,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

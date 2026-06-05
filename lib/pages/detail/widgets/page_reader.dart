@@ -108,14 +108,14 @@ class _PageReaderState extends State<PageReader> {
                 Text(
                   '${_currentPage + 1}',
                   style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 7,
                       color: Color(0xFF8E8E93),
                       fontFeatures: [FontFeature.tabularFigures()]),
                 ),
                 Text(
                   '${slices.length}',
                   style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 7,
                       color: Color(0xFF8E8E93),
                       fontFeatures: [FontFeature.tabularFigures()]),
                 ),

@@ -14,8 +14,9 @@ void main() {
       settingsService: settingsService,
       favoriteService: favoriteService,
     ));
+    await tester.pumpAndSettle(const Duration(seconds: 1));
 
-    // Verify the five tabs exist
+    // Check that the tab labels render (Chinese fallback)
     expect(find.text('首页'), findsOneWidget);
     expect(find.text('全部文章'), findsOneWidget);
     expect(find.text('收藏'), findsOneWidget);

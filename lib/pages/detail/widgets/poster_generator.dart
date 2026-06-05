@@ -122,6 +122,7 @@ class PosterPreview extends StatelessWidget {
   }
 
   void _onSave(BuildContext context, GlobalKey key) async {
+    final navigator = Navigator.of(context);
     try {
       await Permission.storage.request();
 
@@ -139,15 +140,15 @@ class PosterPreview extends StatelessWidget {
         name: 'readmeet_${DateTime.now().millisecondsSinceEpoch}',
       );
 
-      if (context.mounted) {
+      if (navigator.context.mounted) {
         showCupertinoDialog(
-          context: context,
+          context: navigator.context,
           builder: (_) => CupertinoAlertDialog(
             title: const Text('已保存'),
             content: const Text('海报已保存到相册'),
             actions: [
               CupertinoDialogAction(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => navigator.pop(),
                 child: const Text('确定'),
               ),
             ],
@@ -155,15 +156,15 @@ class PosterPreview extends StatelessWidget {
         );
       }
     } catch (e) {
-      if (context.mounted) {
+      if (navigator.context.mounted) {
         showCupertinoDialog(
-          context: context,
+          context: navigator.context,
           builder: (_) => CupertinoAlertDialog(
             title: const Text('保存失败'),
-            content: Text('请检查相册权限'),
+            content: const Text('请检查相册权限'),
             actions: [
               CupertinoDialogAction(
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => navigator.pop(),
                 child: const Text('确定'),
               ),
             ],

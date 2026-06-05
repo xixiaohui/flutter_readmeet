@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../l10n/generated/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 class LoadingIndicator extends StatelessWidget {
@@ -30,15 +31,32 @@ class LoadingIndicator extends StatelessWidget {
 
 class ErrorView extends StatelessWidget {
   final String message;
+  final String? errorCode;
   final VoidCallback onRetry;
   const ErrorView({
     super.key,
     required this.message,
     required this.onRetry,
+    this.errorCode,
   });
+
+  static String? _localizeError(AppLocalizations l10n, String errorCode) {
+    return switch (errorCode) {
+      'requestFailed' => l10n.requestFailed,
+      'articleNotFound' => l10n.articleNotFound,
+      'enterSearchKeyword' => l10n.enterSearchKeyword,
+      'searchFailed' => l10n.searchFailed,
+      _ => null,
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final displayMessage = errorCode != null && l10n != null
+        ? _localizeError(l10n, errorCode!) ?? message
+        : message;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.xl),
@@ -46,7 +64,7 @@ class ErrorView extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              message,
+              displayMessage,
               textAlign: TextAlign.center,
               style: const TextStyle(
                 fontSize: AppText.bodySize,
@@ -58,7 +76,7 @@ class ErrorView extends StatelessWidget {
               color: AppColors.primary,
               borderRadius: BorderRadius.circular(AppRadius.pill),
               onPressed: onRetry,
-              child: const Text('重试'),
+              child: Text(l10n?.retry ?? '重试'),
             ),
           ],
         ),
@@ -68,14 +86,14 @@ class ErrorView extends StatelessWidget {
 }
 
 class EmptyView extends StatelessWidget {
-  final String message;
-  const EmptyView({super.key, this.message = '暂无内容'});
+  final String? message;
+  const EmptyView({super.key, this.message});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        message,
+        message ?? AppLocalizations.of(context)?.noContent ?? '暂无内容',
         style: const TextStyle(
           fontSize: AppText.bodySize,
           color: AppColors.inkMuted48,

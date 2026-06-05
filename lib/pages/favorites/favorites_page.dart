@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../models/author.dart';
 import '../../models/card_item.dart';
 import '../../models/favorite.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../services/api_service.dart';
 import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
@@ -50,12 +51,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: AppColors.canvas,
-      navigationBar: const CupertinoNavigationBar(
+      navigationBar: CupertinoNavigationBar(
         backgroundColor: AppColors.canvasParchment,
         border: null,
-        middle: Text('我的收藏',
-            style:
-                TextStyle(fontWeight: FontWeight.w600, color: AppColors.ink)),
+        middle: Text(
+            AppLocalizations.of(context)?.myFavorites ?? '我的收藏',
+            style: const TextStyle(
+                fontWeight: FontWeight.w600, color: AppColors.ink)),
       ),
       child: SafeArea(
         child: ListenableBuilder(
@@ -63,9 +65,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
           builder: (context, _) {
             final favs = widget.favoriteService.favorites;
             if (favs.isEmpty) {
-              return const Center(
-                child: Text('暂无收藏',
-                    style: TextStyle(
+              return Center(
+                child: Text(
+                    AppLocalizations.of(context)?.noFavorites ?? '暂无收藏',
+                    style: const TextStyle(
                         fontSize: AppText.bodySize,
                         color: AppColors.inkMuted48)),
               );

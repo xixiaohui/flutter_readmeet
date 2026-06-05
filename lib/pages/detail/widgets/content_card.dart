@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/card_item.dart';
 import '../../../theme/app_theme.dart';
 
@@ -97,11 +98,15 @@ class ContentHeader extends StatelessWidget {
                   ),
                 if (blog.authorAvatar != null)
                   const SizedBox(width: 8),
-                Text(
-                  blog.authorName,
-                  style: const TextStyle(
-                    fontSize: AppText.captionSize,
-                    color: AppColors.inkMuted48,
+                Flexible(
+                  child: Text(
+                    blog.authorName ?? AppLocalizations.of(context)?.unknownAuthor ?? '未知作者',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: AppText.captionSize,
+                      color: AppColors.inkMuted48,
+                    ),
                   ),
                 ),
                 if (date.isNotEmpty) ...[

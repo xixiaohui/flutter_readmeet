@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
 import 'package:gal/gal.dart';
 import 'package:permission_handler/permission_handler.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../services/reader_settings_service.dart';
 import '../../../theme/app_theme.dart';
 
@@ -37,11 +38,11 @@ class PosterPreview extends StatelessWidget {
     return CupertinoPageScaffold(
       backgroundColor: AppColors.canvasParchment,
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('生成海报'),
+        middle: Text(AppLocalizations.of(context)?.generatePoster ?? '生成海报'),
         trailing: CupertinoButton(
           padding: EdgeInsets.zero,
           onPressed: () => _onSave(context, key),
-          child: const Text('保存',
+          child: Text(AppLocalizations.of(context)?.save ?? '保存',
               style: TextStyle(color: AppColors.primary, fontSize: 17)),
         ),
       ),
@@ -86,7 +87,7 @@ class PosterPreview extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   Text(
-                    '—— $articleTitle',
+                    '${AppLocalizations.of(context)?.posterTitlePrefix ?? '—— '}$articleTitle',
                     style: TextStyle(
                         fontSize: metaSize,
                         color: AppColors.inkMuted48,
@@ -144,12 +145,12 @@ class PosterPreview extends StatelessWidget {
         showCupertinoDialog(
           context: navigator.context,
           builder: (_) => CupertinoAlertDialog(
-            title: const Text('已保存'),
-            content: const Text('海报已保存到相册'),
+            title: Text(AppLocalizations.of(context)?.savedToGallery ?? '已保存'),
+            content: Text(AppLocalizations.of(context)?.savedToGalleryMsg ?? '海报已保存到相册'),
             actions: [
               CupertinoDialogAction(
                 onPressed: () => navigator.pop(),
-                child: const Text('确定'),
+                child: Text(AppLocalizations.of(context)?.confirm ?? '确定'),
               ),
             ],
           ),
@@ -160,12 +161,12 @@ class PosterPreview extends StatelessWidget {
         showCupertinoDialog(
           context: navigator.context,
           builder: (_) => CupertinoAlertDialog(
-            title: const Text('保存失败'),
-            content: const Text('请检查相册权限'),
+            title: Text(AppLocalizations.of(context)?.saveFailed ?? '保存失败'),
+            content: Text(AppLocalizations.of(context)?.checkPermission ?? '请检查相册权限'),
             actions: [
               CupertinoDialogAction(
                 onPressed: () => navigator.pop(),
-                child: const Text('确定'),
+                child: Text(AppLocalizations.of(context)?.confirm ?? '确定'),
               ),
             ],
           ),

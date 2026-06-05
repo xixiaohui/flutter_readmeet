@@ -195,6 +195,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get poster => 'Poster';
 
   @override
+  String get retry => 'Retry';
+
+  @override
+  String get unknownAuthor => 'Unknown Author';
+
+  @override
+  String get enterSearchKeyword => 'Please enter a search keyword';
+
+  @override
+  String get closeButton => 'Close';
+
+  @override
+  String get searchArticleHint => 'Search articles...';
+
+  @override
+  String get noSearchResults => 'No results found';
+
+  @override
+  String get noArticles => 'No articles';
+
+  @override
+  String get followSystem => 'Follow System';
+
+  @override
+  String get chineseSimplified => 'Simplified Chinese';
+
+  @override
+  String get chineseTraditional => 'Traditional Chinese';
+
+  @override
+  String get japaneseLang => 'Japanese';
+
+  @override
+  String get posterTitlePrefix => '— ';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get typography => 'Typography';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get resetSettings => 'Reset Settings';
+
+  @override
+  String get resetSettingsMsg => 'All settings will be restored to defaults.';
+
+  @override
   String pageIndicator(Object current, Object total) {
     return '$current / $total';
   }

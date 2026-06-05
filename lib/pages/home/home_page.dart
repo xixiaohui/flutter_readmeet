@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/card_item.dart';
 import '../../../services/api_service.dart';
 import '../../../services/favorite_service.dart';
@@ -40,6 +41,7 @@ class _HomePageState extends State<HomePage> {
   List<CardItem>? _sandBlogs;
   List<CardItem>? _burnandBlogs;
   String? _error;
+  String? _errorCode;
 
   @override
   void initState() {
@@ -80,7 +82,10 @@ class _HomePageState extends State<HomePage> {
       setState(() => _featuredBlogs = results);
     } catch (e) {
       if (!mounted) return;
-      setState(() => _error = e.toString());
+      setState(() {
+        _error = e.toString();
+        _errorCode = (e is ApiException) ? e.errorCode : null;
+      });
     }
   }
 
@@ -221,14 +226,14 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
       backgroundColor: AppColors.surfaceBlack,
-      navigationBar: const CupertinoNavigationBar(
+      navigationBar: CupertinoNavigationBar(
         backgroundColor: AppColors.surfaceBlack,
         border: null,
         padding: EdgeInsetsDirectional.zero,
         leading: Padding(
           padding: EdgeInsets.only(left: 16),
           child: Text(
-            'ReadMeet',
+            AppLocalizations.of(context)?.appTitle ?? 'ReadMeet',
             style: TextStyle(
               fontSize: AppText.taglineSize,
               fontWeight: FontWeight.w600,
@@ -251,7 +256,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBody() {
     if (_error != null && _featuredBlogs == null && _heroBlog == null) {
-      return ErrorView(message: _error!, onRetry: _loadFeatured);
+      return ErrorView(message: _error!, errorCode: _errorCode, onRetry: _loadFeatured);
     }
 
     final featured = _featuredBlogs ?? [];
@@ -284,8 +289,8 @@ class _HomePageState extends State<HomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          '最新文章',
+                        Text(
+                          AppLocalizations.of(context)?.latestArticles ?? '最新文章',
                           style: TextStyle(
                             fontSize: AppText.bodySize,
                             fontWeight: FontWeight.w600,
@@ -293,7 +298,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => _openHotList('最新文章', '最新'),
+                          onTap: () => _openHotList(AppLocalizations.of(context)?.latestArticles ?? '最新文章', '最新'),
                           child: const Text(
                             '查看全部',
                             style: TextStyle(
@@ -333,8 +338,8 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      '中文精选',
+                    Text(
+                      AppLocalizations.of(context)?.chineseFeatured ?? '中文精选',
                       style: TextStyle(
                         fontSize: AppText.bodySize,
                         fontWeight: FontWeight.w600,
@@ -342,10 +347,10 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => _openHotList('中文精选', 'zh'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
+                      onTap: () => _openHotList(AppLocalizations.of(context)?.chineseFeatured ?? '中文精选', 'zh'),
+                      child: Text(
+                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                        style: const TextStyle(
                           fontSize: AppText.bodySize,
                           color: AppColors.primary,
                         ),
@@ -381,8 +386,8 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      '日文精选',
+                    Text(
+                      AppLocalizations.of(context)?.japaneseFeatured ?? '日文精选',
                       style: TextStyle(
                         fontSize: AppText.bodySize,
                         fontWeight: FontWeight.w600,
@@ -390,10 +395,10 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => _openHotList('日文精选', 'ja'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
+                      onTap: () => _openHotList(AppLocalizations.of(context)?.japaneseFeatured ?? '日文精选', 'ja'),
+                      child: Text(
+                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                        style: const TextStyle(
                           fontSize: AppText.bodySize,
                           color: AppColors.primary,
                         ),
@@ -439,9 +444,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () => _openHotListAuthor('Shakespeare', 'Shakespeare'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                        style: const TextStyle(
                           fontSize: AppText.bodySize,
                           color: AppColors.primary,
                         ),
@@ -489,9 +494,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () => _openHotListAuthor('Twain, Mark', 'Twain, Mark'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                        style: const TextStyle(
                           fontSize: AppText.bodySize,
                           color: AppColors.primary,
                         ),
@@ -539,9 +544,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () => _openHotListAuthor('Byron', 'Byron'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                        style: const TextStyle(
                           fontSize: AppText.bodySize,
                           color: AppColors.primary,
                         ),
@@ -589,9 +594,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () => _openHotListAuthor('Jefferson, Thomas', 'Jefferson, Thomas'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                        style: const TextStyle(
                           fontSize: AppText.bodySize,
                           color: AppColors.primary,
                         ),
@@ -639,9 +644,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () => _openHotListAuthor('Lincoln, Abraham', 'Lincoln, Abraham'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                        style: const TextStyle(
                           fontSize: AppText.bodySize,
                           color: AppColors.primary,
                         ),
@@ -689,9 +694,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () => _openHotListAuthor('Sand, George', 'Sand, George'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                        style: const TextStyle(
                           fontSize: AppText.bodySize,
                           color: AppColors.primary,
                         ),
@@ -739,9 +744,9 @@ class _HomePageState extends State<HomePage> {
                     ),
                     GestureDetector(
                       onTap: () => _openHotListAuthor('Burnand, F. C.', 'Burnand, F. C.'),
-                      child: const Text(
-                        '查看全部',
-                        style: TextStyle(
+                      child: Text(
+                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                        style: const TextStyle(
                           fontSize: AppText.bodySize,
                           color: AppColors.primary,
                         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart'
     show
         Divider,
@@ -279,22 +280,22 @@ class AnnotatedChunkList extends StatelessWidget {
     if (selLen < 2) return const SizedBox.shrink();
 
     final items = <_MenuItem>[
-      _MenuItem(icon: Icons.copy, label: '复制', onTap: () {
+      _MenuItem(icon: Icons.copy, label: AppLocalizations.of(ctx)?.copy ?? '复制', onTap: () {
         st.copySelection(SelectionChangedCause.toolbar);
         st.hideToolbar();
       }),
-      _MenuItem(icon: Icons.select_all, label: '全选', onTap: () {
+      _MenuItem(icon: Icons.select_all, label: AppLocalizations.of(ctx)?.selectAll ?? '全选', onTap: () {
         st.selectAll(SelectionChangedCause.toolbar);
         st.hideToolbar();
       }),
       _MenuItem.divider,
-      _MenuItem(icon: Icons.format_paint, label: '高亮标注', onTap: () =>
+      _MenuItem(icon: Icons.format_paint, label: AppLocalizations.of(ctx)?.highlight ?? '高亮标注', onTap: () =>
           _onSelectAction(
               ctx, st, localBaseOffset, AnnotationType.highlight)),
-      _MenuItem(icon: Icons.format_underline, label: '下划线', onTap: () =>
+      _MenuItem(icon: Icons.format_underline, label: AppLocalizations.of(ctx)?.underline ?? '下划线', onTap: () =>
           _onSelectAction(
               ctx, st, localBaseOffset, AnnotationType.underline)),
-      _MenuItem(icon: Icons.notes, label: '添加笔记', onTap: () {
+      _MenuItem(icon: Icons.notes, label: AppLocalizations.of(ctx)?.addNote ?? '添加笔记', onTap: () {
           final sel = st.textEditingValue.selection;
           if (!sel.isValid || sel.isCollapsed) return;
           final text = st.textEditingValue.text;
@@ -304,7 +305,7 @@ class AnnotatedChunkList extends StatelessWidget {
               localBaseOffset + sel.start, localBaseOffset + sel.end);
         }),
         _MenuItem.divider,
-        _MenuItem(icon: Icons.image, label: '生成海报', onTap: () {
+        _MenuItem(icon: Icons.image, label: AppLocalizations.of(ctx)?.generatePoster ?? '生成海报', onTap: () {
           final sel = st.textEditingValue.selection;
           if (!sel.isValid || sel.isCollapsed) return;
           final text = st.textEditingValue.text;
@@ -431,7 +432,7 @@ class _ColorPickerSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoActionSheet(
-      title: const Text('选择颜色'),
+      title: Text(AppLocalizations.of(context)?.selectColor ?? '选择颜色'),
       actions: colors
           .map((c) => CupertinoActionSheetAction(
                 onPressed: () => Navigator.pop(context, c),
@@ -454,7 +455,7 @@ class _ColorPickerSheet extends StatelessWidget {
           .toList(),
       cancelButton: CupertinoActionSheetAction(
         onPressed: () => Navigator.pop(context),
-        child: const Text('取消'),
+        child: Text(AppLocalizations.of(context)?.cancel ?? '取消'),
       ),
     );
   }

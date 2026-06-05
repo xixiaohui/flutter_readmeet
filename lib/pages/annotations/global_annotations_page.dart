@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/annotation.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../services/api_service.dart';
 import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
@@ -85,18 +86,18 @@ class _GlobalAnnotationsPageState extends State<GlobalAnnotationsPage> {
     });
     return CupertinoPageScaffold(
       backgroundColor: AppColors.canvasParchment,
-      navigationBar: const CupertinoNavigationBar(
+      navigationBar: CupertinoNavigationBar(
         backgroundColor: AppColors.canvas,
         border: null,
-        middle: Text('标注列表',
-            style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.ink)),
+        middle: Text(AppLocalizations.of(context)?.annotationList ?? '标注列表',
+            style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.ink)),
       ),
       child: SafeArea(
         child: _isLoading
             ? const Center(child: CupertinoActivityIndicator())
             : _groups.isEmpty
-                ? const Center(
-                    child: Text('暂无标注',
+                ? Center(
+                    child: Text(AppLocalizations.of(context)?.noAnnotations ?? '暂无标注',
                         style: TextStyle(
                             fontSize: AppText.bodySize,
                             color: AppColors.inkMuted48)))

@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../models/card_item.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../services/api_service.dart';
 import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/loading_indicator.dart';
 import '../detail/detail_page.dart';
-import 'widgets/search_bar.dart';
 import 'widgets/blog_row.dart';
 
 class ListPage extends StatefulWidget {
@@ -27,7 +27,6 @@ class ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<ListPage> {
-  final _searchController = TextEditingController();
   final _scrollController = ScrollController();
 
   List<CardItem> _blogs = [];
@@ -36,23 +35,18 @@ class _ListPageState extends State<ListPage> {
   bool _isLoading = false;
   bool _isLoadingMore = false;
   String? _error;
-
-  // Search state
-  bool _isSearching = false;
-  List<CardItem> _searchResults = [];
-  int _searchOffset = 0;
-  bool _hasMoreSearch = true;
+  String? _errorCode;
 
   @override
   void initState() {
     super.initState();
+    widget.favoriteService.load();
     _loadBlogs();
     _scrollController.addListener(_onScroll);
   }
 
   @override
   void dispose() {
-    _searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
@@ -60,11 +54,7 @@ class _ListPageState extends State<ListPage> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      if (_isSearching) {
-        _loadMoreSearch();
-      } else {
-        _loadMore();
-      }
+      _loadMore();
     }
   }
 
@@ -86,6 +76,7 @@ class _ListPageState extends State<ListPage> {
       if (!mounted) return;
       setState(() {
         _error = e.toString();
+        _errorCode = (e is ApiException) ? e.errorCode : null;
         _isLoading = false;
       });
     }
@@ -112,72 +103,6 @@ class _ListPageState extends State<ListPage> {
     }
   }
 
-  Future<void> _onSearch(String query) async {
-    if (query.isEmpty) {
-      setState(() {
-        _isSearching = false;
-        _searchResults = [];
-      });
-      return;
-    }
-
-    setState(() {
-      _isSearching = true;
-      _isLoading = true;
-      _searchOffset = 0;
-      _hasMoreSearch = true;
-    });
-
-    try {
-      final results =
-          await widget.apiService.searchBlogs(query, limit: 20, offset: 0);
-      if (!mounted) return;
-      setState(() {
-        _searchResults = results;
-        _isLoading = false;
-        _hasMoreSearch = results.length >= 20;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<void> _loadMoreSearch() async {
-    if (_isLoadingMore || !_hasMoreSearch) return;
-
-    setState(() => _isLoadingMore = true);
-    final nextOffset = _searchOffset + 20;
-    try {
-      final results = await widget.apiService.searchBlogs(
-        _searchController.text,
-        limit: 20,
-        offset: nextOffset,
-      );
-      if (!mounted) return;
-      setState(() {
-        _searchResults.addAll(results);
-        _searchOffset = nextOffset;
-        _isLoadingMore = false;
-        _hasMoreSearch = results.length >= 20;
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() => _isLoadingMore = false);
-    }
-  }
-
-  void _clearSearch() {
-    _searchController.clear();
-    setState(() {
-      _isSearching = false;
-      _searchResults = [];
-    });
-  }
-
   void _openDetail(CardItem item) {
     HapticFeedback.lightImpact();
     Navigator.of(context).push(
@@ -194,65 +119,52 @@ class _ListPageState extends State<ListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final displayList = _isSearching ? _searchResults : _blogs;
-
     return CupertinoPageScaffold(
       backgroundColor: AppColors.canvas,
-      navigationBar: const CupertinoNavigationBar(
+      navigationBar: CupertinoNavigationBar(
         backgroundColor: AppColors.canvasParchment,
         border: null,
         middle: Text(
-          '全部文章',
-          style: TextStyle(
+          AppLocalizations.of(context)?.allArticlesTab ?? '全部文章',
+          style: const TextStyle(
             fontWeight: FontWeight.w600,
             color: AppColors.ink,
           ),
         ),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            BlogSearchBar(
-              controller: _searchController,
-              onChanged: _onSearch,
-              onClear: _clearSearch,
-            ),
-            Expanded(child: _buildContent(displayList)),
-          ],
-        ),
+        child: _buildContent(),
       ),
     );
   }
 
-  Widget _buildContent(List<CardItem> displayList) {
+  Widget _buildContent() {
     if (_isLoading) {
-      return const LoadingIndicator(message: '加载中...');
+      return LoadingIndicator(message: AppLocalizations.of(context)?.loading ?? '加载中...');
     }
 
-    if (_error != null && displayList.isEmpty) {
-      return ErrorView(message: _error!, onRetry: _loadBlogs);
+    if (_error != null && _blogs.isEmpty) {
+      return ErrorView(message: _error!, errorCode: _errorCode, onRetry: _loadBlogs);
     }
 
-    if (displayList.isEmpty) {
-      if (_isSearching) {
-        return const EmptyView(message: '未找到相关内容');
-      }
-      return const EmptyView(message: '暂无文章');
+    if (_blogs.isEmpty) {
+      return EmptyView(message: AppLocalizations.of(context)?.noArticles ?? '暂无文章');
     }
 
     return ListView.builder(
       controller: _scrollController,
-      itemCount: displayList.length + (_isLoadingMore ? 1 : 0),
+      itemCount: _blogs.length + (_isLoadingMore ? 1 : 0),
       itemBuilder: (context, index) {
-        if (index >= displayList.length) {
+        if (index >= _blogs.length) {
           return const Padding(
             padding: EdgeInsets.all(AppSpacing.md),
             child: CupertinoActivityIndicator(),
           );
         }
         return BlogRow(
-          item: displayList[index],
-          onTap: () => _openDetail(displayList[index]),
+          item: _blogs[index],
+          favoriteService: widget.favoriteService,
+          onTap: () => _openDetail(_blogs[index]),
         );
       },
     );

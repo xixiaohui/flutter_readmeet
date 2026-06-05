@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import '../../models/card_item.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../services/api_service.dart';
 import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
@@ -44,6 +45,7 @@ class _HotPageState extends State<HotPage> {
   bool _isLoading = false;
   bool _isLoadingMore = false;
   String? _error;
+  String? _errorCode;
   int _offset = 0;
   int _page = 1;
   bool _hasMore = true;
@@ -98,6 +100,7 @@ class _HotPageState extends State<HotPage> {
       if (!mounted) return;
       setState(() {
         _error = e.toString();
+        _errorCode = (e is ApiException) ? e.errorCode : null;
         _isLoading = false;
       });
     }
@@ -177,15 +180,15 @@ class _HotPageState extends State<HotPage> {
 
   Widget _buildBody() {
     if (_isLoading) {
-      return const LoadingIndicator(message: '加载中...');
+      return LoadingIndicator(message: AppLocalizations.of(context)?.loading ?? '加载中...');
     }
 
     if (_error != null && _blogs.isEmpty) {
-      return ErrorView(message: _error!, onRetry: _load);
+      return ErrorView(message: _error!, errorCode: _errorCode, onRetry: _load);
     }
 
     if (_blogs.isEmpty) {
-      return const EmptyView(message: '暂无精选内容');
+      return EmptyView(message: AppLocalizations.of(context)?.noFeatured ?? '暂无精选内容');
     }
 
     return ListView.builder(

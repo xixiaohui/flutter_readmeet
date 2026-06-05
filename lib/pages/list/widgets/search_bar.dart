@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../theme/app_theme.dart';
 
 class BlogSearchBar extends StatelessWidget {
@@ -43,7 +44,7 @@ class BlogSearchBar extends StatelessWidget {
             Expanded(
               child: CupertinoTextField(
                 controller: controller,
-                placeholder: '搜索文章...',
+                placeholder: AppLocalizations.of(context)?.searchArticleHint ?? '搜索文章...',
                 placeholderStyle: const TextStyle(
                   color: AppColors.inkMuted48,
                   fontSize: AppText.bodySize,

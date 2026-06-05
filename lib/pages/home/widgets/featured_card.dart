@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/card_item.dart';
 import '../../../theme/app_theme.dart';
 
@@ -63,7 +64,7 @@ class FeaturedCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    item.authorName,
+                    item.authorName ?? AppLocalizations.of(context)?.unknownAuthor ?? '未知作者',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(

@@ -7,7 +7,8 @@ import '../models/card_item.dart';
 class ApiException implements Exception {
   final String message;
   final int? statusCode;
-  const ApiException(this.message, {this.statusCode});
+  final String errorCode;
+  const ApiException(this.message, {this.statusCode, this.errorCode = ''});
 
   @override
   String toString() => message;
@@ -48,7 +49,7 @@ class ApiService {
       final total = body['total'] as int? ?? 0;
       return BlogListResponse(data: list, total: total);
     } else {
-      throw ApiException('请求失败', statusCode: response.statusCode);
+      throw ApiException('请求失败', statusCode: response.statusCode, errorCode: 'requestFailed');
     }
   }
 
@@ -63,9 +64,9 @@ class ApiService {
         json.decode(response.body) as Map<String, dynamic>,
       );
     } else if (response.statusCode == 404) {
-      throw ApiException('文章不存在', statusCode: 404);
+      throw ApiException('文章不存在', statusCode: 404, errorCode: 'articleNotFound');
     } else {
-      throw ApiException('请求失败', statusCode: response.statusCode);
+      throw ApiException('请求失败', statusCode: response.statusCode, errorCode: 'requestFailed');
     }
   }
 
@@ -88,9 +89,9 @@ class ApiService {
           .toList();
       return list;
     } else if (response.statusCode == 400) {
-      throw ApiException('请输入搜索关键词', statusCode: 400);
+      throw ApiException('请输入搜索关键词', statusCode: 400, errorCode: 'enterSearchKeyword');
     } else {
-      throw ApiException('搜索失败', statusCode: response.statusCode);
+      throw ApiException('搜索失败', statusCode: response.statusCode, errorCode: 'searchFailed');
     }
   }
 
@@ -113,7 +114,7 @@ class ApiService {
           .toList();
       return list;
     } else {
-      throw ApiException('搜索失败', statusCode: response.statusCode);
+      throw ApiException('搜索失败', statusCode: response.statusCode, errorCode: 'searchFailed');
     }
   }
 
@@ -132,7 +133,7 @@ class ApiService {
         json.decode(response.body) as Map<String, dynamic>,
       );
     } else {
-      throw ApiException('请求失败', statusCode: response.statusCode);
+      throw ApiException('请求失败', statusCode: response.statusCode, errorCode: 'requestFailed');
     }
   }
 

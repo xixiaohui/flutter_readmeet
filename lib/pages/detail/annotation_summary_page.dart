@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../models/annotation.dart';
 import '../../services/annotation_store.dart';
 import '../../services/reader_settings_service.dart';
@@ -40,7 +41,7 @@ class AnnotationSummaryPage extends StatelessWidget {
             ? CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: () => _confirmDeleteAll(context),
-                child: Text('清空',
+                child: Text(AppLocalizations.of(context)?.clear ?? '清空',
                     style: TextStyle(
                         color: AppColors.inkMuted48,
                         fontSize: s.fontSize - 1)),
@@ -54,7 +55,7 @@ class AnnotationSummaryPage extends StatelessWidget {
             final anns = store.annotations;
             if (anns.isEmpty) {
               return Center(
-                child: Text('暂无标注',
+                child: Text(AppLocalizations.of(context)?.noAnnotations ?? '暂无标注',
                     style: TextStyle(
                         fontSize: s.fontSize,
                         color: AppColors.inkMuted48)),
@@ -88,14 +89,14 @@ class AnnotationSummaryPage extends StatelessWidget {
     showCupertinoDialog(
       context: context,
       builder: (_) => CupertinoAlertDialog(
-        title: const Text('清空所有标注'),
-        content: const Text('此操作不可撤销'),
+        title: Text(AppLocalizations.of(context)?.confirmDeleteAll ?? '清空所有标注'),
+        content: Text(AppLocalizations.of(context)?.irreversible ?? '此操作不可撤销'),
         actions: [
           CupertinoDialogAction(
             onPressed: () {
               if (navigator.canPop()) navigator.pop();
             },
-            child: const Text('取消'),
+            child: Text(AppLocalizations.of(context)?.cancel ?? '取消'),
           ),
           CupertinoDialogAction(
             isDestructiveAction: true,
@@ -106,7 +107,7 @@ class AnnotationSummaryPage extends StatelessWidget {
               }
               onDeleteAll?.call();
             },
-            child: const Text('清空'),
+            child: Text(AppLocalizations.of(context)?.clear ?? '清空'),
           ),
         ],
       ),
@@ -183,7 +184,7 @@ class _AnnotationCardState extends State<_AnnotationCard> {
                       horizontal: 12, vertical: 4),
                   minimumSize: Size.zero,
                   onPressed: () => _openPoster(context),
-                  child: Text('海报',
+                  child: Text(AppLocalizations.of(context)?.poster ?? '海报',
                       style: TextStyle(
                           fontSize: smallSize,
                           color: AppColors.primary)),
@@ -193,7 +194,7 @@ class _AnnotationCardState extends State<_AnnotationCard> {
                       horizontal: 12, vertical: 4),
                   minimumSize: Size.zero,
                   onPressed: () => _addNote(context),
-                  child: Text('笔记',
+                  child: Text(AppLocalizations.of(context)?.note ?? '笔记',
                       style: TextStyle(
                           fontSize: smallSize,
                           color: AppColors.primary)),
@@ -204,7 +205,7 @@ class _AnnotationCardState extends State<_AnnotationCard> {
                         horizontal: 12, vertical: 4),
                     minimumSize: Size.zero,
                     onPressed: () => _clearNotes(),
-                    child: Text('清空笔记',
+                    child: Text(AppLocalizations.of(context)?.clearNotes ?? '清空笔记',
                         style: TextStyle(
                             fontSize: smallSize,
                             color: AppColors.inkMuted48)),
@@ -214,7 +215,7 @@ class _AnnotationCardState extends State<_AnnotationCard> {
                       horizontal: 12, vertical: 4),
                   minimumSize: Size.zero,
                   onPressed: widget.onDelete,
-                  child: Text('删除',
+                  child: Text(AppLocalizations.of(context)?.delete ?? '删除',
                       style: TextStyle(
                           fontSize: smallSize,
                           color: CupertinoColors.destructiveRed)),
@@ -233,14 +234,14 @@ class _AnnotationCardState extends State<_AnnotationCard> {
     showCupertinoDialog(
       context: navigator.context,
       builder: (_) => CupertinoAlertDialog(
-        title: const Text('添加笔记'),
+        title: Text(AppLocalizations.of(context)?.addNote ?? '添加笔记'),
         content: Padding(
           padding: const EdgeInsets.only(top: 12),
           child: CupertinoTextField(
             controller: controller,
             autofocus: true,
             maxLines: 4,
-            placeholder: '写下你的想法...',
+            placeholder: AppLocalizations.of(context)?.writeNote ?? '写下你的想法...',
           ),
         ),
         actions: [
@@ -248,7 +249,7 @@ class _AnnotationCardState extends State<_AnnotationCard> {
             onPressed: () {
               if (navigator.canPop()) navigator.pop();
             },
-            child: const Text('取消'),
+            child: Text(AppLocalizations.of(context)?.cancel ?? '取消'),
           ),
           CupertinoDialogAction(
             onPressed: () {
@@ -262,7 +263,7 @@ class _AnnotationCardState extends State<_AnnotationCard> {
                 widget.onEditNotes(updated);
               }
             },
-            child: const Text('保存'),
+            child: Text(AppLocalizations.of(context)?.save ?? '保存'),
           ),
         ],
       ),

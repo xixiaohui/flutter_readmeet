@@ -31,19 +31,6 @@ class ReaderSettingsService extends ChangeNotifier {
   String get backgroundColor => _backgroundColor;
   String? get localeCode => _localeCode;
 
-  // Human-readable labels for UI
-  static const Map<String?, String> fontFamilyLabels = {
-    null: '系统默认',
-    'serif': '宋体',
-    'monospace': '等宽',
-  };
-
-  static const Map<String, String> backgroundColorLabels = {
-    'white': '白色',
-    'parchment': '米色',
-    'dark': '深色',
-  };
-
   /// Load persisted settings (or use defaults on first run / error).
   Future<void> load() async {
     try {
@@ -102,6 +89,18 @@ class ReaderSettingsService extends ChangeNotifier {
   Future<void> setBackgroundColor(String value) async {
     if (value == _backgroundColor) return;
     _backgroundColor = value;
+    notifyListeners();
+    await _persist();
+  }
+
+  /// Reset all settings to their default values.
+  Future<void> resetToDefaults() async {
+    _fontSize = defaultFontSize;
+    _lineHeight = defaultLineHeight;
+    _paragraphSpacing = defaultParagraphSpacing;
+    _fontFamily = null;
+    _backgroundColor = defaultBackgroundColor;
+    _localeCode = null;
     notifyListeners();
     await _persist();
   }

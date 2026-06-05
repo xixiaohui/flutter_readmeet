@@ -104,7 +104,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In zh, this message translates to:
-  /// **'ReadMeet'**
+  /// **'见书'**
   String get appTitle;
 
   /// No description provided for @homeTab.
@@ -472,6 +472,108 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'海报'**
   String get poster;
+
+  /// No description provided for @retry.
+  ///
+  /// In zh, this message translates to:
+  /// **'重试'**
+  String get retry;
+
+  /// No description provided for @unknownAuthor.
+  ///
+  /// In zh, this message translates to:
+  /// **'未知作者'**
+  String get unknownAuthor;
+
+  /// No description provided for @enterSearchKeyword.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入搜索关键词'**
+  String get enterSearchKeyword;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'关闭'**
+  String get closeButton;
+
+  /// No description provided for @searchArticleHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索文章...'**
+  String get searchArticleHint;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In zh, this message translates to:
+  /// **'未找到相关内容'**
+  String get noSearchResults;
+
+  /// No description provided for @noArticles.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无文章'**
+  String get noArticles;
+
+  /// No description provided for @followSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统'**
+  String get followSystem;
+
+  /// No description provided for @chineseSimplified.
+  ///
+  /// In zh, this message translates to:
+  /// **'中文简体'**
+  String get chineseSimplified;
+
+  /// No description provided for @chineseTraditional.
+  ///
+  /// In zh, this message translates to:
+  /// **'中文繁體'**
+  String get chineseTraditional;
+
+  /// No description provided for @japaneseLang.
+  ///
+  /// In zh, this message translates to:
+  /// **'日本語'**
+  String get japaneseLang;
+
+  /// No description provided for @posterTitlePrefix.
+  ///
+  /// In zh, this message translates to:
+  /// **'—— '**
+  String get posterTitlePrefix;
+
+  /// No description provided for @reset.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复'**
+  String get reset;
+
+  /// No description provided for @typography.
+  ///
+  /// In zh, this message translates to:
+  /// **'排版'**
+  String get typography;
+
+  /// No description provided for @appearance.
+  ///
+  /// In zh, this message translates to:
+  /// **'外观'**
+  String get appearance;
+
+  /// No description provided for @resetSettings.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复默认设置'**
+  String get resetSettings;
+
+  /// No description provided for @resetSettingsMsg.
+  ///
+  /// In zh, this message translates to:
+  /// **'所有设置将恢复为默认值'**
+  String get resetSettingsMsg;
 
   /// No description provided for @pageIndicator.
   ///

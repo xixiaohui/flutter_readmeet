@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/annotation.dart';
 import '../../../services/annotation_store.dart';
 import '../../../services/reader_settings_service.dart';
@@ -155,12 +156,12 @@ class _AnnotationBadge extends StatelessWidget {
     showCupertinoDialog(
       context: context,
       builder: (_) => CupertinoAlertDialog(
-        title: const Text('笔记'),
+        title: Text(AppLocalizations.of(context)?.note ?? '笔记'),
         content: Text(ann.notes.join('\n')),
         actions: [
           CupertinoDialogAction(
             onPressed: () => Navigator.pop(context),
-            child: const Text('关闭'),
+            child: Text(AppLocalizations.of(context)?.closeButton ?? '关闭'),
           ),
         ],
       ),

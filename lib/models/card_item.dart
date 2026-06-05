@@ -80,8 +80,8 @@ class CardItem {
         'blog_index': blogIndex,
       };
 
-  String get authorName =>
-      authors.isNotEmpty ? (authors.first.name ?? '未知作者') : '未知作者';
+  String? get authorName =>
+      authors.isNotEmpty ? authors.first.name : null;
 
   String? get authorAvatar =>
       authors.isNotEmpty ? authors.first.avatar : null;

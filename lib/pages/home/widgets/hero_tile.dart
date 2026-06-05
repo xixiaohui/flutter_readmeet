@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/card_item.dart';
 import '../../../theme/app_theme.dart';
 
@@ -77,8 +78,8 @@ class HeroTile extends StatelessWidget {
                   vertical: 11,
                 ),
                 onPressed: onTap,
-                child: const Text(
-                  '开始阅读',
+                child: Text(
+                  AppLocalizations.of(context)?.startReading ?? '开始阅读',
                   style: TextStyle(
                     fontSize: AppText.bodySize,
                     fontWeight: FontWeight.w400,

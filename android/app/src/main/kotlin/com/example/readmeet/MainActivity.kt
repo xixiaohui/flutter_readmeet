@@ -1,4 +1,4 @@
-package com.example.readmeet
+package com.xxh.readmeet
 
 import io.flutter.embedding.android.FlutterActivity
 

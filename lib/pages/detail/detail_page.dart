@@ -11,6 +11,7 @@ import '../../services/favorite_service.dart';
 import '../../services/reader_settings_service.dart';
 import '../../services/reading_progress_service.dart';
 import '../../theme/app_theme.dart';
+import '../../l10n/generated/app_localizations.dart';
 import '../../widgets/loading_indicator.dart';
 import 'widgets/page_reader.dart';
 import 'widgets/markdown_ast.dart';
@@ -42,6 +43,7 @@ class _DetailPageState extends State<DetailPage> {
 
   CardItem? _blog;
   String? _error;
+  String? _errorCode;
   List<MarkdownSegment>? _allSegments;
   int _currentPage = 0;
   int _totalPages = 0;
@@ -97,7 +99,10 @@ class _DetailPageState extends State<DetailPage> {
       ContentCacheService().set(widget.blogId, blog);
     } catch (e) {
       if (!mounted) return;
-      if (_blog == null) setState(() => _error = e.toString());
+      if (_blog == null) setState(() {
+        _error = e.toString();
+        _errorCode = (e is ApiException) ? e.errorCode : null;
+      });
     }
   }
 
@@ -197,7 +202,7 @@ class _DetailPageState extends State<DetailPage> {
       builder: (_) => PosterPreview(
         quote: text,
         articleTitle: blog.title,
-        authorName: blog.authorName,
+        authorName: blog.authorName ?? '未知作者',
         date: formattedDate,
         settings: widget.settingsService,
       ),
@@ -246,14 +251,14 @@ class _DetailPageState extends State<DetailPage> {
                 HapticFeedback.lightImpact();
                 Navigator.of(context).pop();
               },
-              child: const Row(
+              child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(CupertinoIcons.back,
+                  const Icon(CupertinoIcons.back,
                       color: AppColors.primary, size: 20),
-                  SizedBox(width: 4),
-                  Text('返回',
-                      style: TextStyle(
+                  const SizedBox(width: 4),
+                  Text(AppLocalizations.of(context)?.back ?? '返回',
+                      style: const TextStyle(
                           color: AppColors.primary,
                           fontSize: AppText.bodySize)),
                 ],
@@ -271,7 +276,7 @@ class _DetailPageState extends State<DetailPage> {
                     widget.favoriteService.toggle(
                       blogId: blog.id,
                       title: blog.title,
-                      authorName: blog.authorName,
+                      authorName: blog.authorName ?? '未知作者',
                       coverImg: blog.img,
                     );
                   },
@@ -292,7 +297,7 @@ class _DetailPageState extends State<DetailPage> {
                     },
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 8),
                 // Annotation button
                 GestureDetector(
                   onTap: () {
@@ -305,7 +310,7 @@ class _DetailPageState extends State<DetailPage> {
                           store: _annotationStore,
                           settings: widget.settingsService,
                           articleTitle: blog.title,
-                          authorName: blog.authorName,
+                          authorName: blog.authorName ?? '未知作者',
                           date: date.length >= 10
                               ? date.substring(0, 10)
                               : date,
@@ -322,11 +327,14 @@ class _DetailPageState extends State<DetailPage> {
                             color: AppColors.primary, size: 18),
                         if (_annotationStore.count > 0) ...[
                           const SizedBox(width: 2),
-                          Text('${_annotationStore.count}',
-                              style: const TextStyle(
-                                  fontSize: AppText.finePrintSize,
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w600)),
+                          Flexible(
+                            child: Text('${_annotationStore.count}',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontSize: AppText.finePrintSize,
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w600)),
+                          ),
                         ],
                       ],
                     ),
@@ -351,19 +359,19 @@ class _DetailPageState extends State<DetailPage> {
 
   Widget _buildBody(List<PageSlice> slices) {
     if (_error != null) {
-      return ErrorView(message: _error!, onRetry: _loadDetail);
+      return ErrorView(message: _error!, errorCode: _errorCode, onRetry: _loadDetail);
     }
 
     if (_blog == null) {
-      return const LoadingIndicator(message: '加载中...');
+      return LoadingIndicator(message: AppLocalizations.of(context)?.loading ?? '加载中...');
     }
 
     if (_allSegments == null || _allSegments!.isEmpty) {
-      return const EmptyView(message: '暂无内容');
+      return const EmptyView();
     }
 
     if (slices.isEmpty) {
-      return const LoadingIndicator(message: '排版中...');
+      return LoadingIndicator(message: AppLocalizations.of(context)?.typesetting ?? '排版中...');
     }
 
     _totalPages = slices.length;
@@ -411,24 +419,24 @@ class _NoteInputDialogState extends State<_NoteInputDialog> {
   @override
   Widget build(BuildContext context) {
     return CupertinoAlertDialog(
-      title: const Text('添加笔记'),
+      title: Text(AppLocalizations.of(context)?.addNote ?? '添加笔记'),
       content: Padding(
         padding: const EdgeInsets.only(top: 12),
         child: CupertinoTextField(
           controller: _controller,
           autofocus: true,
           maxLines: 4,
-          placeholder: '写下你的想法...',
+          placeholder: AppLocalizations.of(context)?.writeNote ?? '写下你的想法...',
         ),
       ),
       actions: [
         CupertinoDialogAction(
           onPressed: () => Navigator.pop(context),
-          child: const Text('取消'),
+          child: Text(AppLocalizations.of(context)?.cancel ?? '取消'),
         ),
         CupertinoDialogAction(
           onPressed: () => Navigator.pop(context, _controller.text),
-          child: const Text('保存'),
+          child: Text(AppLocalizations.of(context)?.save ?? '保存'),
         ),
       ],
     );

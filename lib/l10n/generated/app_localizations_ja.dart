@@ -195,6 +195,57 @@ class AppLocalizationsJa extends AppLocalizations {
   String get poster => 'ポスター';
 
   @override
+  String get retry => '再試行';
+
+  @override
+  String get unknownAuthor => '不明な著者';
+
+  @override
+  String get enterSearchKeyword => '検索キーワードを入力してください';
+
+  @override
+  String get closeButton => '閉じる';
+
+  @override
+  String get searchArticleHint => '記事を検索...';
+
+  @override
+  String get noSearchResults => '該当する結果がありません';
+
+  @override
+  String get noArticles => '記事がありません';
+
+  @override
+  String get followSystem => 'システムに従う';
+
+  @override
+  String get chineseSimplified => '簡体字中国語';
+
+  @override
+  String get chineseTraditional => '繁体字中国語';
+
+  @override
+  String get japaneseLang => '日本語';
+
+  @override
+  String get posterTitlePrefix => '—— ';
+
+  @override
+  String get reset => 'リセット';
+
+  @override
+  String get typography => 'タイポグラフィ';
+
+  @override
+  String get appearance => '外観';
+
+  @override
+  String get resetSettings => '設定をリセット';
+
+  @override
+  String get resetSettingsMsg => 'すべての設定がデフォルトに戻ります。';
+
+  @override
   String pageIndicator(Object current, Object total) {
     return '$current / $total';
   }

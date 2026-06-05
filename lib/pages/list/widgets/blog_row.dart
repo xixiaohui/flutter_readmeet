@@ -1,13 +1,79 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/card_item.dart';
+import '../../../services/favorite_service.dart';
 import '../../../theme/app_theme.dart';
 
 class BlogRow extends StatelessWidget {
   final CardItem item;
   final VoidCallback onTap;
+  final String? highlightQuery;
+  final FavoriteService? favoriteService;
 
-  const BlogRow({super.key, required this.item, required this.onTap});
+  const BlogRow({
+    super.key,
+    required this.item,
+    required this.onTap,
+    this.highlightQuery,
+    this.favoriteService,
+  });
+
+  Widget _buildTitle(String title) {
+    if (highlightQuery == null || highlightQuery!.isEmpty) {
+      return Text(
+        title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: AppColors.ink,
+          height: 1.2,
+        ),
+      );
+    }
+
+    final spans = <TextSpan>[];
+    final lowerTitle = title.toLowerCase();
+    final lowerQuery = highlightQuery!.toLowerCase();
+    int start = 0;
+
+    while (start < title.length) {
+      final idx = lowerTitle.indexOf(lowerQuery, start);
+      if (idx == -1) {
+        spans.add(TextSpan(text: title.substring(start)));
+        break;
+      }
+      if (idx > start) {
+        spans.add(TextSpan(text: title.substring(start, idx)));
+      }
+      spans.add(TextSpan(
+        text: title.substring(idx, idx + highlightQuery!.length),
+        style: const TextStyle(
+          color: AppColors.primary,
+          backgroundColor: Color(0x330074FF),
+          fontWeight: FontWeight.w700,
+        ),
+      ));
+      start = idx + highlightQuery!.length;
+    }
+
+    return RichText(
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      text: TextSpan(
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w600,
+          color: AppColors.ink,
+          height: 1.2,
+        ),
+        children: spans,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,17 +128,8 @@ class BlogRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    item.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.ink,
-                      height: 1.2,
-                    ),
-                  ),
+                  _buildTitle(item.title),
+
                   if (item.description != null) ...[
                     const SizedBox(height: 4),
                     Text(
@@ -108,7 +165,7 @@ class BlogRow extends StatelessWidget {
                         const SizedBox(width: 6),
                       Flexible(
                         child: Text(
-                          item.authorName,
+                          item.authorName ?? AppLocalizations.of(context)?.unknownAuthor ?? '未知作者',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
@@ -143,6 +200,41 @@ class BlogRow extends StatelessWidget {
                 ],
               ),
             ),
+            if (favoriteService != null) ...[
+              const SizedBox(width: AppSpacing.sm),
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  favoriteService!.toggle(
+                    blogId: item.id,
+                    title: item.title,
+                    authorName:
+                        item.authorName ?? '未知作者',
+                    coverImg: item.img,
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: ListenableBuilder(
+                    listenable: favoriteService!,
+                    builder: (_, __) {
+                      final isFav =
+                          favoriteService!.isFavorited(item.id);
+                      return Icon(
+                        isFav
+                            ? CupertinoIcons.heart_fill
+                            : CupertinoIcons.heart,
+                        color: isFav
+                            ? CupertinoColors.destructiveRed
+                            : AppColors.inkMuted48,
+                        size: 20,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

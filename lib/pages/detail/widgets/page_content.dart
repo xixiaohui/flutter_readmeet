@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import '../../../l10n/generated/app_localizations.dart';
 import 'package:flutter/material.dart'
     show Divider, EditableTextState, Icons, SelectionChangedCause, SelectableText;
 import '../../../models/annotation.dart';
@@ -352,29 +353,29 @@ class _DropdownMenu extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = <_MenuItem>[
-      _MenuItem(icon: Icons.copy, label: '复制', onTap: () {
+      _MenuItem(icon: Icons.copy, label: AppLocalizations.of(context)?.copy ?? '复制', onTap: () {
         onCopy();
         onHide();
       }),
-      _MenuItem(icon: Icons.select_all, label: '全选', onTap: () {
+      _MenuItem(icon: Icons.select_all, label: AppLocalizations.of(context)?.selectAll ?? '全选', onTap: () {
         onSelectAll();
         onHide();
       }),
       _MenuItem.divider,
-      _MenuItem(icon: Icons.format_paint, label: '高亮标记', onTap: () {
+      _MenuItem(icon: Icons.format_paint, label: AppLocalizations.of(context)?.highlight ?? '高亮标记', onTap: () {
         onHide();
         _onSelectAction(AnnotationType.highlight);
       }),
-      _MenuItem(icon: Icons.format_underline, label: '下划线', onTap: () {
+      _MenuItem(icon: Icons.format_underline, label: AppLocalizations.of(context)?.underline ?? '下划线', onTap: () {
         onHide();
         _onSelectAction(AnnotationType.underline);
       }),
-      _MenuItem(icon: Icons.notes, label: '添加笔记', onTap: () {
+      _MenuItem(icon: Icons.notes, label: AppLocalizations.of(context)?.addNote ?? '添加笔记', onTap: () {
         onHide();
         onAddNoteCall?.call(selectedText, startOffset, endOffset);
       }),
       _MenuItem.divider,
-      _MenuItem(icon: Icons.image, label: '生成海报', onTap: () {
+      _MenuItem(icon: Icons.image, label: AppLocalizations.of(context)?.generatePoster ?? '生成海报', onTap: () {
         onHide();
         onPosterCall?.call(selectedText, startOffset, endOffset);
       }),
@@ -477,7 +478,7 @@ class _ColorPickerSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CupertinoActionSheet(
-      title: const Text('选择颜色'),
+      title: Text(AppLocalizations.of(context)?.selectColor ?? '选择颜色'),
       actions: colors
           .map((c) => CupertinoActionSheetAction(
                 onPressed: () => Navigator.pop(context, c),
@@ -500,7 +501,7 @@ class _ColorPickerSheet extends StatelessWidget {
           .toList(),
       cancelButton: CupertinoActionSheetAction(
         onPressed: () => Navigator.pop(context),
-        child: const Text('取消'),
+        child: Text(AppLocalizations.of(context)?.cancel ?? '取消'),
       ),
     );
   }

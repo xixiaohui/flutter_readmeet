@@ -9,7 +9,7 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
-  String get appTitle => 'ReadMeet';
+  String get appTitle => '见书';
 
   @override
   String get homeTab => '首页';
@@ -195,6 +195,57 @@ class AppLocalizationsZh extends AppLocalizations {
   String get poster => '海报';
 
   @override
+  String get retry => '重试';
+
+  @override
+  String get unknownAuthor => '未知作者';
+
+  @override
+  String get enterSearchKeyword => '请输入搜索关键词';
+
+  @override
+  String get closeButton => '关闭';
+
+  @override
+  String get searchArticleHint => '搜索文章...';
+
+  @override
+  String get noSearchResults => '未找到相关内容';
+
+  @override
+  String get noArticles => '暂无文章';
+
+  @override
+  String get followSystem => '跟随系统';
+
+  @override
+  String get chineseSimplified => '中文简体';
+
+  @override
+  String get chineseTraditional => '中文繁體';
+
+  @override
+  String get japaneseLang => '日本語';
+
+  @override
+  String get posterTitlePrefix => '—— ';
+
+  @override
+  String get reset => '恢复';
+
+  @override
+  String get typography => '排版';
+
+  @override
+  String get appearance => '外观';
+
+  @override
+  String get resetSettings => '恢复默认设置';
+
+  @override
+  String get resetSettingsMsg => '所有设置将恢复为默认值';
+
+  @override
   String pageIndicator(Object current, Object total) {
     return '$current / $total';
   }
@@ -205,7 +256,7 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
   AppLocalizationsZhHant() : super('zh_Hant');
 
   @override
-  String get appTitle => 'ReadMeet';
+  String get appTitle => '見書';
 
   @override
   String get homeTab => '首頁';
@@ -389,6 +440,57 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get poster => '海報';
+
+  @override
+  String get retry => '重試';
+
+  @override
+  String get unknownAuthor => '未知作者';
+
+  @override
+  String get enterSearchKeyword => '請輸入搜尋關鍵詞';
+
+  @override
+  String get closeButton => '關閉';
+
+  @override
+  String get searchArticleHint => '搜尋文章...';
+
+  @override
+  String get noSearchResults => '未找到相關內容';
+
+  @override
+  String get noArticles => '暫無文章';
+
+  @override
+  String get followSystem => '跟隨系統';
+
+  @override
+  String get chineseSimplified => '中文簡體';
+
+  @override
+  String get chineseTraditional => '中文繁體';
+
+  @override
+  String get japaneseLang => '日本語';
+
+  @override
+  String get posterTitlePrefix => '—— ';
+
+  @override
+  String get reset => '恢復';
+
+  @override
+  String get typography => '排版';
+
+  @override
+  String get appearance => '外觀';
+
+  @override
+  String get resetSettings => '恢復預設設定';
+
+  @override
+  String get resetSettingsMsg => '所有設定將恢復為預設值';
 
   @override
   String pageIndicator(Object current, Object total) {

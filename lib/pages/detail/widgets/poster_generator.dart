@@ -124,7 +124,10 @@ class PosterPreview extends StatelessWidget {
   }
 
   void _onSave(BuildContext context, GlobalKey key) async {
-    final navigator = Navigator.of(context);
+    // Use root navigator because the app uses CupertinoTabView (nested
+    // navigators) and showCupertinoDialog pushes on the root navigator
+    // by default.
+    final navigator = Navigator.of(context, rootNavigator: true);
     try {
       if (Platform.isIOS) {
         await Permission.photos.request();

@@ -142,6 +142,15 @@ class PageContent extends StatelessWidget {
         pos += a.selectedText.length;
       }
     }
+    // Isolate separator ranges so their spacer style (0.6x fontSize) never
+    // bleeds into content text when annotation breakpoints land near segment
+    // boundaries.
+    for (final info in segInfos) {
+      if (info.isSep) {
+        breakPoints.add(info.start);
+        breakPoints.add(info.end);
+      }
+    }
 
     // 3. Build spans from breakpoints, applying segment styles + annotations
     final sorted = breakPoints.toList()..sort();

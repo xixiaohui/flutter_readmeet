@@ -168,6 +168,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dark => '深色';
 
   @override
+  String get auto => '自动';
+
+  @override
   String get latestArticles => '最新文章';
 
   @override
@@ -413,6 +416,9 @@ class AppLocalizationsZhHant extends AppLocalizationsZh {
 
   @override
   String get dark => '深色';
+
+  @override
+  String get auto => '自動';
 
   @override
   String get latestArticles => '最新文章';

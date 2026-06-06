@@ -1,5 +1,7 @@
 class ApiConfig {
-  static const String baseUrl = 'https://readmeet.club/api';
+  static String get baseUrl {
+    return 'https://www.readmeet.club/api';
+  }
 
   static String get blogs => '$baseUrl/blogs';
 

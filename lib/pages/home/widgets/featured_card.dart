@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/card_item.dart';
 import '../../../theme/app_theme.dart';
+import '../../../utils/responsive.dart';
 
 class FeaturedCard extends StatelessWidget {
   final CardItem item;
@@ -12,10 +13,12 @@ class FeaturedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cw = Responsive.featuredCardWidth(context);
+    final ch = Responsive.featuredCardHeight(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 140,
+        width: cw,
         margin: const EdgeInsets.only(right: AppSpacing.sm),
         decoration: BoxDecoration(
           color: AppColors.canvasParchment,
@@ -27,8 +30,8 @@ class FeaturedCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              width: 140,
-              height: 80,
+              width: cw,
+              height: ch,
               child: CachedNetworkImage(
                 imageUrl: item.displayImg,
                 fit: BoxFit.cover,

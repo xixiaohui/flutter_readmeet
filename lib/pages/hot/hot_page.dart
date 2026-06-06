@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show RefreshIndicator;
 import 'package:flutter/services.dart';
 import '../../models/card_item.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -191,21 +192,25 @@ class _HotPageState extends State<HotPage> {
       return EmptyView(message: AppLocalizations.of(context)?.noFeatured ?? '暂无精选内容');
     }
 
-    return ListView.builder(
-      controller: _scrollController,
-      itemCount: _blogs.length + (_isLoadingMore ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index >= _blogs.length) {
-          return const Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
-            child: CupertinoActivityIndicator(),
+    return RefreshIndicator(
+      onRefresh: _load,
+      child: ListView.builder(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: _blogs.length + (_isLoadingMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= _blogs.length) {
+            return const Padding(
+              padding: EdgeInsets.all(AppSpacing.md),
+              child: CupertinoActivityIndicator(),
+            );
+          }
+          return BlogRow(
+            item: _blogs[index],
+            onTap: () => _openDetail(_blogs[index]),
           );
-        }
-        return BlogRow(
-          item: _blogs[index],
-          onTap: () => _openDetail(_blogs[index]),
-        );
-      },
+        },
+      ),
     );
   }
 }

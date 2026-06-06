@@ -168,6 +168,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dark => 'Dark';
 
   @override
+  String get auto => 'Auto';
+
+  @override
   String get latestArticles => 'Latest';
 
   @override

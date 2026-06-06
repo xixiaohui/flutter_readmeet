@@ -168,6 +168,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get dark => 'ダーク';
 
   @override
+  String get auto => '自動';
+
+  @override
   String get latestArticles => '最新記事';
 
   @override

@@ -23,7 +23,7 @@ class MarkdownChunkList extends StatelessWidget {
       listenable: settingsService,
       builder: (context, _) {
         final s = settingsService;
-        final style = _buildStyle(s);
+        final style = _buildStyle(s, context);
         return SliverList.separated(
           itemCount: chunks.length,
           itemBuilder: (context, index) {
@@ -42,9 +42,11 @@ class MarkdownChunkList extends StatelessWidget {
     );
   }
 
-  MarkdownStyleSheet _buildStyle(ReaderSettingsService s) {
+  MarkdownStyleSheet _buildStyle(ReaderSettingsService s, BuildContext context) {
     final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
-    final isDark = s.backgroundColor == 'dark';
+    final isDark = s.backgroundColor == 'auto'
+        ? MediaQuery.of(context).platformBrightness == Brightness.dark
+        : s.backgroundColor == 'dark';
     final textColor = isDark ? AppColors.onDark : AppColors.ink;
 
     return MarkdownStyleSheet(

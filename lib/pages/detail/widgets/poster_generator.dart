@@ -1,3 +1,4 @@
+import 'dart:io' show Platform; // ignore: unnecessary_import
 import 'dart:ui' as ui;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/rendering.dart';
@@ -125,7 +126,11 @@ class PosterPreview extends StatelessWidget {
   void _onSave(BuildContext context, GlobalKey key) async {
     final navigator = Navigator.of(context);
     try {
-      await Permission.storage.request();
+      if (Platform.isIOS) {
+        await Permission.photos.request();
+      } else {
+        await Permission.storage.request();
+      }
 
       final boundary =
           key.currentContext?.findRenderObject() as RenderRepaintBoundary?;

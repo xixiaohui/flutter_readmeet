@@ -46,14 +46,16 @@ class PageContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final s = settings;
-    final isDark = s.backgroundColor == 'dark';
+    final isDark = s.backgroundColor == 'auto'
+        ? MediaQuery.of(context).platformBrightness == Brightness.dark
+        : s.backgroundColor == 'dark';
     final textColor = isDark ? AppColors.onDark : AppColors.ink;
 
     // Collect all segment indices for this page
     final indices = slice.segmentIndices;
 
     return SingleChildScrollView(
-      physics: const ClampingScrollPhysics(),
+      physics: const BouncingScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

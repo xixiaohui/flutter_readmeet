@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import '../../../l10n/generated/app_localizations.dart';
 import '../../../models/card_item.dart';
 import '../../../theme/app_theme.dart';
+import '../../../utils/responsive.dart';
 
 class HeroTile extends StatelessWidget {
   final CardItem item;
@@ -32,12 +33,12 @@ class HeroTile extends StatelessWidget {
                 child: Image.network(
                   item.displayImg,
                   key: ValueKey(item.displayImg),
-                  height: 160,
+                  height: Responsive.heroImageHeight(context),
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (_, _, _) => Image.network(
                     CardItem.defaultImg,
-                    height: 160,
+                    height: Responsive.heroImageHeight(context),
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),

@@ -85,7 +85,7 @@ class AnnotatedChunkList extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       for (final seg in segments)
-                        _buildSegment(seg, s, chunkBase),
+                        _buildSegment(seg, s, chunkBase, context),
                     ],
                   ),
                 );
@@ -100,8 +100,10 @@ class AnnotatedChunkList extends StatelessWidget {
   }
 
   Widget _buildSegment(
-      MarkdownSegment seg, ReaderSettingsService s, int chunkBaseOffset) {
-    final isDark = s.backgroundColor == 'dark';
+      MarkdownSegment seg, ReaderSettingsService s, int chunkBaseOffset, BuildContext context) {
+    final isDark = s.backgroundColor == 'auto'
+        ? MediaQuery.of(context).platformBrightness == Brightness.dark
+        : s.backgroundColor == 'dark';
     final textColor = isDark ? AppColors.onDark : AppColors.ink;
     final scale = s.fontSize / ReaderSettingsService.defaultFontSize;
     final trueGlobalOffset = chunkBaseOffset + seg.globalOffset;

@@ -205,7 +205,7 @@ class BlogRow extends StatelessWidget {
               GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () {
-                  HapticFeedback.lightImpact();
+                  HapticFeedback.mediumImpact();
                   favoriteService!.toggle(
                     blogId: item.id,
                     title: item.title,

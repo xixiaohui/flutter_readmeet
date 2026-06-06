@@ -7,6 +7,7 @@ import '../../../services/favorite_service.dart';
 import '../../../services/reader_settings_service.dart';
 import '../../../theme/app_theme.dart';
 import '../../../widgets/loading_indicator.dart';
+import '../../../utils/responsive.dart';
 import 'widgets/hero_tile.dart';
 import 'widgets/featured_card.dart';
 import '../hot/hot_page.dart';
@@ -250,7 +251,10 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
       ),
-      child: _buildBody(),
+      child: SafeArea(
+        top: false,
+        child: _buildBody(),
+      ),
     );
   }
 
@@ -261,521 +265,170 @@ class _HomePageState extends State<HomePage> {
 
     final featured = _featuredBlogs ?? [];
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Hero tile — shows skeleton while loading
-          if (_heroBlog != null)
-            HeroTile(item: _heroBlog!, onTap: () => _openDetail(_heroBlog!))
-          else
-            const _HeroSkeleton(),
+    return LayoutBuilder(builder: (context, constraints) {
+      return SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (_heroBlog != null)
+              HeroTile(item: _heroBlog!, onTap: () => _openDetail(_heroBlog!))
+            else
+              const _HeroSkeleton(),
 
-          // ── Below-hero content (white background) ──
-          Container(
-            color: AppColors.canvas,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Featured cards section
-                if (featured.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.sm,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          AppLocalizations.of(context)?.latestArticles ?? '最新文章',
-                          style: TextStyle(
-                            fontSize: AppText.bodySize,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.ink,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () => _openHotList(AppLocalizations.of(context)?.latestArticles ?? '最新文章', '最新'),
-                          child: const Text(
-                            '查看全部',
-                            style: TextStyle(
-                              fontSize: AppText.bodySize,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+            Container(
+              color: AppColors.canvas,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildCardSection(
+                    title: AppLocalizations.of(context)?.latestArticles ?? '最新文章',
+                    query: '最新',
+                    items: featured,
+                    isFirst: true,
                   ),
 
-                if (featured.isNotEmpty)
-                  SizedBox(
-                    height: 170,
-                    child: ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.lg,
-                      ),
-                      itemCount: featured.length,
-                      itemBuilder: (_, i) =>
-                          FeaturedCard(item: featured[i], onTap: () => _openDetail(featured[i])),
+                  if (_zhBlogs != null && _zhBlogs!.isNotEmpty)
+                    _buildCardSection(
+                      title: AppLocalizations.of(context)?.chineseFeatured ?? '中文精选',
+                      query: 'zh',
+                      items: _zhBlogs!,
                     ),
-                  ),
+                  if (_jaBlogs != null && _jaBlogs!.isNotEmpty)
+                    _buildCardSection(
+                      title: AppLocalizations.of(context)?.japaneseFeatured ?? '日文精选',
+                      query: 'ja',
+                      items: _jaBlogs!,
+                    ),
+                  if (_shakespeareBlogs != null && _shakespeareBlogs!.isNotEmpty)
+                    _buildCardSection(
+                      title: 'Shakespeare',
+                      query: 'Shakespeare',
+                      items: _shakespeareBlogs!,
+                      useAuthor: true,
+                    ),
+                  if (_twainBlogs != null && _twainBlogs!.isNotEmpty)
+                    _buildCardSection(
+                      title: 'Twain, Mark',
+                      query: 'Twain, Mark',
+                      items: _twainBlogs!,
+                      useAuthor: true,
+                    ),
+                  if (_byronBlogs != null && _byronBlogs!.isNotEmpty)
+                    _buildCardSection(
+                      title: 'Byron',
+                      query: 'Byron',
+                      items: _byronBlogs!,
+                      useAuthor: true,
+                    ),
+                  if (_jeffersonBlogs != null && _jeffersonBlogs!.isNotEmpty)
+                    _buildCardSection(
+                      title: 'Jefferson, Thomas',
+                      query: 'Jefferson, Thomas',
+                      items: _jeffersonBlogs!,
+                      useAuthor: true,
+                    ),
+                  if (_lincolnBlogs != null && _lincolnBlogs!.isNotEmpty)
+                    _buildCardSection(
+                      title: 'Lincoln, Abraham',
+                      query: 'Lincoln, Abraham',
+                      items: _lincolnBlogs!,
+                      useAuthor: true,
+                    ),
+                  if (_sandBlogs != null && _sandBlogs!.isNotEmpty)
+                    _buildCardSection(
+                      title: 'Sand, George',
+                      query: 'Sand, George',
+                      items: _sandBlogs!,
+                      useAuthor: true,
+                    ),
+                  if (_burnandBlogs != null && _burnandBlogs!.isNotEmpty)
+                    _buildCardSection(
+                      title: 'Burnand, F. C.',
+                      query: 'Burnand, F. C.',
+                      items: _burnandBlogs!,
+                      useAuthor: true,
+                    ),
 
-            // ── 中文精选 section ──
-            if (_zhBlogs != null && _zhBlogs!.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  0,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)?.chineseFeatured ?? '中文精选',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _openHotList(AppLocalizations.of(context)?.chineseFeatured ?? '中文精选', 'zh'),
-                      child: Text(
-                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                        style: const TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  const SizedBox(height: AppSpacing.xl),
+                ],
               ),
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  itemCount: _zhBlogs!.length,
-                  itemBuilder: (_, i) =>
-                      FeaturedCard(item: _zhBlogs![i], onTap: () => _openDetail(_zhBlogs![i])),
-                ),
-              ),
-            ],
-
-            // ── 日文精选 section ──
-            if (_jaBlogs != null && _jaBlogs!.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  0,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      AppLocalizations.of(context)?.japaneseFeatured ?? '日文精选',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _openHotList(AppLocalizations.of(context)?.japaneseFeatured ?? '日文精选', 'ja'),
-                      child: Text(
-                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                        style: const TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  itemCount: _jaBlogs!.length,
-                  itemBuilder: (_, i) =>
-                      FeaturedCard(item: _jaBlogs![i], onTap: () => _openDetail(_jaBlogs![i])),
-                ),
-              ),
-            ],
-
-            // ── Shakespeare section ──
-            if (_shakespeareBlogs != null && _shakespeareBlogs!.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  0,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Shakespeare',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _openHotListAuthor('Shakespeare', 'Shakespeare'),
-                      child: Text(
-                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                        style: const TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  itemCount: _shakespeareBlogs!.length,
-                  itemBuilder: (_, i) => FeaturedCard(
-                    item: _shakespeareBlogs![i],
-                    onTap: () => _openDetail(_shakespeareBlogs![i]),
-                  ),
-                ),
-              ),
-            ],
-
-            // ── Twain, Mark section ──
-            if (_twainBlogs != null && _twainBlogs!.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  0,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Twain, Mark',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _openHotListAuthor('Twain, Mark', 'Twain, Mark'),
-                      child: Text(
-                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                        style: const TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  itemCount: _twainBlogs!.length,
-                  itemBuilder: (_, i) => FeaturedCard(
-                    item: _twainBlogs![i],
-                    onTap: () => _openDetail(_twainBlogs![i]),
-                  ),
-                ),
-              ),
-            ],
-
-            // ── Byron section ──
-            if (_byronBlogs != null && _byronBlogs!.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  0,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Byron',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _openHotListAuthor('Byron', 'Byron'),
-                      child: Text(
-                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                        style: const TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  itemCount: _byronBlogs!.length,
-                  itemBuilder: (_, i) => FeaturedCard(
-                    item: _byronBlogs![i],
-                    onTap: () => _openDetail(_byronBlogs![i]),
-                  ),
-                ),
-              ),
-            ],
-
-            // ── Jefferson, Thomas section ──
-            if (_jeffersonBlogs != null && _jeffersonBlogs!.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  0,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Jefferson, Thomas',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _openHotListAuthor('Jefferson, Thomas', 'Jefferson, Thomas'),
-                      child: Text(
-                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                        style: const TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  itemCount: _jeffersonBlogs!.length,
-                  itemBuilder: (_, i) => FeaturedCard(
-                    item: _jeffersonBlogs![i],
-                    onTap: () => _openDetail(_jeffersonBlogs![i]),
-                  ),
-                ),
-              ),
-            ],
-
-            // ── Lincoln, Abraham section ──
-            if (_lincolnBlogs != null && _lincolnBlogs!.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  0,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Lincoln, Abraham',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _openHotListAuthor('Lincoln, Abraham', 'Lincoln, Abraham'),
-                      child: Text(
-                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                        style: const TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  itemCount: _lincolnBlogs!.length,
-                  itemBuilder: (_, i) => FeaturedCard(
-                    item: _lincolnBlogs![i],
-                    onTap: () => _openDetail(_lincolnBlogs![i]),
-                  ),
-                ),
-              ),
-            ],
-
-            // ── Sand, George section ──
-            if (_sandBlogs != null && _sandBlogs!.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  0,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Sand, George',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _openHotListAuthor('Sand, George', 'Sand, George'),
-                      child: Text(
-                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                        style: const TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  itemCount: _sandBlogs!.length,
-                  itemBuilder: (_, i) => FeaturedCard(
-                    item: _sandBlogs![i],
-                    onTap: () => _openDetail(_sandBlogs![i]),
-                  ),
-                ),
-              ),
-            ],
-
-            // ── Burnand, F. C. section ──
-            if (_burnandBlogs != null && _burnandBlogs!.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.lg),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  0,
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Burnand, F. C.',
-                      style: TextStyle(
-                        fontSize: AppText.bodySize,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _openHotListAuthor('Burnand, F. C.', 'Burnand, F. C.'),
-                      child: Text(
-                        AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                        style: const TextStyle(
-                          fontSize: AppText.bodySize,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 170,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                  ),
-                  itemCount: _burnandBlogs!.length,
-                  itemBuilder: (_, i) => FeaturedCard(
-                    item: _burnandBlogs![i],
-                    onTap: () => _openDetail(_burnandBlogs![i]),
-                  ),
-                ),
-              ),
-            ],
-
-            const SizedBox(height: AppSpacing.xl),
-              ],
             ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildCardSection({
+    required String title,
+    required String query,
+    required List<CardItem> items,
+    bool isFirst = false,
+    bool useAuthor = false,
+  }) {
+    final onOpenList = useAuthor
+        ? () => _openHotListAuthor(title, query)
+        : () => _openHotList(title, query);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!isFirst) const SizedBox(height: AppSpacing.lg),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: AppText.bodySize,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.ink,
+                ),
+              ),
+              GestureDetector(
+                onTap: onOpenList,
+                child: Text(
+                  AppLocalizations.of(context)?.viewAll ?? '查看全部',
+                  style: const TextStyle(
+                    fontSize: AppText.bodySize,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
+        _buildCardList(items),
+      ],
+    );
+  }
+
+  Widget _buildCardList(List<CardItem> items) {
+    final isTablet = Responsive.isTablet(context);
+    if (isTablet) {
+      // iPad: grid layout fills available width
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        child: Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
+          children: items
+              .map((item) => FeaturedCard(item: item, onTap: () => _openDetail(item)))
+              .toList(),
+        ),
+      );
+    }
+    // iPhone: horizontal scroll
+    return SizedBox(
+      height: 170,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        itemCount: items.length,
+        itemBuilder: (_, i) =>
+            FeaturedCard(item: items[i], onTap: () => _openDetail(items[i])),
       ),
     );
   }
@@ -787,7 +440,7 @@ class _HeroSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 280,
+      height: Responsive.heroSkeletonHeight(context),
       color: AppColors.surfaceTile1,
       child: const Center(
         child: CupertinoActivityIndicator(color: AppColors.onDark),

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../models/annotation.dart';
 import '../../models/card_item.dart';
 import '../../models/reading_progress.dart';
@@ -12,6 +13,7 @@ import '../../services/reader_settings_service.dart';
 import '../../services/reading_progress_service.dart';
 import '../../theme/app_theme.dart';
 import '../../l10n/generated/app_localizations.dart';
+import '../../utils/responsive.dart';
 import '../../widgets/loading_indicator.dart';
 import 'widgets/page_reader.dart';
 import 'widgets/markdown_ast.dart';
@@ -37,7 +39,7 @@ class DetailPage extends StatefulWidget {
   State<DetailPage> createState() => _DetailPageState();
 }
 
-class _DetailPageState extends State<DetailPage> {
+class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver {
   final _progressService = ReadingProgressService();
   final _annotationStore = AnnotationStore();
 
@@ -51,15 +53,25 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     widget.settingsService.load();
     _loadDetail();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _saveProgress();
     _annotationStore.flush();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _saveProgress();
+      _annotationStore.flush();
+    }
   }
 
   Future<void> _loadDetail() async {
@@ -209,8 +221,18 @@ class _DetailPageState extends State<DetailPage> {
     ));
   }
 
+  String _effectiveBg() {
+    final bg = widget.settingsService.backgroundColor;
+    if (bg == 'auto') {
+      return MediaQuery.of(context).platformBrightness == Brightness.dark
+          ? 'dark'
+          : 'white';
+    }
+    return bg;
+  }
+
   Color _bgColor() {
-    switch (widget.settingsService.backgroundColor) {
+    switch (_effectiveBg()) {
       case 'white':
         return AppColors.canvas;
       case 'dark':
@@ -222,7 +244,7 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Color _navBgColor() {
-    switch (widget.settingsService.backgroundColor) {
+    switch (_effectiveBg()) {
       case 'dark':
         return CupertinoDynamicColor.resolve(
             CupertinoColors.darkBackgroundGray, context);
@@ -270,7 +292,7 @@ class _DetailPageState extends State<DetailPage> {
                 // Favorite toggle
                 GestureDetector(
                   onTap: () {
-                    HapticFeedback.lightImpact();
+                    HapticFeedback.mediumImpact();
                     final blog = _blog;
                     if (blog == null) return;
                     widget.favoriteService.toggle(
@@ -340,17 +362,41 @@ class _DetailPageState extends State<DetailPage> {
                     ),
                   ),
                 ),
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    final blog = _blog;
+                    if (blog == null) return;
+                    final author = blog.authorName ?? '';
+                    Share.share(
+                      '${blog.title}\n${author.isNotEmpty ? "$author · " : ""}ReadMeet',
+                    );
+                  },
+                  child: const Icon(CupertinoIcons.share,
+                      color: AppColors.primary, size: 20),
+                ),
               ],
             ),
           ),
-          child: LayoutBuilder(
+          child: SafeArea(
+            top: false,
+            child: LayoutBuilder(
             builder: (context, constraints) {
+              final maxWidth = Responsive.contentMaxWidth(context);
+              final hPadding = Responsive.readingHPadding(context);
               // Subtract safety margin: TextPainter estimates may be off
               // by ~1-2px per segment. With 10+ segments, this accumulates.
               final pageHeight = constraints.maxHeight - 24;
-              final slices = _calculatePages(pageHeight, constraints.maxWidth);
-              return _buildBody(slices);
+              final slices = _calculatePages(pageHeight, constraints.maxWidth - hPadding * 2);
+              return Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxWidth),
+                  child: _buildBody(slices),
+                ),
+              );
             },
+          ),
           ),
         );
       },

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show RefreshIndicator;
 import 'package:flutter/services.dart';
 import '../../models/card_item.dart';
 import '../../l10n/generated/app_localizations.dart';
@@ -151,22 +152,26 @@ class _ListPageState extends State<ListPage> {
       return EmptyView(message: AppLocalizations.of(context)?.noArticles ?? '暂无文章');
     }
 
-    return ListView.builder(
-      controller: _scrollController,
-      itemCount: _blogs.length + (_isLoadingMore ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index >= _blogs.length) {
-          return const Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
-            child: CupertinoActivityIndicator(),
+    return RefreshIndicator(
+      onRefresh: _loadBlogs,
+      child: ListView.builder(
+        controller: _scrollController,
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: _blogs.length + (_isLoadingMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= _blogs.length) {
+            return const Padding(
+              padding: EdgeInsets.all(AppSpacing.md),
+              child: CupertinoActivityIndicator(),
+            );
+          }
+          return BlogRow(
+            item: _blogs[index],
+            favoriteService: widget.favoriteService,
+            onTap: () => _openDetail(_blogs[index]),
           );
-        }
-        return BlogRow(
-          item: _blogs[index],
-          favoriteService: widget.favoriteService,
-          onTap: () => _openDetail(_blogs[index]),
-        );
-      },
+        },
+      ),
     );
   }
 }

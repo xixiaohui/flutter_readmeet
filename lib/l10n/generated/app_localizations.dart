@@ -419,6 +419,12 @@ abstract class AppLocalizations {
   /// **'深色'**
   String get dark;
 
+  /// No description provided for @auto.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动'**
+  String get auto;
+
   /// No description provided for @latestArticles.
   ///
   /// In zh, this message translates to:

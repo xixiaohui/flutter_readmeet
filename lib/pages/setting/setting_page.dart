@@ -150,8 +150,9 @@ class _SettingPageState extends State<SettingPage> {
                 const SizedBox(height: AppSpacing.md),
                 _SegmentedRow<String>(
                   value: _s.backgroundColor,
-                  options: const ['white', 'parchment', 'dark'],
+                  options: const ['auto', 'white', 'parchment', 'dark'],
                   labels: [
+                    l10n?.auto ?? '自动',
                     l10n?.white ?? '白色',
                     l10n?.parchment ?? '米色',
                     l10n?.dark ?? '深色',
@@ -219,13 +220,16 @@ class _PreviewCard extends StatelessWidget {
       builder: (context, _) {
         final bg = settings.backgroundColor;
         final fontFamily = settings.fontFamily;
-        final bgColor = switch (bg) {
+        final effectiveBg = bg == 'auto'
+            ? (MediaQuery.of(context).platformBrightness == Brightness.dark ? 'dark' : 'white')
+            : bg;
+        final bgColor = switch (effectiveBg) {
           'white' => AppColors.canvas,
           'dark' => AppColors.surfaceBlack,
           _ => AppColors.canvasParchment,
         };
         final textColor =
-            bg == 'dark' ? AppColors.onDark : AppColors.ink;
+            effectiveBg == 'dark' ? AppColors.onDark : AppColors.ink;
 
         return Container(
           width: double.infinity,

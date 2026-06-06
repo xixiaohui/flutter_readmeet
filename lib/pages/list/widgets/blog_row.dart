@@ -218,7 +218,7 @@ class BlogRow extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 2),
                   child: ListenableBuilder(
                     listenable: favoriteService!,
-                    builder: (_, __) {
+                    builder: (_, _) {
                       final isFav =
                           favoriteService!.isFavorited(item.id);
                       return Icon(

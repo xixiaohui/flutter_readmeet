@@ -111,10 +111,12 @@ class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver {
       ContentCacheService().set(widget.blogId, blog);
     } catch (e) {
       if (!mounted) return;
-      if (_blog == null) setState(() {
+      if (_blog == null) {
+        setState(() {
         _error = e.toString();
         _errorCode = (e is ApiException) ? e.errorCode : null;
       });
+      }
     }
   }
 
@@ -304,7 +306,7 @@ class _DetailPageState extends State<DetailPage> with WidgetsBindingObserver {
                   },
                   child: ListenableBuilder(
                     listenable: widget.favoriteService,
-                    builder: (_, _a) {
+                    builder: (_, a) {
                       final isFav = widget.favoriteService
                           .isFavorited(widget.blogId);
                       return Icon(

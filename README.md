@@ -1,150 +1,179 @@
-# ReadMeet
+# 见书 · ReadMeet
 
-A cross-platform reading application built with Flutter, featuring paginated reading, text annotations, poster generation, and customizable typography settings.
+> 见书如面，落笔有光 — 一款为深度阅读者打造的跨平台移动阅读应用。
 
-## Features
+翻页式阅读体验，支持文本批注、彩色高亮、笔记摘录与一键海报生成。聚合多语经典文学作品，从莎士比亚到徐霞客，让每一次阅读都留下可回味的痕迹。
 
-### Article Reader
+---
 
-- **PageView Pagination** — book-like page-turning instead of infinite scrolling. Pages are dynamically calculated using `TextPainter` based on font size, line height, and screen dimensions.
-- **Markdown Rendering** — custom AST parser that handles headings, blockquotes, code blocks, bold, italic, and inline formatting.
-- **Reading Progress** — page index saved per article and restored on revisit.
+## 功能
 
-### Text Annotations
+### 📖 阅读器
 
-- **Highlight & Underline** — select text (≥2 chars) to show a dropdown menu with highlight and underline options. Color picker with 5 highlight colors and 2 underline colors.
-- **Notes** — attach multiple comments to any annotation. Notes appear inline and in the annotation summary.
-- **Annotation Summary** — per-article page listing all annotations with edit/delete. Per-annotation poster generation.
-- **Global Annotations** — app-level tab showing annotations across all articles, grouped by article.
-- **Persistence** — annotations stored via `shared_preferences`, keyed by article ID.
-- **Text-based Matching** — annotations are matched by actual text content using `indexOf`, making them robust against offset drift when articles reload.
+- **PageView 翻页** — 模拟纸质书翻页，页数由 `TextPainter` 根据字号、行高和屏幕尺寸动态计算
+- **Markdown 渲染** — 自定义 AST 解析器，支持标题、引用、代码块、粗体、斜体等内联格式
+- **阅读进度恢复** — 每篇文章的阅读页码自动保存，再次打开时恢复
 
-### Poster Generation
+### ✍️ 批注与笔记
 
-- Select text → "Generate Poster" → styled preview with quote block, article title, author, date, and app watermark.
-- Save as PNG directly to the phone photo gallery.
+- **高亮 & 下划线** — 选中 2 字以上弹出菜单，5 种高亮色 + 2 种下划线色
+- **批注笔记** — 任意批注可附加多条笔记，内联显示并汇总到批注摘要页
+- **全局批注** — App 级标签页，按文章分组展示所有批注，支持编辑和删除
+- **文本匹配** — 批注基于实际文本内容匹配（`indexOf`），不受文章重新加载后偏移量变化影响
+- **持久化** — 通过 `shared_preferences` 存储，按文章 ID 分组
 
-### Reader Settings
+### 🖼️ 海报生成
 
-Customizable via the Settings tab and applied globally to the reader, annotation summary, and posters:
+- 选中文本 → 「生成海报」→ 引文卡片预览（含引用、标题、作者、日期、App 水印）
+- 一键保存 PNG 至手机相册
 
-| Setting | Range |
+### 🎛️ 阅读设置
+
+| 设置项 | 范围 |
 | --- | --- |
-| Font Size | 14 – 24 |
-| Line Height | 1.2 – 2.4 |
-| Paragraph Spacing | 8 – 32 px |
-| Font Family | System Default / Serif / Monospace |
-| Background Color | White / Parchment / Dark |
+| 字号 | 14 – 24 |
+| 行高 | 1.2 – 2.4 |
+| 段落间距 | 8 – 32 px |
+| 字体 | 系统默认 / 宋体 / 等宽 |
+| 背景色 | 白色 / 米色 / 深色 |
 
-### Home Page
+### 🏠 首页
 
-Modular home page with independently-loading content sections:
-- **Hero** — featured article from `/api/blogs/hero`
-- **最新文章** — latest articles
-- **中文精选 / 日文精选** — Chinese and Japanese curated content
-- **Author Collections** — Shakespeare, Twain, Byron, Jefferson, Lincoln, Sand, Burnand
+- **Hero 轮播** — 3~5 篇精选自动翻页，渐变遮罩叠加标题与作者
+- **最新文章** — 双列网格（iPad 三列），大卡片展示
+- **中文精选 / 日文精选** — 横向滑动卡片，圆形作者头像
+- **作者专栏** — Shakespeare、Twain、Byron、Jefferson、Lincoln、Sand、Burnand 七位经典作者
+- **Shimmer 骨架屏** — 加载态微光动画占位
+- **下拉刷新** — 全板块并行重新加载
+- **搜索** — 导航栏搜索图标直达搜索页，关键词搜索文章
 
-Each module loads asynchronously and appears as data arrives (progressive rendering).
+---
 
-## Project Structure
+## 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| 框架 | Flutter 3.44（Dart 3.12） |
+| UI 风格 | Cupertino（iOS 原生风格） |
+| 状态管理 | `ChangeNotifier` + `ListenableBuilder` |
+| HTTP | `package:http` |
+| Markdown | 自定义 AST 解析器 |
+| 本地存储 | `shared_preferences` |
+| 图片缓存 | `cached_network_image` |
+| 相册保存 | `gal` |
+| 权限管理 | `permission_handler` |
+| 国际化 | `flutter_localizations`（zh / zh-Hant / ja / en） |
+
+---
+
+## 项目结构
 
 ```
 lib/
-├── main.dart                          # Entry point
-├── app.dart                           # CupertinoApp + tab navigation
+├── main.dart                              # 入口
+├── app.dart                               # CupertinoApp + 5 标签页导航
 ├── config/
-│   └── api.dart                       # API endpoint constants
+│   └── api.dart                           # API 端点配置
+├── l10n/
+│   └── generated/                         # ARB 生成的本地化代码（zh / ja / en）
 ├── models/
-│   ├── annotation.dart                # Annotation data model
-│   ├── card_item.dart                 # Blog article model
-│   └── reading_progress.dart          # Reading progress model (page index)
+│   ├── annotation.dart                    # 批注数据模型
+│   ├── author.dart                        # 作者模型
+│   ├── card_item.dart                     # 文章卡片模型
+│   ├── favorite.dart                      # 收藏数据模型
+│   └── reading_progress.dart              # 阅读进度模型
 ├── services/
-│   ├── annotation_store.dart          # Annotation CRUD + persistence
-│   ├── api_service.dart               # HTTP client for blog API
-│   ├── reader_settings_service.dart   # Typography settings (ChangeNotifier)
-│   └── reading_progress_service.dart  # Progress save/load
+│   ├── api_service.dart                   # HTTP API 客户端
+│   ├── annotation_store.dart              # 批注 CRUD 持久化
+│   ├── content_cache_service.dart         # 文章内容缓存（24h TTL）
+│   ├── favorite_service.dart              # 收藏持久化
+│   ├── reader_settings_service.dart       # 阅读设置（ChangeNotifier）
+│   └── reading_progress_service.dart      # 进度保存/加载
 ├── theme/
-│   └── app_theme.dart                 # Design tokens (colors, spacing, text)
+│   └── app_theme.dart                     # 设计令牌（颜色、排版、间距、圆角）
 ├── utils/
-│   └── markdown_chunker.dart          # Markdown chunker (legacy)
+│   ├── markdown_chunker.dart              # Markdown 分块器
+│   └── responsive.dart                    # 响应式断点适配
 ├── widgets/
-│   └── loading_indicator.dart         # Shared loading/error/empty widgets
+│   ├── loading_indicator.dart             # 加载/错误/空态通用组件
+│   ├── section_header.dart                # 栏目标题行
+│   └── shimmer.dart                       # Shimmer 骨架屏动画
 └── pages/
     ├── home/
-    │   ├── home_page.dart             # Home page with modular sections
+    │   ├── home_page.dart                 # 首页（轮播 + 网格 + 横向滑动）
     │   └── widgets/
-    │       ├── hero_tile.dart          # Hero card
-    │       └── featured_card.dart      # Horizontal scroll card
+    │       ├── hero_carousel.dart          # Hero 自动轮播
+    │       ├── grid_card.dart              # 双列网格卡片
+    │       ├── horizontal_card.dart        # 横向滑动卡片
+    │       ├── hero_tile.dart              # [旧] 静态 Hero 卡片
+    │       └── featured_card.dart          # [旧] 横向滑动卡片
     ├── list/
-    │   ├── list_page.dart             # All articles list
+    │   ├── list_page.dart                 # 全部文章（无限滚动）
     │   └── widgets/
-    │       └── blog_row.dart           # List row item
+    │       ├── blog_row.dart               # 列表行组件
+    │       └── search_bar.dart            # 搜索栏
+    ├── search/
+    │   └── search_page.dart               # 搜索页
     ├── hot/
-    │   └── hot_page.dart              # Curated content list
-    ├── setting/
-    │   └── setting_page.dart          # Reader settings UI
+    │   └── hot_page.dart                  # 精选/作者文章列表
+    ├── favorites/
+    │   └── favorites_page.dart            # 收藏列表
     ├── annotations/
-    │   └── global_annotations_page.dart # Cross-article annotations
+    │   └── global_annotations_page.dart   # 全局批注列表
+    ├── setting/
+    │   └── setting_page.dart              # 阅读设置页（排版 + 外观 + 语言）
     └── detail/
-        ├── detail_page.dart           # Article detail (PageView reader)
-        ├── annotation_summary_page.dart # Per-article annotation list
+        ├── detail_page.dart               # 文章详情（PageView 阅读器）
+        ├── annotation_summary_page.dart   # 单文章批注摘要
         ├── services/
-        │   └── page_calculator.dart   # TextPainter-based pagination
+        │   └── page_calculator.dart       # TextPainter 分页算法
         └── widgets/
-            ├── page_reader.dart        # PageView wrapper + indicator
-            ├── page_content.dart       # Single page content + annotation menus
-            ├── markdown_ast.dart       # Custom markdown parser
-            ├── annotated_chunk_list.dart # Scroll-based chunk list (legacy)
-            ├── annotated_span_builder.dart # Annotation span tree builder
-            ├── hero_image.dart         # Detail page hero image
-            ├── content_card.dart       # Article header card
-            └── poster_generator.dart   # PNG poster generation + save
+            ├── page_reader.dart            # PageView 包装 + 页码指示器
+            ├── page_content.dart           # 单页内容 + 批注菜单
+            ├── markdown_ast.dart           # Markdown 解析器
+            ├── annotated_chunk_list.dart   # 滚动分块列表
+            ├── annotated_span_builder.dart # 批注 Span 树构建器
+            ├── hero_image.dart             # 详情页 Hero 图
+            ├── content_card.dart           # 文章头部卡片
+            └── poster_generator.dart       # PNG 海报生成与保存
 ```
 
-## Tech Stack
+---
 
-| Category | Technology |
-| --- | --- |
-| Framework | Flutter 3.44 (Dart 3.12) |
-| UI | Cupertino (iOS-style) |
-| State | `ChangeNotifier` + `ListenableBuilder` |
-| HTTP | `package:http` |
-| Markdown | Custom AST parser (`markdown_ast.dart`) |
-| Storage | `shared_preferences` |
-| Image Caching | `cached_network_image` |
-| Gallery Save | `gal` |
-| Permissions | `permission_handler` |
-
-## Getting Started
+## 构建
 
 ```bash
-# Install dependencies
+# 获取依赖
 flutter pub get
 
-# Run on device/emulator
+# 开发运行
 flutter run -d <device-id>
 
-# Run on Android
-flutter run -d android
+# 构建发布版本
+./scripts/build.sh prod          # 生产构建（Android APK + AAB + Web）
+./scripts/build.sh dev           # 开发构建
+./scripts/build.sh test          # 测试构建
 
-# Static analysis
+# 静态分析
 flutter analyze
 
-# Run tests
+# 运行测试
 flutter test
 ```
 
-## Platform Support
+构建输出位于 `build_output/<env>-<version>/`。
 
-- Android
-- iOS
-- Windows
-- macOS
-- Linux
-- Web
+---
 
-## Environment
+## 平台支持
 
-- **Flutter** 3.44.1 (stable)
+| Android | iOS | Web | Windows | macOS | Linux |
+| :-: | :-: | :-: | :-: | :-: | :-: |
+| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+
+## 环境要求
+
+- **Flutter** 3.44.1（stable）
 - **Dart** 3.12.1
-- **Linter**: `package:flutter_lints/flutter.yaml` (v6.0.0)
+- **Android** minSdk 24 · targetSdk 36
+- **iOS** 最低版本见 `ios/Podfile`

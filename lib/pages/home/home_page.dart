@@ -1,17 +1,22 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart' show RefreshIndicator;
 import 'package:flutter/services.dart';
-import '../../../l10n/generated/app_localizations.dart';
-import '../../../models/card_item.dart';
-import '../../../services/api_service.dart';
-import '../../../services/favorite_service.dart';
-import '../../../services/reader_settings_service.dart';
-import '../../../theme/app_theme.dart';
-import '../../../widgets/loading_indicator.dart';
-import '../../../utils/responsive.dart';
-import 'widgets/hero_tile.dart';
-import 'widgets/featured_card.dart';
+import '../../l10n/generated/app_localizations.dart';
+import '../../models/card_item.dart';
+import '../../services/api_service.dart';
+import '../../services/favorite_service.dart';
+import '../../services/reader_settings_service.dart';
+import '../../theme/app_theme.dart';
+import '../../utils/responsive.dart';
+import '../../widgets/section_header.dart';
+import '../../widgets/shimmer.dart';
+import '../../widgets/loading_indicator.dart';
+import 'widgets/hero_carousel.dart';
+import 'widgets/grid_card.dart';
+import 'widgets/horizontal_card.dart';
 import '../hot/hot_page.dart';
 import '../detail/detail_page.dart';
+import '../search/search_page.dart';
 
 class HomePage extends StatefulWidget {
   final ApiService apiService;
@@ -30,7 +35,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  CardItem? _heroBlog;
+  // Hero carousel articles (replaces single hero)
+  List<CardItem>? _heroItems;
   List<CardItem>? _featuredBlogs;
   List<CardItem>? _zhBlogs;
   List<CardItem>? _jaBlogs;
@@ -41,46 +47,51 @@ class _HomePageState extends State<HomePage> {
   List<CardItem>? _lincolnBlogs;
   List<CardItem>? _sandBlogs;
   List<CardItem>? _burnandBlogs;
+
   String? _error;
   String? _errorCode;
 
   @override
   void initState() {
     super.initState();
-    _loadHero();
-    _loadFeatured();
-    _loadZh();
-    _loadJa();
-    _loadShakespeare();
-    _loadTwain();
-    _loadByron();
-    _loadJefferson();
-    _loadLincoln();
-    _loadSand();
-    _loadBurnand();
+    _loadAll();
   }
 
-  Future<void> _loadHero() async {
-
-    const heroId = '23876'; // 徐霞客游记blog_index=23876
-    try {
-      final blog = await widget.apiService.getHeroBlog(heroId);
-      if (!mounted) return;
-      setState(() => _heroBlog = blog);
-    } catch (_) {
-      // Non-critical — silently ignore
-    }
-  }
-
-  Future<void> _loadFeatured() async {
+  Future<void> _loadAll() async {
+    if (!mounted) return;
     setState(() {
       _error = null;
-      _featuredBlogs = null;
     });
+
     try {
-      final results = await widget.apiService.searchBlogs('最新', limit: 6, offset: 0);
+      final results = await Future.wait([
+        _safeFetch(() => widget.apiService.getBlogs(page: 1, pageSize: 5).then((r) => r.data)),
+        _safeFetch(() => widget.apiService.searchBlogs('最新', limit: 6, offset: 0)),
+        _safeFetch(() => widget.apiService.searchBlogs('zh', limit: 6, offset: 0)),
+        _safeFetch(() => widget.apiService.searchBlogs('ja', limit: 6, offset: 0)),
+        _safeFetch(() => widget.apiService.searchAuthor('Shakespeare', limit: 6, offset: 0)),
+        _safeFetch(() => widget.apiService.searchAuthor('Twain, Mark', limit: 6, offset: 0)),
+        _safeFetch(() => widget.apiService.searchAuthor('Byron', limit: 6, offset: 0)),
+        _safeFetch(() => widget.apiService.searchAuthor('Jefferson, Thomas', limit: 6, offset: 0)),
+        _safeFetch(() => widget.apiService.searchAuthor('Lincoln, Abraham', limit: 6, offset: 0)),
+        _safeFetch(() => widget.apiService.searchAuthor('Sand, George', limit: 6, offset: 0)),
+        _safeFetch(() => widget.apiService.searchAuthor('Burnand, F. C.', limit: 6, offset: 0)),
+      ]);
+
       if (!mounted) return;
-      setState(() => _featuredBlogs = results);
+      setState(() {
+        _heroItems = results[0];
+        _featuredBlogs = results[1];
+        _zhBlogs = results[2];
+        _jaBlogs = results[3];
+        _shakespeareBlogs = results[4];
+        _twainBlogs = results[5];
+        _byronBlogs = results[6];
+        _jeffersonBlogs = results[7];
+        _lincolnBlogs = results[8];
+        _sandBlogs = results[9];
+        _burnandBlogs = results[10];
+      });
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -90,93 +101,12 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  Future<void> _loadZh() async {
+  /// Helper to safely fetch a list, returning empty list on error.
+  Future<List<CardItem>> _safeFetch(Future<List<CardItem>> Function() fetcher) async {
     try {
-      final results = await widget.apiService.searchBlogs('zh', limit: 6, offset: 0);
-      if (!mounted) return;
-      setState(() => _zhBlogs = results);
+      return await fetcher();
     } catch (_) {
-      // Non-critical — silently ignore
-    }
-  }
-
-  Future<void> _loadJa() async {
-    try {
-      final results = await widget.apiService.searchBlogs('ja', limit: 6, offset: 0);
-      if (!mounted) return;
-      setState(() => _jaBlogs = results);
-    } catch (_) {
-      // Non-critical — silently ignore
-    }
-  }
-
-  Future<void> _loadShakespeare() async {
-    try {
-      final results = await widget.apiService.searchAuthor('Shakespeare', limit: 6, offset: 0);
-      if (!mounted) return;
-      setState(() => _shakespeareBlogs = results);
-    } catch (_) {
-      // Non-critical — silently ignore
-    }
-  }
-
-  Future<void> _loadTwain() async {
-    try {
-      final results = await widget.apiService.searchAuthor('Twain, Mark', limit: 6, offset: 0);
-      if (!mounted) return;
-      setState(() => _twainBlogs = results);
-    } catch (_) {
-      // Non-critical — silently ignore
-    }
-  }
-
-  Future<void> _loadByron() async {
-    try {
-      final results = await widget.apiService.searchAuthor('Byron', limit: 6, offset: 0);
-      if (!mounted) return;
-      setState(() => _byronBlogs = results);
-    } catch (_) {
-      // Non-critical — silently ignore
-    }
-  }
-
-  Future<void> _loadJefferson() async {
-    try {
-      final results = await widget.apiService.searchAuthor('Jefferson, Thomas', limit: 6, offset: 0);
-      if (!mounted) return;
-      setState(() => _jeffersonBlogs = results);
-    } catch (_) {
-      // Non-critical — silently ignore
-    }
-  }
-
-  Future<void> _loadLincoln() async {
-    try {
-      final results = await widget.apiService.searchAuthor('Lincoln, Abraham', limit: 6, offset: 0);
-      if (!mounted) return;
-      setState(() => _lincolnBlogs = results);
-    } catch (_) {
-      // Non-critical — silently ignore
-    }
-  }
-
-  Future<void> _loadSand() async {
-    try {
-      final results = await widget.apiService.searchAuthor('Sand, George', limit: 6, offset: 0);
-      if (!mounted) return;
-      setState(() => _sandBlogs = results);
-    } catch (_) {
-      // Non-critical — silently ignore
-    }
-  }
-
-  Future<void> _loadBurnand() async {
-    try {
-      final results = await widget.apiService.searchAuthor('Burnand, F. C.', limit: 6, offset: 0);
-      if (!mounted) return;
-      setState(() => _burnandBlogs = results);
-    } catch (_) {
-      // Non-critical — silently ignore
+      return [];
     }
   }
 
@@ -223,6 +153,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _openSearch() {
+    Navigator.of(context).push(
+      CupertinoPageRoute(
+        builder: (_) => SearchPage(
+          apiService: widget.apiService,
+          settingsService: widget.settingsService,
+          favoriteService: widget.favoriteService,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
@@ -232,10 +174,10 @@ class _HomePageState extends State<HomePage> {
         border: null,
         padding: EdgeInsetsDirectional.zero,
         leading: Padding(
-          padding: EdgeInsets.only(left: 16),
+          padding: const EdgeInsets.only(left: 16),
           child: Text(
             AppLocalizations.of(context)?.appTitle ?? 'ReadMeet',
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: AppText.taglineSize,
               fontWeight: FontWeight.w600,
               color: AppColors.onDark,
@@ -243,11 +185,14 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         trailing: Padding(
-          padding: EdgeInsets.only(right: 16),
-          child: Icon(
-            CupertinoIcons.search,
-            color: AppColors.onDark,
-            size: 20,
+          padding: const EdgeInsets.only(right: 16),
+          child: GestureDetector(
+            onTap: _openSearch,
+            child: const Icon(
+              CupertinoIcons.search,
+              color: AppColors.onDark,
+              size: 20,
+            ),
           ),
         ),
       ),
@@ -259,192 +204,255 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildBody() {
-    if (_error != null && _featuredBlogs == null && _heroBlog == null) {
-      return ErrorView(message: _error!, errorCode: _errorCode, onRetry: _loadFeatured);
+    if (_error != null && _heroItems == null) {
+      return ErrorView(
+        message: _error!,
+        errorCode: _errorCode,
+        onRetry: _loadAll,
+      );
     }
 
-    final featured = _featuredBlogs ?? [];
-
-    return LayoutBuilder(builder: (context, constraints) {
-      return SingleChildScrollView(
+    return RefreshIndicator(
+      color: AppColors.primary,
+      onRefresh: _loadAll,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_heroBlog != null)
-              HeroTile(item: _heroBlog!, onTap: () => _openDetail(_heroBlog!))
+            // ── Hero Carousel ──
+            if (_heroItems != null && _heroItems!.isNotEmpty)
+              HeroCarousel(
+                items: _heroItems!,
+                onTap: _openDetail,
+              )
             else
-              const _HeroSkeleton(),
+              ShimmerHero(height: Responsive.heroSkeletonHeight(context)),
 
+            // ── Content Sections ──
             Container(
               color: AppColors.canvas,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildCardSection(
+                  // ── Latest Articles (grid layout) ──
+                  const SizedBox(height: AppSpacing.md),
+                  _buildGridSection(
                     title: AppLocalizations.of(context)?.latestArticles ?? '最新文章',
                     query: '最新',
-                    items: featured,
-                    isFirst: true,
+                    items: _featuredBlogs,
                   ),
 
-                  if (_zhBlogs != null && _zhBlogs!.isNotEmpty)
-                    _buildCardSection(
+                  // ── Language & Author Sections (horizontal scroll) ──
+                  if (_zhBlogs != null && _zhBlogs!.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _buildHorizontalSection(
                       title: AppLocalizations.of(context)?.chineseFeatured ?? '中文精选',
                       query: 'zh',
                       items: _zhBlogs!,
                     ),
-                  if (_jaBlogs != null && _jaBlogs!.isNotEmpty)
-                    _buildCardSection(
+                  ],
+                  if (_jaBlogs != null && _jaBlogs!.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _buildHorizontalSection(
                       title: AppLocalizations.of(context)?.japaneseFeatured ?? '日文精选',
                       query: 'ja',
                       items: _jaBlogs!,
                     ),
-                  if (_shakespeareBlogs != null && _shakespeareBlogs!.isNotEmpty)
-                    _buildCardSection(
+                  ],
+                  if (_shakespeareBlogs != null && _shakespeareBlogs!.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _buildHorizontalSection(
                       title: 'Shakespeare',
                       query: 'Shakespeare',
                       items: _shakespeareBlogs!,
                       useAuthor: true,
                     ),
-                  if (_twainBlogs != null && _twainBlogs!.isNotEmpty)
-                    _buildCardSection(
+                  ],
+                  if (_twainBlogs != null && _twainBlogs!.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _buildHorizontalSection(
                       title: 'Twain, Mark',
                       query: 'Twain, Mark',
                       items: _twainBlogs!,
                       useAuthor: true,
                     ),
-                  if (_byronBlogs != null && _byronBlogs!.isNotEmpty)
-                    _buildCardSection(
+                  ],
+                  if (_byronBlogs != null && _byronBlogs!.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _buildHorizontalSection(
                       title: 'Byron',
                       query: 'Byron',
                       items: _byronBlogs!,
                       useAuthor: true,
                     ),
-                  if (_jeffersonBlogs != null && _jeffersonBlogs!.isNotEmpty)
-                    _buildCardSection(
+                  ],
+                  if (_jeffersonBlogs != null && _jeffersonBlogs!.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _buildHorizontalSection(
                       title: 'Jefferson, Thomas',
                       query: 'Jefferson, Thomas',
                       items: _jeffersonBlogs!,
                       useAuthor: true,
                     ),
-                  if (_lincolnBlogs != null && _lincolnBlogs!.isNotEmpty)
-                    _buildCardSection(
+                  ],
+                  if (_lincolnBlogs != null && _lincolnBlogs!.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _buildHorizontalSection(
                       title: 'Lincoln, Abraham',
                       query: 'Lincoln, Abraham',
                       items: _lincolnBlogs!,
                       useAuthor: true,
                     ),
-                  if (_sandBlogs != null && _sandBlogs!.isNotEmpty)
-                    _buildCardSection(
+                  ],
+                  if (_sandBlogs != null && _sandBlogs!.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _buildHorizontalSection(
                       title: 'Sand, George',
                       query: 'Sand, George',
                       items: _sandBlogs!,
                       useAuthor: true,
                     ),
-                  if (_burnandBlogs != null && _burnandBlogs!.isNotEmpty)
-                    _buildCardSection(
+                  ],
+                  if (_burnandBlogs != null && _burnandBlogs!.isNotEmpty) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _buildHorizontalSection(
                       title: 'Burnand, F. C.',
                       query: 'Burnand, F. C.',
                       items: _burnandBlogs!,
                       useAuthor: true,
                     ),
+                  ],
 
-                  const SizedBox(height: AppSpacing.xl),
+                  const SizedBox(height: AppSpacing.md),
                 ],
               ),
             ),
           ],
         ),
-      );
-    });
+      ),
+    );
   }
 
-  Widget _buildCardSection({
+  // ── Grid Section (Latest Articles) ──
+
+  Widget _buildGridSection({
+    required String title,
+    required String query,
+    List<CardItem>? items,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SectionHeader(
+          title: title,
+          onViewAll: () => _openHotList(title, query),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+        ),
+        if (items != null)
+          _buildGrid(items)
+        else
+          _buildGridSkeleton(),
+      ],
+    );
+  }
+
+  Widget _buildGrid(List<CardItem> items) {
+    final isTablet = Responsive.isTablet(context);
+    final crossAxisCount = isTablet ? 3 : 2;
+    final childAspectRatio = isTablet ? 0.72 : 0.68;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: AppSpacing.sm,
+          crossAxisSpacing: AppSpacing.sm,
+          childAspectRatio: childAspectRatio,
+        ),
+        itemCount: items.length,
+        itemBuilder: (_, i) => GridCard(
+          item: items[i],
+          onTap: () => _openDetail(items[i]),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildGridSkeleton() {
+    final isTablet = Responsive.isTablet(context);
+    final crossAxisCount = isTablet ? 3 : 2;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+      child: GridView.builder(
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
+          mainAxisSpacing: AppSpacing.sm,
+          crossAxisSpacing: AppSpacing.sm,
+          childAspectRatio: 0.7,
+        ),
+        itemCount: 6,
+        itemBuilder: (_, _) => const ShimmerGridCard(),
+      ),
+    );
+  }
+
+  // ── Horizontal Section (Language / Author) ──
+
+  Widget _buildHorizontalSection({
     required String title,
     required String query,
     required List<CardItem> items,
-    bool isFirst = false,
     bool useAuthor = false,
   }) {
-    final onOpenList = useAuthor
+    final onViewAll = useAuthor
         ? () => _openHotListAuthor(title, query)
         : () => _openHotList(title, query);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (!isFirst) const SizedBox(height: AppSpacing.lg),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: AppText.bodySize,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.ink,
-                ),
-              ),
-              GestureDetector(
-                onTap: onOpenList,
-                child: Text(
-                  AppLocalizations.of(context)?.viewAll ?? '查看全部',
-                  style: const TextStyle(
-                    fontSize: AppText.bodySize,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            ],
+        SectionHeader(
+          title: title,
+          onViewAll: onViewAll,
+          padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.xs),
+        ),
+        SizedBox(
+          height: HorizontalCard.cardHeight,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            itemCount: items.length,
+            itemBuilder: (_, i) => HorizontalCard(
+              item: items[i],
+              onTap: () => _openDetail(items[i]),
+            ),
           ),
         ),
-        _buildCardList(items),
+        // Fade hint at right edge
+        if (items.length > 3)
+          Align(
+            alignment: Alignment.centerRight,
+            child: Container(
+              width: 32,
+              height: 17,
+              margin: const EdgeInsets.only(right: AppSpacing.lg),
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerRight,
+                  end: Alignment.centerLeft,
+                  colors: [AppColors.canvas, Color(0x00FFFFFF)],
+                ),
+              ),
+            ),
+          ),
       ],
-    );
-  }
-
-  Widget _buildCardList(List<CardItem> items) {
-    final isTablet = Responsive.isTablet(context);
-    if (isTablet) {
-      // iPad: grid layout fills available width
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        child: Wrap(
-          spacing: AppSpacing.sm,
-          runSpacing: AppSpacing.sm,
-          children: items
-              .map((item) => FeaturedCard(item: item, onTap: () => _openDetail(item)))
-              .toList(),
-        ),
-      );
-    }
-    // iPhone: horizontal scroll
-    return SizedBox(
-      height: 170,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        itemCount: items.length,
-        itemBuilder: (_, i) =>
-            FeaturedCard(item: items[i], onTap: () => _openDetail(items[i])),
-      ),
-    );
-  }
-}
-
-class _HeroSkeleton extends StatelessWidget {
-  const _HeroSkeleton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: Responsive.heroSkeletonHeight(context),
-      color: AppColors.surfaceTile1,
-      child: const Center(
-        child: CupertinoActivityIndicator(color: AppColors.onDark),
-      ),
     );
   }
 }

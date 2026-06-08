@@ -360,7 +360,9 @@ class _HomePageState extends State<HomePage> {
   Widget _buildGrid(List<CardItem> items) {
     final isTablet = Responsive.isTablet(context);
     final crossAxisCount = isTablet ? 3 : 2;
-    final childAspectRatio = isTablet ? 0.72 : 0.68;
+    // Tablet cards are wider with 3 columns; a higher aspect ratio keeps
+    // them from becoming too tall relative to their natural content height.
+    final childAspectRatio = isTablet ? 1.10 : 0.7;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
